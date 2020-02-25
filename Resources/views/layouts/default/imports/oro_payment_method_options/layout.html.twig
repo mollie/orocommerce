@@ -1,0 +1,27 @@
+{% block _payment_methods_mollie_payment_widget %}
+    <div
+        class="{{ class_prefix }}-form__payment-methods mollie-payment-widget"
+        {% if (view.options.isApplePay) %}data-mollie-applepay{% endif %}
+    >
+        <div class="mollie-payment-container">
+            <img src="{{ asset(view.options.icon) }}" class="mollie-payment-image" alt="Mollie payment image">
+            <div class="mollie-payment-widget-content">
+                {% if (view.options.isSurchargeSupported and view.options.surchargeAmount is not empty) %}
+                    <p class="mollie-payment-surcharge">{{ 'mollie.payment.checkout.subtotals.mollie_payment_surcharge'|trans }}: {{ view.options.surchargeAmount|oro_format_currency({'currency': view.options.currency}) }}</p>
+                {% endif %}
+                <p>{{ 'mollie.payment.checkout.redirect_to_mollie_payment'|trans }}</p>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block _payment_methods_widget %}
+    {% set options = {} %}
+    <div
+            data-page-component-module="molliepayment/js/app/components/mollie-applepay"
+            data-page-component-options="{{ options|json_encode }}"
+    >
+        {{ parent_block_widget(block) }}
+    </div>
+{% endblock %}

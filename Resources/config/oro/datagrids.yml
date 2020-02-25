@@ -1,0 +1,25 @@
+datagrids:
+  mollie-notifications-grid:
+    source:
+      type: array
+    columns:
+      id:
+        label: '#'
+      website:
+        label: mollie.payment.config.notifications.label.website
+      date:
+        label: mollie.payment.config.notifications.label.date
+      order:
+        label: mollie.payment.config.notifications.label.order
+      severity:
+        label: mollie.payment.config.notifications.label.type
+        type: twig
+        frontend_type: html
+        template: MolliePaymentBundle::Config/Notification/severity.html.twig
+
+      message:
+        type: translatable
+        label: mollie.payment.config.notifications.label.message
+      description:
+        type: translatable
+        label: mollie.payment.config.notifications.label.details

@@ -1,0 +1,36 @@
+.mollie-accordion {
+  .mollie-payment-method-nav {
+    cursor: pointer;
+    margin-bottom: 5px;
+
+    .nav-link {
+      font-weight: bold;
+    }
+
+    .badge {
+      margin: 6px 0;
+    }
+
+    .badge-disabled {
+      background-color: #e3e3e4;
+    }
+
+    .mollie-toggle {
+      float: right;
+    }
+  }
+
+  .mollie-payment-method {
+    .mollie-payment-image-container {
+      margin-top: -10px;
+    }
+
+    .mollie-payment-image {
+      width: 64px;
+    }
+  }
+}
+
+.mollie-notifications {
+  position: relative;
+}

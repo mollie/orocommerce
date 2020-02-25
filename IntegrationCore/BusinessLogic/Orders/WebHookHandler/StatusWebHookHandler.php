@@ -1,0 +1,130 @@
+<?php
+
+namespace Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Orders\WebHookHandler;
+
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Payment;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Integration\Interfaces\OrderTransitionService;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\WebHook\OrderChangedWebHookEvent;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ServiceRegister;
+
+class StatusWebHookHandler
+{
+    private static $STATUS_TO_SERVICE_METHOD = array(
+        'paid' => 'payOrder',
+        'expired' => 'expireOrder',
+        'canceled' => 'cancelOrder',
+        'authorized' => 'authorizeOrder',
+        'completed' => 'completeOrder',
+    );
+
+    private static $ORDER_PAYMENT_STATUS_TO_SERVICE_METHOD = array(
+        'expired' => 'expireOrder',
+        'canceled' => 'cancelOrder',
+        'failed' => 'failOrder',
+    );
+
+    public function handle(OrderChangedWebHookEvent $event)
+    {
+        if (!$this->isOrderStatusChanged($event)) {
+            $this->handlePaymentStatusChanges($event);
+            return;
+        }
+
+        $serviceMethod = $this->getServiceMethodFor($event->getNewOrder()->getStatus());
+        if (!$serviceMethod) {
+            return;
+        }
+
+        $this->handleOrderLineChanges($event);
+
+        call_user_func(
+            array($this->getOrderTransitionService(), $serviceMethod),
+            $event->getOrderReference()->getShopReference(),
+            $event->getNewOrder()->getMetadata()
+        );
+    }
+
+    protected function isOrderStatusChanged(OrderChangedWebHookEvent $event)
+    {
+        return $event->getCurrentOrder()->getStatus() !== $event->getNewOrder()->getStatus();
+    }
+
+    protected function handlePaymentStatusChanges(OrderChangedWebHookEvent $event)
+    {
+        $currentEmbeds = $event->getCurrentOrder()->getEmbedded();
+        $newEmbeds = $event->getNewOrder()->getEmbedded();
+        if (empty($currentEmbeds['payments']) || empty($newEmbeds['payments'])) {
+            return;
+        }
+
+        /** @var Payment[] $currentOrderPaymentMap */
+        $currentOrderPaymentMap = array();
+        /** @var Payment[] $currentPayments */
+        $currentPayments = $currentEmbeds['payments'];
+        foreach ($currentPayments as $currentPayment) {
+            $currentOrderPaymentMap[$currentPayment->getId()] = $currentPayment;
+        }
+
+        /** @var Payment[] $newPayments */
+        $newPayments = $newEmbeds['payments'];
+        foreach ($newPayments as $newPayment) {
+            if (!array_key_exists($newPayment->getId(), $currentOrderPaymentMap)) {
+                continue;
+            }
+
+            if ($currentOrderPaymentMap[$newPayment->getId()]->getStatus() === $newPayment->getStatus()) {
+                continue;
+            }
+
+            $serviceMethod = $this->getOrderPaymentServiceMethodFor($newPayment->getStatus());
+            if (!$serviceMethod) {
+                continue;
+            }
+
+            call_user_func(
+                array($this->getOrderTransitionService(), $serviceMethod),
+                $event->getOrderReference()->getShopReference(),
+                $event->getNewOrder()->getMetadata()
+            );
+        }
+    }
+
+    protected function handleOrderLineChanges(OrderChangedWebHookEvent $event)
+    {
+        $lineHandler = new LineStatusWebHookHandler();
+        $lineHandler->handle($event, true);
+    }
+
+    /**
+     * @param string $status
+     *
+     * @return string|null
+     */
+    protected function getServiceMethodFor($status)
+    {
+        if (array_key_exists($status, static::$STATUS_TO_SERVICE_METHOD)) {
+            return static::$STATUS_TO_SERVICE_METHOD[$status];
+        }
+
+        return null;
+    }
+
+    protected function getOrderPaymentServiceMethodFor($status)
+    {
+        if (array_key_exists($status, static::$ORDER_PAYMENT_STATUS_TO_SERVICE_METHOD)) {
+            return static::$ORDER_PAYMENT_STATUS_TO_SERVICE_METHOD[$status];
+        }
+
+        return null;
+    }
+
+    /**
+     * @return OrderTransitionService
+     */
+    protected function getOrderTransitionService()
+    {
+        /** @var OrderTransitionService $orderTransitionService */
+        $orderTransitionService = ServiceRegister::getService(OrderTransitionService::CLASS_NAME);
+        return $orderTransitionService;
+    }
+}

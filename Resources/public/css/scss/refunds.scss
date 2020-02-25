@@ -1,0 +1,57 @@
+.mollie-refund-items-message {
+  padding: 20px 0 20px 0;
+}
+
+.mollie-input-not-valid-message {
+  padding: 10px 0 10px 0;
+  color: #a91c00;
+}
+
+.mollie-refunded-info-container {
+  padding: 20px 0 20px 0;
+  float: right;
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-column-gap: 30px;
+}
+
+.mollie-refunded-info-container i {
+  margin-right: 8px;
+}
+
+.mollie-datagrid-container {
+  min-width: 1000px;
+}
+
+#mollie-form-container {
+  td {
+    input {
+      width: 35px;
+    }
+  }
+}
+
+.mollie-hide-input {
+  input {
+    display: none;
+  }
+}
+
+.controls-refund-payment-amount {
+  .refund-payment-amount {
+
+  }
+
+  .refund-payment-amount-value {
+    input {
+      width: 246px;
+      margin-right: -2px;
+    }
+  }
+
+  .refund-payment-currency {
+    input {
+      width: 50px;
+    }
+  }
+}

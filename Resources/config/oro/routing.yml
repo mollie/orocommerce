@@ -1,0 +1,16 @@
+mollie_payment:
+    resource:     "@MolliePaymentBundle/Controller/AjaxMollieController.php"
+    type:         annotation
+    prefix:       /mollie
+
+mollie_support:
+    resource:     "@MolliePaymentBundle/Controller/SupportController.php"
+    type:         annotation
+    prefix:       /mollie
+
+mollie_payment_link:
+    resource:     "@MolliePaymentBundle/Controller/PaymentLinkController.php"
+    type:         annotation
+    prefix:       /mollie
+    options:
+        frontend: true

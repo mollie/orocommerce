@@ -1,0 +1,13 @@
+{% set options = {
+    view: 'molliepayment/js/app/views/mollie-payments-refresher',
+    websiteChooserSelector: "#" ~ form.websiteProfile.vars.id,
+    websiteProfileChangeMarkerName: form.websiteProfileChangeMarker.vars.full_name,
+    formSaveMarkerSelector: '[name="' ~ form.mollieSaveMarker.vars.full_name ~ '"]'
+} %}
+<div
+    data-page-component-module="oroui/js/app/components/view-component"
+    data-page-component-options="{{ options|json_encode }}"
+>
+    {{ form_row(form.websiteProfile, { 'attr': {'class': 'mollie-website-chooser'} }) }}
+    {{ form_row(form.websiteProfileChangeMarker) }}
+</div>

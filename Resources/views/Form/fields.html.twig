@@ -1,0 +1,71 @@
+{% block mollie_channel_setting_type_widget %}
+    {# First include and render all tabsl content in a template variable to avoid mixing Mollie content with Oro form #}
+    {% set authTokenIsValid = form.authToken.vars.value is not empty and form.authToken.vars.errors is empty %}
+    {% set showOnlyAuthorization = not authTokenIsValid or form.formRefreshRequired.vars.value is not empty %}
+    {% set authorizationContent = include('MolliePaymentBundle:Form:authorization.html.twig') %}
+
+    {% if (not showOnlyAuthorization) %}
+        {% set websiteProfileContent = include('MolliePaymentBundle:Form:website-profile.html.twig') %}
+        {% set paymentMethodsContent = include('MolliePaymentBundle:Form:payment-methods.html.twig') %}
+        {% set notificationsContent = include('MolliePaymentBundle:Form:notifications.html.twig') %}
+    {% endif %}
+
+
+    {# Render whole oro parent form so that we are sure that Mollie content is at the bottom of the configuration page #}
+    {% if (form.parent.transport is defined) %}
+        {{ form_widget(form.parent.transport, {'attr': {'class': 'control-group-container'}}) }}
+    {% endif %}
+
+    {% if (form.parent.synchronizationSettings is defined) %}
+        {{ form_widget(form.parent.synchronizationSettings) }}
+    {% endif %}
+
+    {% if (form.parent.mappingSettings is defined) %}
+        {{ form_widget(form.parent.mappingSettings) }}
+    {% endif %}
+
+    {% if (form.parent.connectors is defined) %}
+        <div class="control-group-container {% if form.parent.connectors.vars.choices is empty %}{{ 'hide' }}{% endif %}">
+            {{ form_row(form.parent.connectors) }}
+        </div>
+    {% endif %}
+    {{ form_rest(form.parent) }}
+
+
+    {# Define custom Mollie form content #}
+    <div class="navbar navbar-static scrollspy-nav">
+        {% set options = {
+            view: 'molliepayment/js/app/views/mollie-tabs-view',
+            contentContainerSelector: '#mollie-tabs-container'
+        } %}
+        <nav
+            class="nav"
+            data-page-component-module="oroui/js/app/components/view-component"
+            data-page-component-options="{{ options|json_encode }}">
+            <a class="nav-link" href="#mollie_authorization">{{ 'mollie.payment.config.authorization.label'|trans }}</a>
+            {% if (not showOnlyAuthorization) %}
+                <a class="nav-link" href="#mollie_website_prifile">{{ 'mollie.payment.config.website_profile.label'|trans }}</a>
+                <a class="nav-link" href="#mollie_payment_methods">{{ 'mollie.payment.config.payment_methods.label'|trans }}</a>
+                <a class="nav-link" href="#mollie_notifications">{{ 'mollie.payment.config.notifications.label'|trans }}</a>
+            {% endif %}
+        </nav>
+    </div>
+
+    <div class="inline-actions-element_actions"></div>
+    <div id="mollie-tabs-container" class="section-content">
+        <div data-target="#mollie_authorization" class="hide">
+            {{ authorizationContent|raw }}
+        </div>
+        {% if (not showOnlyAuthorization) %}
+            <div data-target="#mollie_website_prifile" class="hide">
+                {{ websiteProfileContent|raw }}
+            </div>
+            <div data-target="#mollie_payment_methods" class="hide">
+                {{ paymentMethodsContent|raw }}
+            </div>
+            <div data-target="#mollie_notifications" class="hide">
+                {{ notificationsContent|raw }}
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

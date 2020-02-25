@@ -1,0 +1,2 @@
+bundles:
+  - MolliePaymentBundle:Form:fields.html.twig

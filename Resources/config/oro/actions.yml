@@ -1,0 +1,90 @@
+operations:
+  mollie_payment_link_generation:
+    label: mollie.payment.payment_link.label
+    routes:
+      - oro_order_view
+    frontend_options:
+      template: MolliePaymentBundle:Action:generate_payment_link.html.twig
+    button_options:
+      icon: fa-link
+    attributes:
+      molliePaymentLink:
+        label: ' '
+        type: entity
+        options:
+          class: Mollie\Bundle\PaymentBundle\Form\Entity\MolliePaymentLink
+    form_options:
+      attribute_fields:
+        molliePaymentLink:
+          form_type: Mollie\Bundle\PaymentBundle\Form\Type\MolliePaymentLinkType
+      attribute_default_values:
+        molliePaymentLink: $.paymentLink
+    preactions:
+      - '@call_service_method':
+          service: mollie_payment.manager.mollie_payment_link_provider
+          method: displayGeneratePaymentLinkButton
+          method_parameters: [$.data]
+          attribute: $.displayButton
+    preconditions:
+      '@equal': [$.displayButton, true]
+    form_init:
+      - '@call_service_method':
+          service: mollie_payment.manager.mollie_payment_link_provider
+          method_parameters: [$.data]
+          method: generatePaymentLink
+          attribute: $.paymentLink
+
+  mollie_payment_refund:
+    label: mollie.payment.refund.label
+    routes:
+      - oro_order_view
+    frontend_options:
+      template: MolliePaymentBundle:Action:refund.html.twig
+    button_options:
+      icon: fa-money
+    attributes:
+      mollieRefund:
+        label: ' '
+        type: entity
+        options:
+          class: Mollie\Bundle\PaymentBundle\Form\Entity\MollieRefund
+    form_options:
+      attribute_fields:
+        mollieRefund:
+          form_type: Mollie\Bundle\PaymentBundle\Form\Type\MollieRefundType
+          options:
+            required: true
+      attribute_default_values:
+        mollieRefund: $.refund
+    form_init:
+      - '@call_service_method':
+          service: mollie_payment.manager.mollie_refund_provider
+          method: getMollieRefund
+          method_parameters: [$.data]
+          attribute: $.refund
+    preactions:
+      - '@call_service_method':
+          service: mollie_payment.manager.mollie_refund_provider
+          method: displayRefundOption
+          method_parameters: [$.data]
+          attribute: $.isAllowed
+    preconditions:
+      '@equal': [$.isAllowed, true]
+    conditions:
+      '@mollie_refund_form_valid':
+    actions:
+      - '@call_service_method':
+          service: mollie_payment.manager.mollie_refund_provider
+          method: processRefundForm
+          method_parameters: [$.form]
+          attribute: $.formResponse
+      - '@flash_message':
+          conditions:
+            '@eq': [$.formResponse.success, true]
+          message: $.formResponse.message
+          type: 'success'
+      - '@flash_message':
+          conditions:
+            '@eq': [$.formResponse.success, false]
+          message: $.formResponse.message
+          type: 'error'

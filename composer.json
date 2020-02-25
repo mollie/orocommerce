@@ -1,0 +1,56 @@
+{
+  "name": "mollie/orocommerce",
+  "type": "symfony-bundle",
+  "description": "Mollie Payment Module for OroCommerce",
+  "keywords": [
+    "mollie",
+    "payment",
+    "service",
+    "ideal",
+    "creditcard",
+    "apple pay",
+    "mistercash",
+    "bancontact",
+    "sofort",
+    "sofortbanking",
+    "sepa",
+    "paypal",
+    "paysafecard",
+    "podiumcadeaukaart",
+    "przelewy24",
+    "banktransfer",
+    "direct debit",
+    "belfius",
+    "belfius direct net",
+    "refunds",
+    "api",
+    "payments",
+    "gateway",
+    "subscriptions",
+    "recurring",
+    "charges",
+    "kbc",
+    "cbc",
+    "gift cards",
+    "intersolve",
+    "fashioncheque",
+    "inghomepay",
+    "klarna",
+    "paylater",
+    "sliceit",
+    "mybank",
+    "oro",
+    "oro commerce"
+  ],
+  "license": [
+    "OSL-3.0",
+    "AFL-3.0"
+  ],
+  "require": {
+    "php": ">=7.0",
+    "oro/commerce": "^4.0"
+  },
+  "autoload": {
+    "psr-4": { "Mollie\\Bundle\\PaymentBundle\\": "" }
+  }
+}

@@ -1,0 +1,2 @@
+bundles:
+  - Mollie\Bundle\PaymentBundle\MolliePaymentBundle

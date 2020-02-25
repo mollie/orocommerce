@@ -1,0 +1,34 @@
+<fieldset class="form-horizontal">
+    <div data-target="#payment_refund" class="hide">
+        {% set className = '' %}
+        {% if form.mollieRefund.totalValue.vars.value == 0 or not form.mollieRefund.isOrderRefundable.vars.value %}
+            {% set className = 'hide' %}
+        {% endif %}
+        <div class="{{ className }}">
+            <div class="mollie-refund-items-message">
+                {{ 'mollie.payment.refund.paymentRefundMessage'|trans }}
+            </div>
+
+            <div class="control-group">
+                <div class="control-label wrap">{{ form_label(form.mollieRefund.refundPayment.amount) }}</div>
+                <div class="controls controls-refund-payment-amount">
+                    <div class="refund-payment-amount">
+                        <div class="fields-row">
+                            <div class="refund-payment-amount-value input-append">
+                                {{ form_widget(form.mollieRefund.refundPayment.amount) }}
+                                <div class="refund-payment-currency">
+                                    {{ form_widget(form.mollieRefund.currency) }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                {{ form_row(form.mollieRefund.refundPayment.description) }}
+            </div>
+
+
+        </div>
+    </div>
+</fieldset>

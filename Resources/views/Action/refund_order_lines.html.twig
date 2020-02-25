@@ -1,0 +1,81 @@
+<div data-target="#order_line_refund" style="min-width: 500px">
+    <div class="mollie-refund-items-message">
+        {{ 'mollie.payment.refund.orderLineRefundMessage'|trans }}
+    </div>
+
+    <div data-layout="separate" class="oro-datagrid mollie-datagrid-container">
+        <div class="other-scroll-container">
+            <div class="grid-scrollable-container os-host os-host-resize-disabled os-host-scrollbar-horizontal-hidden os-host-scrollbar-vertical-hidden os-host-transition os-theme-dark">
+                <div class="grid-container">
+                    <table class="grid grid-main-container">
+                        <thead class="grid-header">
+                        <tr class="grid-header-row">
+                            <th class="grid-cell grid-header-cell grid-header-cell-id renderable shortenable-label string-cell">
+                                                        <span class="grid-header-cell__label-container" data-grid-header-cell-label="">
+                                                            <span class="grid-header-cell__label" data-grid-header-cell-text="">{{ 'mollie.payment.refund.identifier'|trans }}</span>
+                                                        </span>
+                            </th>
+                            <th class="grid-cell grid-header-cell grid-header-cell-website renderable shortenable-label string-cell">
+                                                        <span class="grid-header-cell__label-container" data-grid-header-cell-label="">
+                                                            <span class="grid-header-cell__label" data-grid-header-cell-text="">{{ 'oro.sale.quote.lineitem.product'|trans }}</span>
+                                                        </span>
+                            </th>
+                            <th class="grid-cell grid-header-cell grid-header-cell-date renderable shortenable-label string-cell">
+                                                        <span class="grid-header-cell__label-container" data-grid-header-cell-label="">
+                                                            <span class="grid-header-cell__label" data-grid-header-cell-text="">{{ 'oro.pricing.productprice.quantity.label'|trans }}</span>
+                                                        </span>
+                            </th>
+                            <th class="grid-cell grid-header-cell grid-header-cell-order renderable shortenable-label string-cell">
+                                                        <span class="grid-header-cell__label-container" data-grid-header-cell-label="">
+                                                            <span class="grid-header-cell__label" data-grid-header-cell-text="">{{ 'mollie.payment.refund.refundedQuantity'|trans }}</span>
+                                                        </span>
+                            </th>
+                            <th class="grid-cell grid-header-cell grid-header-cell-severity renderable shortenable-label string-cell">
+                                                        <span class="grid-header-cell__label-container" data-grid-header-cell-label="">
+                                                            <span class="grid-header-cell__label" data-grid-header-cell-text="">{{'oro.order.orderlineitem.price.label'|trans}}</span>
+                                                        </span>
+                            </th>
+                            <th class="grid-cell grid-header-cell grid-header-cell-message renderable shortenable-label string-cell">
+                                                        <span class="grid-header-cell__label-container" data-grid-header-cell-label="">
+                                                            <span class="grid-header-cell__label" data-grid-header-cell-text="">{{ 'mollie.payment.refund.quantityToRefund'|trans }}</span>
+                                                        </span>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody class="grid-body">
+                        {% for refundItem in form.mollieRefund.refundItems %}
+                            <tr class="grid-row">
+                                <td class="string-cell grid-cell grid-body-cell grid-body-cell-sku">{{ refundItem.sku.vars.value }}</td>
+                                <td class="string-cell grid-cell grid-body-cell grid-body-cell-product" >{{ refundItem.product.vars.value }}</td>
+                                <td class="string-cell grid-cell grid-body-cell grid-body-cell-quantity">{{ refundItem.orderedQuantity.vars.value }}</td>
+                                <td class="string-cell grid-cell grid-body-cell grid-body-cell-refunded-quantity">{{ refundItem.refundedQuantity.vars.value }}</td>
+                                <td class="string-cell grid-cell grid-body-cell grid-body-cell-price">{{ form.mollieRefund.currencySymbol.vars.value }}<span class="mollie-refund-item-price">{{ refundItem.price.vars.value }}</span></td>
+                                {% set hide = '' %}
+                                {% if refundItem.refundedQuantity.vars.value >= refundItem.orderedQuantity.vars.value or
+                                    form.mollieRefund.totalValue.vars.value == 0 or
+                                    not refundItem.isRefundable.vars.value
+                                %}
+                                    {% set hide = 'mollie-hide-input' %}
+                                {% endif %}
+                                <td class="string-cell grid-cell grid-body-cell grid-body-cell-quantity-to-refund {{ hide }}">
+                                    {{ form_widget(refundItem.quantityToRefund) }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="mollie-refunded-info-container">
+        {% import 'OroUIBundle::macros.html.twig' as UI %}
+        <div>{{ UI.tooltip("mollie.payment.refund.tooltip.total") }}{{ 'mollie.payment.refund.amountToRefund'|trans }}</div>
+        <div>{{ form.mollieRefund.currencySymbol.vars.value }}{{ form.mollieRefund.totalValue.vars.value }}</div>
+        <div>{{ UI.tooltip("mollie.payment.refund.tooltip.refunded") }}{{ 'mollie.payment.refund.totalRefunded'|trans }}</div>
+        <div>{{ form.mollieRefund.currencySymbol.vars.value }}{{ form.mollieRefund.totalRefunded.vars.value }}</div>
+    </div>
+
+</div>

@@ -1,0 +1,16 @@
+{% set severity = record.getValue('severity') %}
+{% set severityValue =  'info' %}
+
+{% if severity == '1' %}
+    {% set severityValue =  'warning' %}
+{% elseif severity == '2' %}
+    {% set severityValue =  'error' %}
+{% endif %}
+
+{% set labelKey = 'mollie.payment.config.notifications.' ~ severityValue %}
+
+<div class="mollie-notifications">
+    <div class="alert-{{ severityValue }} alert-icon ">
+        {{ labelKey|trans }}
+    </div>
+</div>

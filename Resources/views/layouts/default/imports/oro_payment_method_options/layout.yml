@@ -1,0 +1,5 @@
+layout:
+  actions:
+    - '@setBlockTheme':
+        themes:
+          - 'MolliePaymentBundle:layouts:default/imports/oro_payment_method_options/layout.html.twig'

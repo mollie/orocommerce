@@ -1,0 +1,6 @@
+config:
+  paths:
+    'molliepayment/js/app/components/mollie-form-refresher': 'bundles/molliepayment/js/app/components/mollie-form-refresher.js'
+    'molliepayment/js/app/views/mollie-accordion-view': 'bundles/molliepayment/js/app/views/mollie-accordion-view.js'
+    'molliepayment/js/app/views/mollie-payments-refresher': 'bundles/molliepayment/js/app/views/mollie-payments-refresher.js'
+    'molliepayment/js/app/views/mollie-tabs-view': 'bundles/molliepayment/js/app/views/mollie-tabs-view.js'

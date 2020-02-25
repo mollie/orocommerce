@@ -1,0 +1,36 @@
+{{ form_row(form.authToken) }}
+{{ form_row(form.testMode) }}
+{{ form_row(form.isTokenOnlySubmit) }}
+
+{% set options = {
+    refreshForm: form.formRefreshRequired.vars.value,
+    formUpdateMarker: form.formRefreshRequired.vars.full_name
+} %}
+<div
+        data-page-component-module="molliepayment/js/app/components/mollie-form-refresher"
+        data-page-component-options="{{ options|json_encode }}"
+>
+    {{ form_row(form.formRefreshRequired) }}
+</div>
+
+<div class="control-group control-group-button">
+    <div class="controls">
+        <button type="button"
+                class="btn btn-primary"
+                data-page-component-module="orointegration/js/app/components/integration-connection-checker-component"
+                data-page-component-options="{{ {
+                    'formSelector': '[name="oro_integration_channel_form"]',
+                    'backendUrl': path('mollie_payment_validate_connection', {'channelId': form.parent.vars.value.id|default(0) })
+                }|json_encode }}"
+        >
+            {{ 'mollie.payment.config.authorization.connection_validation.button.text'|trans }}
+        </button>
+    </div>
+</div>
+<div class="control-group control-group-button">
+    <div class="controls">
+        <a href="https://www.mollie.com/dashboard/developers/organization-access-tokens" target="_blank">
+            {{ 'mollie.payment.config.authorization.new_token.link.text'|trans }}
+        </a>
+    </div>
+</div>

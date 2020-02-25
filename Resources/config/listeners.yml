@@ -1,0 +1,83 @@
+services:
+  mollie_payment.entity_listener.channel_settings:
+    class: Mollie\Bundle\PaymentBundle\EventListener\ChannelSettingsListener
+    arguments:
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\WebsiteProfileController'
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\PaymentMethodController'
+      - '@Mollie\Bundle\PaymentBundle\IntegrationServices\FileUploader'
+      - '@translator'
+      - '@session.flash_bag'
+      - '%mollie_payment.uploader.public_image_path%'
+    tags:
+      - { name: doctrine.orm.entity_listener, entity: Oro\Bundle\IntegrationBundle\Entity\Channel, event: postPersist, method: onNewChannel }
+      - { name: doctrine.orm.entity_listener, entity: Mollie\Bundle\PaymentBundle\Entity\ChannelSettings, event: postUpdate, method: updateConfig }
+
+  mollie_payment.entity_listener.checkout:
+    class: Mollie\Bundle\PaymentBundle\EventListener\CheckoutEntityListener
+    arguments:
+      - '@mollie_payment.payment_method.config.provider'
+    tags:
+      - { name: doctrine.orm.entity_listener, entity: '%oro_checkout.entity.checkout.class%', event: prePersist, method: onPrePersist }
+      - { name: doctrine.orm.entity_listener, entity: '%oro_checkout.entity.checkout.class%', event: preUpdate, method: onPreUpdate }
+
+  mollie_payment.entity_listener.order:
+    class: Mollie\Bundle\PaymentBundle\EventListener\OrderEntityListener
+    arguments:
+      - '@mollie_payment.manager.oro_payment_method_utility'
+      - '@translator'
+      - '@mollie_payment.mapper.mollie_dto_mapper'
+    tags:
+      - { name: doctrine.orm.entity_listener, entity: '%oro_order.entity.order.class%', event: preUpdate, method: onPreUpdate }
+      - { name: doctrine.orm.entity_listener, entity: '%oro_order.entity.order.class%', event: preRemove, method: onPreRemove }
+      - { name: doctrine.orm.entity_listener, entity: '%oro_order.entity.order_address.class%', event: preUpdate, method: onAddressPreUpdate }
+
+  mollie_payment.entity_listener.order_line:
+    class: Mollie\Bundle\PaymentBundle\EventListener\OrderLineEntityListener
+    arguments:
+      - '@mollie_payment.manager.oro_payment_method_utility'
+      - '@mollie_payment.mapper.mollie_dto_mapper'
+      - '@translator'
+      - '@session.flash_bag'
+    tags:
+      - { name: doctrine.orm.entity_listener, entity: '%oro_order.entity.order_line_item.class%', event: preUpdate, method: onPreUpdate }
+  mollie_payment.entity_listener.datagrids:
+    class: Mollie\Bundle\PaymentBundle\EventListener\DatagridsListener
+    arguments:
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\NotificationController'
+      - "@translator"
+    tags:
+      - { name: kernel.event_listener, event: oro_datagrid.datagrid.build.after.mollie-notifications-grid, method: onBuildAfter }
+
+  mollie_payment.event_listener.mollie_surcharge:
+    class: Mollie\Bundle\PaymentBundle\EventListener\MollieSurchargeListener
+    arguments:
+      - '@mollie_payment.provider.subtotal_payment_surcharge'
+    tags:
+      - { name: kernel.event_listener, event: oro_payment.event.collect_surcharge, method: onCollectSurcharge }
+
+  mollie_payment.event_listener.callback.payment_callback_listener:
+    class: 'Mollie\Bundle\PaymentBundle\EventListener\Callback\PaymentCheckoutCallbackListener'
+    lazy: true
+    arguments:
+      - '@request_stack'
+      - '@mollie_payment.payment_method_provider.mollie_payment'
+      - '@oro_entity.doctrine_helper'
+    tags:
+      - { name: kernel.event_listener, event: oro_payment.callback.notify, method: onNotify }
+
+  mollie_payment.entity_listener.kernel:
+    class: 'Mollie\Bundle\PaymentBundle\EventListener\KernelEventListener'
+    tags:
+      - { name: kernel.event_listener, event: kernel.exception, method: onException }
+  mollie_payment.event_listener.callback.payment_redirect:
+    class: 'Mollie\Bundle\PaymentBundle\EventListener\Callback\PaymentCheckoutRedirectListener'
+    lazy: true
+    arguments:
+      - '@session'
+      - '@mollie_payment.payment_method_provider.mollie_payment'
+      - '@oro_payment.provider.result_messages'
+      - '@oro_entity.doctrine_helper'
+      - '@router'
+    tags:
+      # Priority of this listener should always be less then priority of mollie_payment.event_listener.callback.payment_return_handler
+      - { name: kernel.event_listener, event: oro_payment.callback.return, method: onReturn, priority: -100 }

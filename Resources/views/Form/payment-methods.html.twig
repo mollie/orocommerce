@@ -1,0 +1,51 @@
+{% set options = {
+    view: 'molliepayment/js/app/views/mollie-accordion-view'
+} %}
+<div
+    class="mollie-accordion"
+    data-page-component-module="oroui/js/app/components/view-component"
+    data-page-component-options="{{ options|json_encode }}"
+>
+    {% for paymentMethod in form.paymentMethodSettings %}
+        <div class="navbar navbar-static scrollspy-nav mollie-payment-method-nav" data-payment-method-id="{{ paymentMethod.mollieMethodId.vars.value }}">
+            <span class="nav-link">{{ paymentMethod.mollieMethodDescription.vars.value }}</span>
+
+            {% if (paymentMethod.enabled.vars.value) %}
+                <span class="badge badge-pill badge-enabled status-enabled">
+                <i class="icon-status-enabled fa-circle" aria-hidden="true"></i>{{ 'mollie.payment.config.payment_methods.status.active.label'|trans }}
+            </span>
+            {% else %}
+                <span class="badge badge-pill badge-disabled status-disabled">
+                <i class="icon-status-disabled fa-circle" aria-hidden="true"></i>{{ 'mollie.payment.config.payment_methods.status.inactive.label'|trans }}
+            </span>
+            {% endif %}
+
+            <span class="mollie-toggle nav-link">
+            <i class="fa-chevron-down hide-text"></i>
+        </span>
+        </div>
+        <div class="mollie-payment-method section-content hide" data-payment-method-id="{{ paymentMethod.mollieMethodId.vars.value }}">
+            {{ form_row(paymentMethod.names) }}
+            {{ form_row(paymentMethod.descriptions) }}
+            {{ form_row(paymentMethod.image) }}
+
+            <div class="control-group mollie-payment-image-container" data-payment-image-id="{{paymentMethod.imagePath.vars.id}}">
+                <div class="control-label wrap">
+                    <label><em>&nbsp;</em></label>
+                </div>
+                <div class="controls">
+                    {% if (paymentMethod.imagePath.vars.value) %}
+                        <img src="{{ asset(paymentMethod.imagePath.vars.value) }}" class="mollie-payment-image" alt="Mollie payment image">
+                        <i data-payment-image-id="{{paymentMethod.imagePath.vars.id}}" class="btn btn-square-lighter fa-close mollie-remove-image"></i>
+                    {% else %}
+                        <img src="{{ asset(paymentMethod.originalImagePath.vars.value) }}" class="mollie-payment-image" alt="Mollie payment image">
+                    {% endif %}
+                </div>
+
+            </div>
+
+
+            {{ form_rest(paymentMethod) }}
+        </div>
+    {% endfor %}
+</div>

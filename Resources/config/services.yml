@@ -1,0 +1,237 @@
+parameters:
+  mollie_payment.method.identifier_prefix.mollie_payment: 'mollie_payment'
+  mollie_payment.uploader.public_image_path: 'bundles/molliepayment/img/uploads'
+  mollie_payment.uploader.image_dir: '%kernel.project_dir%/public/%mollie_payment.uploader.public_image_path%'
+  mollie_payment.webhooks_url_replacement: ''
+
+services:
+  mollie_payment.entity_generator_extension.order:
+    class: Mollie\Bundle\PaymentBundle\Entity\GeneratorExtension\MollieSurchargeAwareEntityGeneratorExtension
+    calls:
+      - ['registerSupportedEntity', ['%oro_order.entity.order.class%']]
+      - ['registerSupportedEntity', ['%oro_checkout.entity.checkout.class%']]
+    tags:
+      - { name: oro_entity_extend.entity_generator_extension }
+
+  oro_promotion.mapper.order_mapper_decorator:
+    class: Mollie\Bundle\PaymentBundle\Mapper\OrderMapperDecorator
+    public: false
+    decorates: oro_checkout.mapper.order_mapper
+    arguments:
+      - '@oro_promotion.mapper.order_mapper_decorator.inner'
+
+  mollie_payment.integration.channel:
+    class: Mollie\Bundle\PaymentBundle\Integration\MolliePaymentChannelType
+    public: true
+    tags:
+      - { name: oro_integration.channel, type: mollie_payment_channel }
+
+  mollie_payment.integration.transport:
+    class: Mollie\Bundle\PaymentBundle\Integration\MolliePaymentTransport
+    public: false
+    tags:
+      - { name: oro_integration.transport, type: mollie_payment_transport, channel_type: mollie_payment_channel }
+
+  mollie_payment.generator.mollie_payment_config_integration_identifier:
+    parent: oro_integration.generator.prefixed_identifier_generator
+    public: true
+    arguments:
+      - '%mollie_payment.method.identifier_prefix.mollie_payment%'
+
+  mollie_payment.generator.mollie_payment_config_identifier:
+    class: Mollie\Bundle\PaymentBundle\PaymentMethod\Config\Factory\PaymentConfigIdentifierGenerator
+    public: true
+    arguments:
+      - '@mollie_payment.generator.mollie_payment_config_integration_identifier'
+
+  mollie_payment.factory.payment_config:
+    class: Mollie\Bundle\PaymentBundle\PaymentMethod\Config\Factory\PaymentConfigFactory
+    public: false
+    arguments:
+      - '@oro_locale.helper.localization'
+      - '@mollie_payment.generator.mollie_payment_config_identifier'
+
+  mollie_payment.payment_method.config.provider:
+    class: Mollie\Bundle\PaymentBundle\PaymentMethod\Config\Provider\MolliePaymentConfigProvider
+    arguments:
+      - '@doctrine'
+      - '@mollie_payment.factory.payment_config'
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\PaymentMethodController'
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\WebsiteProfileController'
+
+  mollie_payment.payment_method.context_aware.config.provider:
+    class: Mollie\Bundle\PaymentBundle\PaymentMethod\Config\Provider\MolliePaymentContextAwareConfigProvider
+    arguments:
+      - '@doctrine'
+      - '@mollie_payment.factory.payment_config'
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\PaymentMethodController'
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\WebsiteProfileController'
+
+
+  mollie_payment.payment_method_view_provider.mollie_payment:
+    class: Mollie\Bundle\PaymentBundle\PaymentMethod\View\Provider\MolliePaymentViewProvider
+    public: false
+    arguments:
+      - '@mollie_payment.payment_method.config.provider'
+      - '@mollie_payment.factory.method_view.mollie_payment'
+    tags:
+      - { name: oro_payment.payment_method_view_provider }
+
+  mollie_payment.payment_method_provider.mollie_payment:
+    class: Mollie\Bundle\PaymentBundle\PaymentMethod\Provider\MolliePaymentProvider
+    public: false
+    arguments:
+      - '@mollie_payment.payment_method.config.provider'
+      - '@mollie_payment.factory.method.mollie_payment'
+    tags:
+      - { name: oro_payment.payment_method_provider }
+
+  mollie_payment.factory.method_view.mollie_payment:
+    class: Mollie\Bundle\PaymentBundle\PaymentMethod\View\Factory\MolliePaymentViewFactory
+    public: false
+
+  mollie_payment.factory.method.mollie_payment:
+    class: Mollie\Bundle\PaymentBundle\PaymentMethod\Factory\MolliePaymentPaymentMethodFactory
+    arguments:
+      - '@mollie_payment.payment_method.context_aware.config.provider'
+      - '@router'
+      - '@oro_locale.helper.localization'
+      - '@mollie_payment.mapper.mollie_dto_mapper'
+      - '%mollie_payment.webhooks_url_replacement%'
+    public: false
+
+  mollie_payment.mapper.mollie_dto_mapper:
+    class: Mollie\Bundle\PaymentBundle\Mapper\MollieDtoMapper
+    arguments:
+      - '@oro_tax.provider.tax_provider_registry'
+      - '@oro_payment.provider.surcharge'
+      - '@translator'
+      - '@oro_entity.doctrine_helper'
+      - '@router'
+      - '@oro_locale.helper.localization'
+      - '%mollie_payment.webhooks_url_replacement%'
+    public: true
+
+  mollie_payment.platform_version_reader:
+    class: Mollie\Bundle\PaymentBundle\IntegrationServices\PlatformVersionReader
+    public: true
+    arguments:
+      - '@oro_platform.provider.package'
+
+  mollie_payment.logger:
+    class: Mollie\Bundle\PaymentBundle\IntegrationServices\LoggerService
+    public: true
+    arguments:
+      - '@logger'
+    tags:
+      - { name: monolog.logger, channel: mollie }
+
+  mollie_payment.form.type.channel_settings:
+    class: Mollie\Bundle\PaymentBundle\Form\Type\ChannelSettingsType
+    arguments:
+      - "@mollie_payment.form.subscriber.channel_settings_subscriber"
+    tags:
+      - { name: form.type }
+
+  mollie_payment.form.type.payment_method_settings:
+    class: Mollie\Bundle\PaymentBundle\Form\Type\PaymentMethodSettingsType
+    arguments:
+      - "@translator"
+    tags:
+      - { name: form.type }
+
+  mollie_payment.form.type.mollie_refund:
+    class: Mollie\Bundle\PaymentBundle\Form\Type\MollieRefundType
+    tags:
+      - { name: form.type }
+
+  mollie_payment.form.type.mollie_refund_line_item:
+    class: Mollie\Bundle\PaymentBundle\Form\Type\MollieRefundLineItemType
+    tags:
+      - { name: form.type }
+
+  mollie_payment.form.type.mollie_payment_link_generation:
+    class: Mollie\Bundle\PaymentBundle\Form\Type\MolliePaymentLinkType
+    tags:
+      - { name: form.type }
+
+  mollie_payment.form.subscriber.channel_settings_subscriber:
+    class: Mollie\Bundle\PaymentBundle\Form\EventListener\ChannelSettingsTypeSubscriber
+    public: false
+    arguments:
+      - "@translator"
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\AuthorizationController'
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\WebsiteProfileController'
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\PaymentMethodController'
+
+  mollie_payment.manager.mollie_delete_provider:
+    class: Mollie\Bundle\PaymentBundle\Manager\MollieDeleteProvider
+    arguments:
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\AuthorizationController'
+    tags:
+      - { name: oro_integration.delete_provider }
+
+  mollie_payment.provider.subtotal_payment_surcharge:
+    class: 'Mollie\Bundle\PaymentBundle\Provider\MollieSurchargeProvider'
+    public: false
+    arguments:
+      - '@translator'
+      - '@oro_currency.rounding.price_rounding_service'
+      - '@oro_pricing.subtotal_processor.provider.arguments'
+      - '@oro_checkout.data_provider.converter.checkout_to_order'
+    tags:
+      - { name: oro_pricing.subtotal_provider, priority: 25 }
+
+  mollie_payment.manager.oro_payment_method_utility:
+    class: Mollie\Bundle\PaymentBundle\Manager\OroPaymentMethodUtility
+    arguments:
+      - '@oro_payment.provider.payment_transaction'
+      - '@mollie_payment.payment_method.config.provider'
+    public: true
+
+  mollie_payment.manager.mollie_payment_link_provider:
+    class: Mollie\Bundle\PaymentBundle\Manager\MolliePaymentLinkProvider
+    arguments:
+      - '@router'
+      - '@mollie_payment.manager.oro_payment_method_utility'
+    public: true
+
+  mollie_payment.manager.mollie_refund_provider:
+    class: Mollie\Bundle\PaymentBundle\Manager\MollieRefundProvider
+    public: true
+    arguments:
+      - '@mollie_payment.manager.oro_payment_method_utility'
+      - '@oro_locale.twig.locale'
+      - '@translator'
+
+  mollie_payment.condition.refund_form_valid:
+    class: Mollie\Bundle\PaymentBundle\Condition\RefundFormValid
+    tags:
+      - { name: oro_action.condition, alias: 'mollie_refund_form_valid' }
+
+  Mollie\Bundle\PaymentBundle\IntegrationServices\FileUploader:
+    arguments:
+      - '%mollie_payment.uploader.image_dir%'
+  Mollie\Bundle\PaymentBundle\IntegrationServices\DebugService:
+    arguments:
+      - '%kernel.logs_dir%'
+    public: true
+  Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\AuthorizationController:
+    public: true
+  Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\WebsiteProfileController:
+    public: true
+  Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\PaymentMethodController:
+    public: true
+  Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\NotificationController:
+    public: true
+
+  Mollie\Bundle\PaymentBundle\IntegrationServices\OrderTransitionService:
+    public: true
+    arguments:
+      - '@oro_payment.provider.payment_transaction'
+      - '@oro_entity.doctrine_helper'
+  Mollie\Bundle\PaymentBundle\IntegrationServices\OrderLineTransitionService:
+    public: true
+    arguments:
+      - '@oro_payment.provider.payment_transaction'
+      - '@oro_entity.doctrine_helper'

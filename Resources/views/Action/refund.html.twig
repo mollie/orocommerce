@@ -1,0 +1,49 @@
+{% extends 'OroActionBundle:Operation:form.html.twig' %}
+
+{% block widget_content_inner %}
+    {% if form is defined %}
+        {# Define custom Mollie form content #}
+        <div class="navbar navbar-static scrollspy-nav">
+            {% set options = {
+                view: 'molliepayment/js/app/views/mollie-tabs-view',
+                contentContainerSelector: '#mollie-form-container',
+                selectedRefundTabSelector: "#" ~ form.mollieRefund.selectedTab.vars.id,
+            } %}
+            <nav
+                    class="nav"
+                    data-page-component-module="oroui/js/app/components/view-component"
+                    data-page-component-options="{{ options|json_encode }}">
+                {% if (form.mollieRefund.isOrderApiUsed.vars.value) %}
+                    <a class="nav-link" href="#order_line_refund">{{ 'mollie.payment.refund.orderLineRefund'|trans }}</a>
+                {% endif %}
+                <a class="nav-link" href="#payment_refund">{{ 'mollie.payment.refund.paymentRefund'|trans }}</a>
+            </nav>
+        </div>
+    {% endif %}
+    {{ parent() }}
+{% endblock %}
+
+
+{% block form_widget %}
+    {% block oro_order_refund_widget %}
+        <div id="mollie-form-container" class="section-content">
+            {% if (form.mollieRefund.isOrderApiUsed.vars.value) %}
+                {% include 'MolliePaymentBundle:Action:refund_order_lines.html.twig' %}
+            {% endif %}
+            {% include 'MolliePaymentBundle:Action:refund_payment.html.twig' %}
+        </div>
+
+        {% if form.mollieRefund.totalValue.vars.value == 0 %}
+            <div class="mollie-input-not-valid-message">{{ 'mollie.payment.refund.totalAmountRefundedMessage'|trans }}</div>
+        {% elseif not form.mollieRefund.isOrderRefundable.vars.value %}
+            <div class="mollie-input-not-valid-message">{{ 'mollie.payment.refund.orderIsNotRefundableMessage'|trans }}</div>
+        {% endif %}
+    {% endblock %}
+{% endblock %}
+
+{% block form_actions_inner %}
+    <button type="reset" class="btn">{{ 'oro.order.orderdiscount.action.cancel'|trans }}</button>
+    {% if form.mollieRefund.totalValue.vars.value > 0 and form.mollieRefund.isOrderRefundable.vars.value %}
+        <button type="submit" class="btn btn-primary">{{ 'mollie.payment.refund.label'|trans }}</button>
+    {% endif %}
+{% endblock %}
