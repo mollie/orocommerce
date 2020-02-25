@@ -7,8 +7,8 @@
     class: 'btn btn-icon icons-holder-text',
     title: 'oro.ui.button.copy_to_clipboard.label'|trans,
     pageComponent: {
-        view: {
-            view: 'oroui/js/app/views/element-value-copy-to-clipboard-view',
+        module: 'oroui/js/app/components/element-value-copy-to-clipboard-component',
+        options: {
             elementSelector: '#' ~ form.molliePaymentLink.paymentLink.vars.id ~ '-text'
         }
     }

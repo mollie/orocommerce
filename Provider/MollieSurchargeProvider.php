@@ -3,13 +3,12 @@
 namespace Mollie\Bundle\PaymentBundle\Provider;
 
 use Mollie\Bundle\PaymentBundle\Entity\MollieSurchargeAwareInterface;
-use Oro\Bundle\CheckoutBundle\DataProvider\Converter\CheckoutToOrderConverter;
 use Oro\Bundle\CurrencyBundle\Rounding\RoundingServiceInterface;
 use Oro\Bundle\PricingBundle\SubtotalProcessor\Model\Subtotal;
 use Oro\Bundle\PricingBundle\SubtotalProcessor\Model\SubtotalProviderInterface;
 use Oro\Bundle\PricingBundle\SubtotalProcessor\Provider\AbstractSubtotalProvider;
 use Oro\Bundle\PricingBundle\SubtotalProcessor\Provider\SubtotalProviderConstructorArguments;
-use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class MollieSurchargeProvider extends AbstractSubtotalProvider implements SubtotalProviderInterface
 {
@@ -26,10 +25,6 @@ class MollieSurchargeProvider extends AbstractSubtotalProvider implements Subtot
      * @var RoundingServiceInterface
      */
     protected $rounding;
-    /**
-     * @var \Oro\Bundle\CheckoutBundle\DataProvider\Converter\CheckoutToOrderConverter
-     */
-    private $orderConverter;
 
     /**
      * @param TranslatorInterface $translator
@@ -39,14 +34,12 @@ class MollieSurchargeProvider extends AbstractSubtotalProvider implements Subtot
     public function __construct(
         TranslatorInterface $translator,
         RoundingServiceInterface $rounding,
-        SubtotalProviderConstructorArguments $arguments,
-        CheckoutToOrderConverter $orderConverter
+        SubtotalProviderConstructorArguments $arguments
     ) {
         parent::__construct($arguments);
 
         $this->translator = $translator;
         $this->rounding = $rounding;
-        $this->orderConverter = $orderConverter;
     }
 
     /**

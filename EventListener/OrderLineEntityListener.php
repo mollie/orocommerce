@@ -3,7 +3,6 @@
 namespace Mollie\Bundle\PaymentBundle\EventListener;
 
 use Doctrine\ORM\Event\PreUpdateEventArgs;
-use Mollie\Bundle\PaymentBundle\Exceptions\MollieOperationForbiddenException;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Configuration;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\Order;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Integration\Event\IntegrationOrderLineChangedEvent;
@@ -12,8 +11,9 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ServiceRegister;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Utility\Events\EventBus;
 use Mollie\Bundle\PaymentBundle\Manager\OroPaymentMethodUtility;
 use Mollie\Bundle\PaymentBundle\Mapper\MollieDtoMapperInterface;
+use Oro\Bundle\ActionBundle\Exception\ForbiddenOperationException;
 use Oro\Bundle\OrderBundle\Entity\OrderLineItem;
-use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Component\Translation\TranslatorInterface;
 
 /**
  * Class OrderLineEntityListener
@@ -34,6 +34,10 @@ class OrderLineEntityListener
      * @var TranslatorInterface
      */
     private $translator;
+    /**
+     * @var FlashBagInterface
+     */
+    private $flashBag;
 
     public static $handleLineEvent = true;
 
@@ -43,15 +47,18 @@ class OrderLineEntityListener
      * @param OroPaymentMethodUtility $paymentMethodUtility
      * @param MollieDtoMapperInterface $mollieDtoMapper
      * @param TranslatorInterface $translator
+     * @param FlashBagInterface $flashBag
      */
     public function __construct(
         OroPaymentMethodUtility $paymentMethodUtility,
         MollieDtoMapperInterface $mollieDtoMapper,
-        TranslatorInterface $translator
+        TranslatorInterface $translator,
+        FlashBagInterface $flashBag
     ) {
         $this->mollieDtoMapper = $mollieDtoMapper;
         $this->paymentMethodUtility = $paymentMethodUtility;
         $this->translator = $translator;
+        $this->flashBag = $flashBag;
     }
 
     /**
@@ -80,7 +87,8 @@ class OrderLineEntityListener
                 ['{api_message}' => $exception->getMessage()]
             );
 
-            throw new MollieOperationForbiddenException($message, 0, $exception);
+            $this->flashBag->add('error', $message);
+            throw new ForbiddenOperationException($message, 0, $exception);
         }
     }
 

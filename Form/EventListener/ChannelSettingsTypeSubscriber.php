@@ -23,8 +23,8 @@ use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
+use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Form\FormInterface;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ChannelSettingsTypeSubscriber implements EventSubscriberInterface
 {
@@ -46,6 +46,14 @@ class ChannelSettingsTypeSubscriber implements EventSubscriberInterface
     private $paymentMethodController;
     private $tokenValidationCache = [];
 
+    /**
+     * ChannelSettingsTypeSubscriber constructor.
+     *
+     * @param TranslatorInterface $translator
+     * @param AuthorizationController $authorizationController
+     * @param WebsiteProfileController $websiteProfileController
+     * @param PaymentMethodController $paymentMethodController
+     */
     public function __construct(
         TranslatorInterface $translator,
         AuthorizationController $authorizationController,

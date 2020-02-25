@@ -22,7 +22,7 @@ use Oro\Bundle\TaxBundle\Provider\TaxProviderRegistry;
 use Oro\Bundle\OrderBundle\Entity\Order as OroOrder;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Component\Translation\TranslatorInterface;
 use Oro\Bundle\LocaleBundle\DependencyInjection\Configuration as LocaleConfiguration;
 
 /**

@@ -1,4 +1,4 @@
-# Mollie for OROCommerce® 4.x #
+# Mollie for OROCommerce® 3.x #
 
 ***
 

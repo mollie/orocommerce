@@ -22,7 +22,7 @@ use Oro\Bundle\OrderBundle\Entity\Order;
 use Oro\Bundle\OrderBundle\Entity\OrderAddress;
 use Oro\Bundle\OrderBundle\Entity\OrderShippingTracking;
 use Oro\Bundle\OrderBundle\Provider\OrderStatusesProviderInterface;
-use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Component\Translation\TranslatorInterface;
 
 /**
  * Class OrderEntityListener
@@ -141,7 +141,7 @@ class OrderEntityListener
                     $this->getEventBus()->fire(new IntegrationOrderBillingAddressChangedEvent(
                         $order->getIdentifier(), $this->mollieDtoMapper->getAddressData($billingAddress, $order->getEmail())));
                 } catch (\Exception $exception) {
-                    $this->handleException($exception, 'billing_address_change_error');
+                    $this->handleAddressException($exception, 'billing');
                 }
 
             }
@@ -152,12 +152,26 @@ class OrderEntityListener
                     $this->getEventBus()->fire(new IntegrationOrderShippingAddressChangedEvent(
                         $order->getIdentifier(), $this->mollieDtoMapper->getAddressData($shippingAddress, $order->getEmail())));
                 } catch (\Exception $exception) {
-                    $this->handleException($exception, 'shipping_address_change_error');
+                    $this->handleAddressException($exception, 'shipping');
                 }
             }
         });
     }
 
+    /**
+     * @param \Exception $exception
+     * @param $addressType
+     * @throws MollieOperationForbiddenException
+     */
+    protected function handleAddressException(\Exception $exception, $addressType)
+    {
+        $message = $this->translator->trans(
+            "mollie.payment.integration.event.notification.{$addressType}_address_change_error.description",
+            ['{api_message}' => $exception->getMessage()]
+        );
+
+        throw new MollieOperationForbiddenException($message, 0, $exception);
+    }
     /**
      * @param Order $order
      *
@@ -204,24 +218,6 @@ class OrderEntityListener
 
     /**
      * @param Order $order
-     * @param string $channelId
-     * @throws MollieOperationForbiddenException
-     */
-    protected function handleOrderTotalChange(Order $order, $channelId)
-    {
-        try {
-            OrderLineEntityListener::$handleLineEvent = false;
-            $this->getConfigService()->doWithContext((string)$channelId, function () use ($order) {
-                $this->orderChangeIsProcessing = true;
-                $this->getEventBus()->fire(new IntegrationOrderTotalChangedEvent($order->getIdentifier()));
-            });
-        } catch (\Exception $exception) {
-            $this->handleException($exception, 'order_total_change_error');
-        }
-    }
-
-    /**
-     * @param Order $order
      * @param $channelId
      */
     protected function handleInternalStatusChangedEvents(Order $order, $channelId)
@@ -232,24 +228,15 @@ class OrderEntityListener
                 $this->orderChangeIsProcessing = true;
                 $internalStatusId = $order->getInternalStatus()->getId();
                 if ($internalStatusId === OrderStatusesProviderInterface::INTERNAL_STATUS_SHIPPED) {
-                    $this->handleStatusEvent(
-                        new IntegrationOrderShippedEvent($order->getIdentifier(), $this->getTracking($order)),
-                        'order_ship_error'
-                    );
+                    $this->handleEvent(new IntegrationOrderShippedEvent($order->getIdentifier(), $this->getTracking($order)), 'ship');
                 }
 
                 if ($internalStatusId === OrderStatusesProviderInterface::INTERNAL_STATUS_CLOSED) {
-                    $this->handleStatusEvent(
-                        new IntegrationOrderClosedEvent($order->getIdentifier()),
-                        'order_close_error'
-                    );
+                    $this->handleEvent(new IntegrationOrderClosedEvent($order->getIdentifier()), 'close');
                 }
 
                 if ($internalStatusId === OrderStatusesProviderInterface::INTERNAL_STATUS_CANCELLED) {
-                    $this->handleStatusEvent(
-                        new IntegrationOrderCanceledEvent($order->getIdentifier()),
-                        'order_cancel_error'
-                    );
+                    $this->handleEvent(new IntegrationOrderCanceledEvent($order->getIdentifier()), 'cancel');
                 }
             }
         );
@@ -257,26 +244,26 @@ class OrderEntityListener
 
     /**
      * @param Event $event
-     * @param string $messageKey
+     * @param string $eventType
      */
-    protected function handleStatusEvent($event, $messageKey)
+    protected function handleEvent($event, $eventType)
     {
         try {
             $this->getEventBus()->fire($event);
         } catch (\Exception $exception) {
-            $this->handleException($exception, $messageKey);
+            $this->handleStatusUpdateException($exception, $eventType);
         }
     }
 
     /**
      * @param \Exception $e
-     * @param string $messageKey
+     * @param string $eventType
      */
-    protected function handleException(\Exception $e, $messageKey)
+    protected function handleStatusUpdateException(\Exception $e, $eventType)
     {
         throw new MollieOperationForbiddenException(
             $this->translator->trans(
-                "mollie.payment.integration.event.notification.{$messageKey}.description",
+                "mollie.payment.integration.event.notification.order_{$eventType}_error.description",
                 ['{api_message}' => $e->getMessage()]
             ),
             0,
@@ -306,5 +293,28 @@ class OrderEntityListener
         }
 
         return $this->configService;
+    }
+
+    /**
+     * @param Order $order
+     * @param string $channelId
+     * @throws MollieOperationForbiddenException
+     */
+    protected function handleOrderTotalChange(Order $order, $channelId)
+    {
+        try {
+            OrderLineEntityListener::$handleLineEvent = false;
+            $this->getConfigService()->doWithContext((string)$channelId, function () use ($order) {
+                $this->orderChangeIsProcessing = true;
+                $this->getEventBus()->fire(new IntegrationOrderTotalChangedEvent($order->getIdentifier()));
+            });
+        } catch (\Exception $exception) {
+            $screenMessage = $this->translator->trans(
+                'mollie.payment.integration.event.notification.order_total_change_error.description',
+                ['{api_message}' => $exception->getMessage()]
+            );
+
+            throw new MollieOperationForbiddenException($screenMessage, 0, $exception);
+        }
     }
 }

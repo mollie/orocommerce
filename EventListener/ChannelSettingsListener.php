@@ -17,7 +17,7 @@ use Mollie\Bundle\PaymentBundle\IntegrationServices\FileUploader;
 use Oro\Bundle\IntegrationBundle\Entity\Channel;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
-use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class ChannelSettingsListener
 {

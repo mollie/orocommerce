@@ -22,7 +22,7 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ServiceRegister;
 use Oro\Bundle\LocaleBundle\Twig\LocaleExtension;
 use Oro\Bundle\OrderBundle\Entity\Order;
 use Symfony\Component\Form\Form;
-use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Component\Translation\TranslatorInterface;
 
 /**
  * Class MollieRefundProvider

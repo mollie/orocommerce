@@ -10,7 +10,7 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ServiceRegister;
 use Oro\Bundle\DataGridBundle\Datasource\ArrayDatasource\ArrayDatasource;
 use Oro\Bundle\DataGridBundle\Event\BuildAfter;
 use Oro\Bundle\DataGridBundle\Exception\UnexpectedTypeException;
-use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class DatagridsListener
 {
@@ -26,6 +26,7 @@ class DatagridsListener
      * DatagridsListener constructor.
      *
      * @param NotificationController $notificationController
+     * @param TranslatorInterface $translator
      */
     public function __construct(NotificationController $notificationController, TranslatorInterface $translator)
     {
