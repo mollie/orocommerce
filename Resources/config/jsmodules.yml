@@ -1,0 +1,7 @@
+dynamic-imports:
+  molliepayment:
+        - molliepayment/js/app/components/mollie-payment-link-generator
+        - molliepayment/js/app/components/mollie-form-refresher
+        - molliepayment/js/app/views/mollie-accordion-view
+        - molliepayment/js/app/views/mollie-payments-refresher
+        - molliepayment/js/app/views/mollie-tabs-view

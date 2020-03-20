@@ -1,10 +1,10 @@
 define(function(require) {
     'use strict';
 
-    var MollieApplepayComponent;
-    var BaseComponent = require('oroui/js/app/components/base/component');
+    const _ = require('underscore');
+    const BaseComponent = require('oroui/js/app/components/base/component');
 
-    MollieApplepayComponent = BaseComponent.extend({
+    const MollieApplepayComponent = BaseComponent.extend({
         /**
          * @property {Object}
          */

@@ -6,9 +6,7 @@ define([
 ], function($, _, mediator, BaseView) {
     'use strict';
 
-    var paymentsRefresherView;
-
-    paymentsRefresherView = BaseView.extend({
+    const paymentsRefresherView = BaseView.extend({
         autoRender: true,
 
         /**

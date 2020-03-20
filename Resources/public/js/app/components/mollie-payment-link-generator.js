@@ -1,13 +1,12 @@
 define(function(require) {
     'use strict';
 
-    var MolliePaymentLinkGeneratorComponent;
-    var BaseComponent = require('oroui/js/app/components/base/component');
-    var MultiSelectFilter = require('oro/filter/multiselect-filter');
-    var $ = require('jquery');
-    var _ = require('underscore');
+    const BaseComponent = require('oroui/js/app/components/base/component');
+    const MultiSelectFilter = require('oro/filter/multiselect-filter');
+    const $ = require('jquery');
+    const _ = require('underscore');
 
-    MolliePaymentLinkGeneratorComponent = BaseComponent.extend({
+    const MolliePaymentLinkGeneratorComponent = BaseComponent.extend({
         /**
          * @property {Object}
          */

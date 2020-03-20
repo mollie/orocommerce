@@ -1,12 +1,11 @@
 define(function(require) {
     'use strict';
 
-    var MolliePaymentMethodComponent;
-    var _ = require('underscore');
-    var mediator = require('oroui/js/mediator');
-    var BaseComponent = require('oroui/js/app/components/base/component');
+    const _ = require('underscore');
+    const mediator = require('oroui/js/mediator');
+    const BaseComponent = require('oroui/js/app/components/base/component');
 
-    MolliePaymentMethodComponent = BaseComponent.extend({
+    const MolliePaymentMethodComponent = BaseComponent.extend({
         /**
          * @property {Object}
          */

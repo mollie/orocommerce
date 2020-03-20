@@ -1,10 +1,9 @@
 define(function (require) {
     'use strict';
 
-    var tabsView,
-        BaseView = require('oroui/js/app/views/base/view');
+    const BaseView = require('oroui/js/app/views/base/view');
 
-    tabsView = BaseView.extend({
+    const tabsView = BaseView.extend({
         autoRender: true,
 
         events: {

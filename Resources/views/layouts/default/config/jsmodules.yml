@@ -1,0 +1,4 @@
+dynamic-imports:
+    molliepayment:
+        - molliepayment/js/app/components/mollie-applepay
+        - molliepayment/js/app/components/mollie-payment-method-component

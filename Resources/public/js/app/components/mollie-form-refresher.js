@@ -1,13 +1,12 @@
 define(function(require) {
     'use strict';
 
-    var MollieFormRefresherComponent;
-    var BaseComponent = require('oroui/js/app/components/base/component');
-    var mediator = require('oroui/js/mediator');
-    var $ = require('jquery');
-    var _ = require('underscore');
+    const BaseComponent = require('oroui/js/app/components/base/component');
+    const mediator = require('oroui/js/mediator');
+    const $ = require('jquery');
+    const _ = require('underscore');
 
-    MollieFormRefresherComponent = BaseComponent.extend({
+    const MollieFormRefresherComponent = BaseComponent.extend({
         /**
          * @property {Object}
          */

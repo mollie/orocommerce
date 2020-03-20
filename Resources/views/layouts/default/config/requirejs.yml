@@ -1,4 +1,0 @@
-config:
-    paths:
-        'molliepayment/js/app/components/mollie-applepay': 'bundles/molliepayment/js/app/components/mollie-applepay.js'
-        'molliepayment/js/app/components/mollie-payment-method-component': 'bundles/molliepayment/js/app/components/mollie-payment-method-component.js'

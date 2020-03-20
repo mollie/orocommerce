@@ -1,10 +1,9 @@
 define(function (require) {
     'use strict';
 
-    var accordionView,
-        BaseView = require('oroui/js/app/views/base/view');
+    const BaseView = require('oroui/js/app/views/base/view');
 
-    accordionView = BaseView.extend({
+    const accordionView = BaseView.extend({
         autoRender: true,
 
         events: {
