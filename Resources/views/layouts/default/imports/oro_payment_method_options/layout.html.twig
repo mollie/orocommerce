@@ -4,9 +4,11 @@
         {% if (view.options.isApplePay) %}data-mollie-applepay{% endif %}
     >
         <div class="mollie-payment-container">
-            <img src="{{ asset(view.options.icon) }}" class="mollie-payment-image" alt="Mollie payment image">
+            {% if (view.options.icon) %}
+                <img src="{{ asset(view.options.icon) }}" class="mollie-payment-image" alt="Mollie payment image">
+            {% endif %}
             <div class="mollie-payment-widget-content">
-                {% if (view.options.isSurchargeSupported and view.options.surchargeAmount is not empty) %}
+                {% if (view.options.surchargeAmount is not empty and view.options.surchargeAmount > 0) %}
                     <p class="mollie-payment-surcharge">{{ 'mollie.payment.checkout.subtotals.mollie_payment_surcharge'|trans }}: {{ view.options.surchargeAmount|oro_format_currency({'currency': view.options.currency}) }}</p>
                 {% endif %}
                 <p>{{ 'mollie.payment.checkout.redirect_to_mollie_payment'|trans }}</p>

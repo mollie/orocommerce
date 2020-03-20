@@ -18,11 +18,11 @@ class MollieConfigMapperDecorator implements MollieDtoMapperInterface
     /**
      * @var MollieDtoMapperInterface
      */
-    private $dtoMapper;
+    protected $dtoMapper;
     /**
      * @var MolliePaymentConfigInterface $config
      */
-    private $config;
+    protected $config;
 
     /**
      * MollieConfigMapperDecorator constructor.

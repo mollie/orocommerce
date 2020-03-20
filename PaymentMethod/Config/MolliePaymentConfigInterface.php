@@ -6,6 +6,7 @@ use Oro\Bundle\PaymentBundle\Method\Config\PaymentConfigInterface;
 
 interface MolliePaymentConfigInterface extends PaymentConfigInterface
 {
+    const ADMIN_PAYMENT_LINK_ID = 'mollie_admin_link';
     /**
      * @return string
      */
@@ -32,6 +33,11 @@ interface MolliePaymentConfigInterface extends PaymentConfigInterface
     public function getApiMethod();
 
     /**
+     * @return bool
+     */
+    public function isApiMethodRestricted();
+
+    /**
      * @return string
      */
     public function getProfileId();
@@ -40,11 +46,6 @@ interface MolliePaymentConfigInterface extends PaymentConfigInterface
      * @return string
      */
     public function getChannelId();
-
-    /**
-     * @return bool
-     */
-    public function isSurchargeSupported();
 
     /**
      * @return float

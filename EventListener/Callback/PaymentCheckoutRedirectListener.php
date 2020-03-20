@@ -2,6 +2,7 @@
 
 namespace Mollie\Bundle\PaymentBundle\EventListener\Callback;
 
+use Mollie\Bundle\PaymentBundle\PaymentMethod\Config\MolliePaymentConfigInterface;
 use Oro\Bundle\EntityBundle\ORM\DoctrineHelper;
 use Oro\Bundle\OrderBundle\Entity\Order;
 use Oro\Bundle\PaymentBundle\Entity\PaymentTransaction;
@@ -87,6 +88,10 @@ class PaymentCheckoutRedirectListener
         }
 
         if (false === $this->paymentMethodProvider->hasPaymentMethod($paymentTransaction->getPaymentMethod())) {
+            return;
+        }
+
+        if ($paymentTransaction->getPaymentMethod() === MolliePaymentConfigInterface::ADMIN_PAYMENT_LINK_ID) {
             return;
         }
 

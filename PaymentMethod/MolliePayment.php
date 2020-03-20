@@ -14,12 +14,16 @@ use Oro\Bundle\PaymentBundle\Method\Action\PurchaseActionInterface;
 use Oro\Bundle\PaymentBundle\Method\PaymentMethodInterface;
 use Symfony\Component\Routing\RouterInterface;
 
-abstract class MolliePayment implements PaymentMethodInterface, PurchaseActionInterface, CaptureActionInterface
+class MolliePayment implements PaymentMethodInterface, PurchaseActionInterface, CaptureActionInterface
 {
     /**
      * @var MolliePaymentConfigInterface
      */
     protected $config;
+    /**
+     * @var MolliePaymentCreatorInterface
+     */
+    protected $paymentCreator;
     /**
      * @var MolliePaymentContextAwareConfigProviderInterface
      */
@@ -46,26 +50,19 @@ abstract class MolliePayment implements PaymentMethodInterface, PurchaseActionIn
      */
     public function __construct(
         MolliePaymentConfigInterface $config,
+        MolliePaymentCreatorInterface $paymentCreator,
         MolliePaymentContextAwareConfigProviderInterface $contextAwareConfigProvider,
         RouterInterface $router,
         LocalizationHelper $localizationHelper,
         $webhooksUrlReplacement = ''
     ) {
         $this->config = $config;
+        $this->paymentCreator = $paymentCreator;
         $this->contextAwareConfigProvider = $contextAwareConfigProvider;
         $this->router = $router;
         $this->localizationHelper = $localizationHelper;
         $this->webhooksUrlReplacement = $webhooksUrlReplacement;
     }
-
-    /**
-     * Creates payment instance (payment or order) on mollie api
-     *
-     * @param PaymentTransaction $paymentTransaction
-     *
-     * @return MolliePaymentResultInterface|null
-     */
-    abstract protected function createMolliePayment(PaymentTransaction $paymentTransaction);
 
     /**
      * {@inheritdoc}
@@ -96,7 +93,7 @@ abstract class MolliePayment implements PaymentMethodInterface, PurchaseActionIn
         $purchaseRedirectUrl = $configuration->doWithContext(
             (string)$this->config->getChannelId(),
             function () use ($paymentTransaction) {
-                $paymentCreationResult = $this->createMolliePayment($paymentTransaction);
+                $paymentCreationResult = $this->paymentCreator->createMolliePayment($paymentTransaction);
                 if (!$paymentCreationResult) {
                     return null;
                 }
@@ -164,10 +161,6 @@ abstract class MolliePayment implements PaymentMethodInterface, PurchaseActionIn
      */
     public function isApplicable(PaymentContextInterface $context)
     {
-        if (!$context->getBillingAddress()) {
-            return false;
-        }
-
         $this->contextAwareConfigProvider->setPaymentContext($context);
         return $this->contextAwareConfigProvider->hasPaymentConfig($this->getIdentifier());
     }

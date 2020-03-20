@@ -5,6 +5,8 @@ mollie:
     payment_link:
       label: 'Generate payment link'
       message: 'Is your payment still pending? Copy this payment link and send it to your customer. It will redirect them to the checkout page, where they can initiate the payment again.'
+      only_payments_message: 'Available payment methods are restricted due to missing billing address information'
+      copy_button.label: 'Copy and Save'
     capture:
       message: 'It is not possible to manually capture payment. Payment will be captured automatically by mollie.'
     refund:
@@ -30,9 +32,11 @@ mollie:
     checkout:
       subtotals.mollie_payment_surcharge: 'Payment surcharge'
       redirect_to_mollie_payment: 'You will be redirected to payment gateway website to complete your purchase after the order review step.'
+      admin_link_error: 'We were unable to process your payment. Please verify your payment information and <a href="{adminPaymentLink}">try again</a>.'
     config:
       authorization:
         label: 'Authorization'
+        version.label: 'Version'
         auth_token.label: 'Organization API token'
         verification:
           success.message: 'A connection was successfully established with Mollie API.'
@@ -65,7 +69,8 @@ mollie:
           option.order_api.label: 'Orders API'
         surcharge:
           label: 'Surcharge'
-          tooltip: "Enter the extra costs for a Klarna Pay Later payment with a maximum of € 1.95. The greater amounts won't be accepted."
+          klarna_tooltip: "Enter the extra costs for a Klarna payment with a maximum of € 1.95. The greater amounts won't be accepted."
+          tooltip: "Enter the extra costs for a payment."
       notifications:
         label: 'Notifications'
         warning: 'Warning'
@@ -77,6 +82,8 @@ mollie:
         label.message: 'Message'
         label.details: 'Details'
         label.order: 'Order'
+      support:
+        label: 'Support'
     integration.event:
       notification:
         order_total_change_error.title: 'Shop change synchronization failed'

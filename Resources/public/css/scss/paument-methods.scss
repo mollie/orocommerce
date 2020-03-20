@@ -1,3 +1,16 @@
+.mollie-navbar {
+  .nav {
+    .mollie-logo-big svg {
+      height: 31px;
+      padding: 6px 16px;
+    }
+
+    .right-separator {
+      flex-grow:1;
+    }
+  }
+}
+
 .mollie-accordion {
   .mollie-payment-method-nav {
     cursor: pointer;

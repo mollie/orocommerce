@@ -12,6 +12,7 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Refunds\R
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\TokenPermission;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\WebsiteProfile;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\Exceptions\UnprocessableEntityRequestException;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\Model\PaymentMethodConfig;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http\Exceptions\HttpAuthenticationException;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http\Exceptions\HttpCommunicationException;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http\Exceptions\HttpRequestException;
@@ -287,19 +288,24 @@ class Proxy
      *
      * @param string|null $billingCountry The billing country of your customer in ISO 3166-1 alpha-2 format.
      * @param Amount|null $amount
+     * @param string $apiMethod Api method to use for availability checking. Default is orders api
      *
      * @return PaymentMethod[]
      *
-     * @throws UnprocessableEntityRequestException
      * @throws HttpAuthenticationException
      * @throws HttpCommunicationException
      * @throws HttpRequestException
+     * @throws UnprocessableEntityRequestException
      */
-    public function getEnabledPaymentMethods($profileId, $billingCountry = null, $amount = null)
-    {
+    public function getEnabledPaymentMethods(
+        $profileId,
+        $billingCountry = null,
+        $amount = null,
+        $apiMethod = PaymentMethodConfig::API_METHOD_ORDERS
+    ) {
         $params = array(
             'includeWallets' => 'applepay',
-            'resource' => 'orders',
+            'resource' => $apiMethod === PaymentMethodConfig::API_METHOD_PAYMENT ? 'payments' : 'orders',
             'profileId' => $profileId,
         );
         if (!empty($billingCountry)) {
@@ -327,18 +333,23 @@ class Proxy
      * @param string $profileId Mollie website profile id
      * @param string|null $billingCountry The billing country of your customer in ISO 3166-1 alpha-2 format.
      * @param Amount|null $amount
+     * @param string $apiMethod Api method to use for availability checking. Default is orders api
      *
      * @return PaymentMethod[]
      *
-     * @throws UnprocessableEntityRequestException
      * @throws HttpAuthenticationException
      * @throws HttpCommunicationException
      * @throws HttpRequestException
+     * @throws UnprocessableEntityRequestException
      */
-    public function getEnabledPaymentMethodsMap($profileId, $billingCountry = null, $amount = null)
-    {
+    public function getEnabledPaymentMethodsMap(
+        $profileId,
+        $billingCountry = null,
+        $amount = null,
+        $apiMethod = PaymentMethodConfig::API_METHOD_ORDERS
+    ) {
         $paymentMethodsMap = array();
-        $paymentMethods = $this->getEnabledPaymentMethods($profileId, $billingCountry, $amount);
+        $paymentMethods = $this->getEnabledPaymentMethods($profileId, $billingCountry, $amount, $apiMethod);
         foreach ($paymentMethods as $paymentMethod) {
             $paymentMethodsMap[$paymentMethod->getId()] = $paymentMethod;
         }

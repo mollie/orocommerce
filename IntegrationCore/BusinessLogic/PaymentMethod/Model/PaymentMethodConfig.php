@@ -23,7 +23,7 @@ class PaymentMethodConfig extends Entity
         PaymentMethods::KlarnaSliceIt => self::API_METHOD_ORDERS,
     );
 
-    protected static $surchargeSupport = array(PaymentMethods::KlarnaPayLater, PaymentMethods::KlarnaSliceIt);
+    protected static $surchargeRestrictedPaymentMethods = array(PaymentMethods::KlarnaPayLater, PaymentMethods::KlarnaSliceIt);
 
     /**
      * @inheritDoc
@@ -108,9 +108,9 @@ class PaymentMethodConfig extends Entity
         return $data;
     }
 
-    public function isSurchargeSupported()
+    public function isSurchargeRestricted()
     {
-        return in_array($this->getMollieId(), static::$surchargeSupport, true);
+        return in_array($this->getMollieId(), static::$surchargeRestrictedPaymentMethods, true);
     }
 
     public function isApiMethodRestricted()
@@ -284,8 +284,6 @@ class PaymentMethodConfig extends Entity
      */
     public function setSurcharge($surcharge)
     {
-        if ($this->isSurchargeSupported()) {
-            $this->surcharge = $surcharge;
-        }
+        $this->surcharge = $surcharge;
     }
 }

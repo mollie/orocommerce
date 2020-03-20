@@ -30,6 +30,23 @@ class PlatformVersionReader
     }
 
     /**
+     * Retrieves mollie version from installed composer package
+     *
+     * @return string|null
+     */
+    public function getMolliePackageVersion()
+    {
+        $molliePackage = null;
+
+        $packageInterfaces = $this->packageProvider->getThirdPartyPackages();
+        if (array_key_exists('mollie/orocommerce', $packageInterfaces)) {
+            $molliePackage = $packageInterfaces['mollie/orocommerce'];
+        }
+
+        return $molliePackage ? $molliePackage->getFullPrettyVersion() : null;
+    }
+
+    /**
      * Retrieves integration name.
      *
      * @return string Integration name.

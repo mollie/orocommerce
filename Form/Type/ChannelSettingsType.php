@@ -43,6 +43,9 @@ class ChannelSettingsType extends AbstractType
             ->add('isTokenOnlySubmit', HiddenType::class, [
                 'mapped' => false
             ])
+            ->add('mollieVersion', HiddenType::class, [
+                'mapped' => false
+            ])
             ->add(
                 'authToken',
                 TextType::class,

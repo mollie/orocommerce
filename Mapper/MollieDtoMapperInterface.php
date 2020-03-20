@@ -3,6 +3,7 @@
 namespace Mollie\Bundle\PaymentBundle\Mapper;
 
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Address;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\BaseDto;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\Order;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\OrderLine;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Payment;
@@ -37,7 +38,7 @@ interface MollieDtoMapperInterface
 
     /**
      * @param PaymentTransaction $paymentTransaction
-     * @return \Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\BaseDto|Payment
+     * @return BaseDto|Payment
      */
     public function getPaymentData(PaymentTransaction $paymentTransaction);
 
