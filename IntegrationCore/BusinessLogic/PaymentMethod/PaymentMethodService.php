@@ -71,21 +71,26 @@ class PaymentMethodService extends BaseService
      * @param string $profileId
      * @param string|null $billingCountry The billing country of your customer in ISO 3166-1 alpha-2 format.
      * @param Amount|null $amount
+     * @param string $apiMethod Api method to use for availability checking. Default is orders api
      *
      * @return PaymentMethodConfig[] Payment method configurations for every enabled Mollie payment method
      *
-     * @throws UnprocessableEntityRequestException
      * @throws HttpAuthenticationException
      * @throws HttpCommunicationException
      * @throws HttpRequestException
+     * @throws UnprocessableEntityRequestException
      */
-    public function getEnabledPaymentMethodConfigurations($profileId, $billingCountry = null, $amount = null)
-    {
+    public function getEnabledPaymentMethodConfigurations(
+        $profileId,
+        $billingCountry = null,
+        $amount = null,
+        $apiMethod = PaymentMethodConfig::API_METHOD_ORDERS
+    ) {
         /** @var Proxy $proxy */
         $proxy = ServiceRegister::getService(Proxy::CLASS_NAME);
         $paymentMethodConfigs = array();
 
-        $enabledPaymentMethods = $proxy->getEnabledPaymentMethodsMap($profileId, $billingCountry, $amount);
+        $enabledPaymentMethods = $proxy->getEnabledPaymentMethodsMap($profileId, $billingCountry, $amount, $apiMethod);
         $savedPaymentMethodConfigs = $this->getPaymentMethodConfigurationsMap($profileId);
 
         foreach ($enabledPaymentMethods as $paymentMethod) {

@@ -7,6 +7,8 @@ use Mollie\Bundle\PaymentBundle\Entity\ChannelSettings;
 use Mollie\Bundle\PaymentBundle\Entity\PaymentMethodSettings;
 use Mollie\Bundle\PaymentBundle\Entity\Repository\ChannelSettingsRepository;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Configuration;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Image;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\Model\PaymentMethodConfig;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\PaymentMethodController;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\WebsiteProfileController;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http\Exceptions\HttpBaseException;
@@ -30,12 +32,12 @@ class MolliePaymentConfigProvider implements MolliePaymentConfigProviderInterfac
     protected $configFactory;
 
     /**
-     * @var \Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\PaymentMethodController
+     * @var PaymentMethodController
      */
     protected $paymentMethodController;
 
     /**
-     * @var \Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\WebsiteProfileController
+     * @var WebsiteProfileController
      */
     protected $websiteProfileController;
 
@@ -106,11 +108,46 @@ class MolliePaymentConfigProvider implements MolliePaymentConfigProviderInterfac
         $paymentConfigs = [];
 
         foreach ($this->getEnabledPaymentMethodSettings() as $paymentMethodSetting) {
+            if (empty($paymentConfigs)) {
+                $paymentLinkMethod = $this->createPaymentLinkMethodSetting(
+                    $paymentMethodSetting->getChannelSettings(),
+                    PaymentMethodConfig::fromArray($paymentMethodSetting->getPaymentMethodConfig()->toArray())
+                );
+
+                $paymentLinkConfig = $this->configFactory->create($paymentLinkMethod);
+                $paymentConfigs[$paymentLinkConfig->getPaymentMethodIdentifier()] = $paymentLinkConfig;
+            }
+
             $config = $this->configFactory->create($paymentMethodSetting);
             $paymentConfigs[$config->getPaymentMethodIdentifier()] = $config;
         }
 
         return $paymentConfigs;
+    }
+
+    /**
+     * @param ChannelSettings $channelSettings
+     * @param PaymentMethodConfig $paymentMethodConfig
+     *
+     * @return PaymentMethodSettings
+     */
+    protected function createPaymentLinkMethodSetting(
+        ChannelSettings $channelSettings,
+        PaymentMethodConfig $paymentMethodConfig
+    ) {
+        $paymentLinkMethod = new PaymentMethodSettings();
+        $paymentLinkMethod->setEnabled(true);
+        $paymentLinkMethod->setChannelSettings($channelSettings);
+        $paymentLinkMethod->setMollieMethodId(MolliePaymentConfigInterface::ADMIN_PAYMENT_LINK_ID);
+        $paymentLinkMethod->addName((new LocalizedFallbackValue())->setString('Admin payment link'));
+        $paymentLinkMethod->addDescription((new LocalizedFallbackValue())->setString('Admin payment link'));
+        $paymentLinkMethod->setPaymentMethodConfig($paymentMethodConfig);
+        $paymentLinkMethod->getPaymentMethodConfig()->getOriginalAPIConfig()->setId(null);
+        $paymentLinkMethod->getPaymentMethodConfig()->getOriginalAPIConfig()->setImage(Image::fromArray([]));
+        $paymentLinkMethod->getPaymentMethodConfig()->setApiMethod(PaymentMethodConfig::API_METHOD_PAYMENT);
+        $paymentLinkMethod->getPaymentMethodConfig()->setSurcharge(0);
+
+        return $paymentLinkMethod;
     }
 
     /**
@@ -123,7 +160,7 @@ class MolliePaymentConfigProvider implements MolliePaymentConfigProviderInterfac
         $configuration = ServiceRegister::getService(Configuration::CLASS_NAME);
 
         foreach ($this->getEnabledIntegrationSettings() as $channelSetting) {
-            $enabledPaymentMethodSettings[] =  $configuration->doWithContext(
+            $enabledPaymentMethodSettings[] = $configuration->doWithContext(
                 (string)$channelSetting->getChannel()->getId(),
                 function () use ($channelSetting) {
                     return $this->getPaymentMethodConfigurations($channelSetting);
@@ -131,7 +168,7 @@ class MolliePaymentConfigProvider implements MolliePaymentConfigProviderInterfac
             );
         }
 
-        return array_merge(...$enabledPaymentMethodSettings);
+        return !empty($enabledPaymentMethodSettings) ? array_merge(...$enabledPaymentMethodSettings) : [];
     }
 
     /**
@@ -168,7 +205,7 @@ class MolliePaymentConfigProvider implements MolliePaymentConfigProviderInterfac
     }
 
     /**
-     * @param \Mollie\Bundle\PaymentBundle\Entity\ChannelSettings $channelSettings
+     * @param ChannelSettings $channelSettings
      *
      * @return PaymentMethodSettings[]
      */
@@ -231,7 +268,7 @@ class MolliePaymentConfigProvider implements MolliePaymentConfigProviderInterfac
     }
 
     /**
-     * @return \Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\Model\PaymentMethodConfig[]
+     * @return PaymentMethodConfig[]
      */
     protected function getMolliePaymentMethodConfigs()
     {

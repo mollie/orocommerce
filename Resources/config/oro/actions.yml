@@ -1,6 +1,7 @@
 operations:
   mollie_payment_link_generation:
     label: mollie.payment.payment_link.label
+    page_reload: false
     routes:
       - oro_order_view
     frontend_options:
@@ -33,6 +34,11 @@ operations:
           method_parameters: [$.data]
           method: generatePaymentLink
           attribute: $.paymentLink
+    actions:
+      - '@call_service_method':
+          service: mollie_payment.manager.mollie_payment_link_provider
+          method: processForm
+          method_parameters: [$.data, $.form]
 
   mollie_payment_refund:
     label: mollie.payment.refund.label

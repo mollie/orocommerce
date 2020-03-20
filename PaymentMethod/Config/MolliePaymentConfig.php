@@ -11,9 +11,9 @@ class MolliePaymentConfig extends AbstractParameterBagPaymentConfig implements M
     const ICON = 'icon';
     const MOLLIE_ID = 'mollie_id';
     const API_METHOD = 'api_method';
+    const IS_API_METHOD_RESTRICTED = 'is_api_method_restricted';
     const PROFILE_ID = 'profile_id';
     const CHANNEL_ID = 'channel_id';
-    const IS_SURCHARGE_SUPPORTED = 'is_surcharge_supported';
     const SURCHARGE_AMOUNT = 'surcharge_amount';
 
     /**
@@ -56,6 +56,11 @@ class MolliePaymentConfig extends AbstractParameterBagPaymentConfig implements M
         return (string)$this->get(self::API_METHOD);
     }
 
+    public function isApiMethodRestricted()
+    {
+        return (bool)$this->get(self::IS_API_METHOD_RESTRICTED);
+    }
+
     /**
      * @inheritDoc
      */
@@ -70,14 +75,6 @@ class MolliePaymentConfig extends AbstractParameterBagPaymentConfig implements M
     public function getChannelId()
     {
         return (string)$this->get(self::CHANNEL_ID);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function isSurchargeSupported()
-    {
-        return (bool)$this->get(self::IS_SURCHARGE_SUPPORTED);
     }
 
     /**

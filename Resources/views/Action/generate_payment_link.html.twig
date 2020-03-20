@@ -1,24 +1,15 @@
 {% extends 'OroActionBundle:Operation:form.html.twig' %}
-{% import 'OroUIBundle::macros.html.twig' as UI %}
-
-{% set options = {
-    aCss: 'no-hash',
-    iCss: 'fa-copy',
-    class: 'btn btn-icon icons-holder-text',
-    title: 'oro.ui.button.copy_to_clipboard.label'|trans,
-    pageComponent: {
-        module: 'oroui/js/app/components/element-value-copy-to-clipboard-component',
-        options: {
-            elementSelector: '#' ~ form.molliePaymentLink.paymentLink.vars.id ~ '-text'
-        }
-    }
-} %}
 
 {% block widget_content_inner %}
     {% set paymentLinkGeneratorOptions = {
+        paymentFilterLabel: 'mollie.payment.config.payment_methods.label'|trans,
         baseSelector: '.ui-dialog-inner-wrapper',
         copyButtonSelector: '.icons-holder-text',
-        closeButtonSelector: '.ui-dialog-titlebar-close'
+        closeButtonSelector: '.ui-dialog-titlebar-close',
+        isMolliePaymentOnOrder: form.molliePaymentLink.isMolliePaymentOnOrder.vars.value ? true : false,
+        isPaymentsApiOnly: form.molliePaymentLink.isPaymentsApiOnly.vars.value ? true : false,
+        paymentMethods: form.molliePaymentLink.paymentMethods.vars.value,
+        paymentMethodsSelector: '#' ~ form.molliePaymentLink.selectedPaymentMethods.vars.id
     } %}
     <div
             data-page-component-module="molliepayment/js/app/components/mollie-payment-link-generator"
@@ -31,13 +22,29 @@
 
 {% block form_widget %}
     {% block oro_payment_link_widget %}
+        {% if (form.molliePaymentLink.isPaymentsApiOnly.vars.value) %}
+            <div class="alert alert-info alert-icon">
+                {{ 'mollie.payment.payment_link.only_payments_message'|trans }}
+            </div>
+        {% endif %}
         <div class="mollie-generate-payment-link-message">
             {{ 'mollie.payment.payment_link.message'|trans }}
         </div>
         <fieldset class="form-horizontal mollie-generated-payment-link mollie-copy-button">
+            <div class="filter-box clearfix"></div>
             <p id="{{ form.molliePaymentLink.paymentLink.vars.id }}-text" class="hide">{{ form.molliePaymentLink.paymentLink.vars.value }}</p>
             {{ form_widget(form.molliePaymentLink.paymentLink) }}
-            {{ UI.clientLink(options) }}
+            {% set copyLinkOptions = {
+                elementSelector: '#' ~ form.molliePaymentLink.paymentLink.vars.id ~ '-text'
+            } %}
+            <button
+                    type="submit"
+                    class="btn icons-holder-text no-hash"
+                    data-page-component-module="oroui/js/app/components/element-value-copy-to-clipboard-component"
+                    data-page-component-options="{{ copyLinkOptions|json_encode }}"
+            >
+                <i class="fa-copy"></i>{{ 'mollie.payment.payment_link.copy_button.label'|trans }}
+            </button>
         </fieldset>
     {% endblock %}
 {% endblock %}

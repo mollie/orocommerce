@@ -33,21 +33,24 @@
 
 
     {# Define custom Mollie form content #}
-    <div class="navbar navbar-static scrollspy-nav">
+    <div class="mollie-navbar navbar navbar-static scrollspy-nav">
         {% set options = {
             view: 'molliepayment/js/app/views/mollie-tabs-view',
             contentContainerSelector: '#mollie-tabs-container'
         } %}
         <nav
-            class="nav"
+            class="nav icons-holder"
             data-page-component-module="oroui/js/app/components/view-component"
             data-page-component-options="{{ options|json_encode }}">
+            <span class="mollie-logo-big">{{ include('@MolliePayment/Icon/mollie-logo-big.svg') }}</span>
             <a class="nav-link" href="#mollie_authorization">{{ 'mollie.payment.config.authorization.label'|trans }}</a>
             {% if (not showOnlyAuthorization) %}
                 <a class="nav-link" href="#mollie_website_prifile">{{ 'mollie.payment.config.website_profile.label'|trans }}</a>
                 <a class="nav-link" href="#mollie_payment_methods">{{ 'mollie.payment.config.payment_methods.label'|trans }}</a>
                 <a class="nav-link" href="#mollie_notifications">{{ 'mollie.payment.config.notifications.label'|trans }}</a>
             {% endif %}
+            <span class="right-separator"></span>
+            <a class="mollie-support-link icons-holder-text pull-right" href="https://help.mollie.com/hc/en-us" target="_blank"><span class="fa-life-ring" aria-hidden="true"></span>{{ 'mollie.payment.config.support.label'|trans }}</a>
         </nav>
     </div>
 

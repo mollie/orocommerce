@@ -101,21 +101,24 @@ class PaymentMethodSettingsType extends AbstractType
             return;
         }
 
-        if ($paymentMethodConfig->isSurchargeSupported()) {
-            $event->getForm()->add(
-                'surcharge',
-                NumberType::class,
-                [
-                    'label' => 'mollie.payment.config.payment_methods.surcharge.label',
-                    'tooltip' => 'mollie.payment.config.payment_methods.surcharge.tooltip',
-                    'required' => false,
-                    'attr' => ['autocomplete' => 'off'],
-                    'constraints' => [
-                        new Type(['type' => 'numeric'])
-                    ],
-                ]
-            );
+        $tooltip = 'mollie.payment.config.payment_methods.surcharge.tooltip';
+        if ($paymentMethodConfig->isSurchargeRestricted()) {
+            $tooltip = 'mollie.payment.config.payment_methods.surcharge.klarna_tooltip';
         }
+
+        $event->getForm()->add(
+            'surcharge',
+            NumberType::class,
+            [
+                'label' => 'mollie.payment.config.payment_methods.surcharge.label',
+                'tooltip' => $tooltip,
+                'required' => false,
+                'attr' => ['autocomplete' => 'off'],
+                'constraints' => [
+                    new Type(['type' => 'numeric'])
+                ],
+            ]
+        );
 
         if (!$paymentMethodConfig->isApiMethodRestricted()) {
             $paymentMethodApiChoices = [

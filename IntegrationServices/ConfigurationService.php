@@ -69,7 +69,12 @@ class ConfigurationService extends Configuration
      */
     public function getExtensionVersion()
     {
-        return '0.0.1';
+        /** @var ContainerInterface $container */
+        $container = ServiceRegister::getService(ContainerInterface::class);
+        $platformVersionReader = $container->get('mollie_payment.platform_version_reader');
+        $installedPackageVersion = $platformVersionReader->getMolliePackageVersion();
+
+        return $installedPackageVersion ?: $container->getParameter('mollie_payment.version');
     }
 
     /**
@@ -80,6 +85,14 @@ class ConfigurationService extends Configuration
     public function getExtensionName()
     {
         return 'MollieOroCommerce';
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function isSystemSpecific($name)
+    {
+        return false;
     }
 
     /**

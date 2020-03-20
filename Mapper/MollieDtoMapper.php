@@ -190,7 +190,8 @@ class MollieDtoMapper implements MollieDtoMapperInterface
             ],
         ]);
 
-        if ($tax = $this->getTax($orderLine)) {
+        $tax = $this->getTax($orderLine);
+        if ($tax && (float)($tax->getRow()->getIncludingTax()) > 0) {
             $this->updateOrderLineDataWithTax($orderLineData, $tax->getRow());
             $orderLineData->getUnitPrice()->setAmountValue($tax->getUnit()->getIncludingTax());
         }
@@ -327,7 +328,8 @@ class MollieDtoMapper implements MollieDtoMapperInterface
                 ),
             ));
 
-            if ($tax = $this->getTax($order)) {
+            $tax = $this->getTax($order);
+            if ($tax && (float)($tax->getShipping()->getIncludingTax()) > 0) {
                 $this->updateOrderLineDataWithTax($orderLineData, $tax->getShipping());
             }
 
@@ -403,12 +405,18 @@ class MollieDtoMapper implements MollieDtoMapperInterface
      */
     protected function updateOrderLineDataWithTax(OrderLine $orderLineData, ResultElement $taxesRow)
     {
+        if ($taxesRow->getIncludingTax() === null) {
+            return;
+        }
+
         $orderLineData->getUnitPrice()->setAmountValue($taxesRow->getIncludingTax());
         $orderLineData->getTotalAmount()->setAmountValue($taxesRow->getIncludingTax());
         $orderLineData->getVatAmount()->setAmountValue($taxesRow->getTaxAmount());
-        $orderLineData->setVatRate(
-            round(100 * (float)($taxesRow->getTaxAmount()) / (float)($taxesRow->getExcludingTax()), 2)
-        );
+        if ((float)($taxesRow->getExcludingTax()) > 0) {
+            $orderLineData->setVatRate(
+                round(100 * (float)($taxesRow->getTaxAmount()) / (float)($taxesRow->getExcludingTax()), 2)
+            );
+        }
     }
 
     /**

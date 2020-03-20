@@ -1,6 +1,7 @@
 <?php
 namespace Mollie\Bundle\PaymentBundle\IntegrationServices;
 
+use Mollie\Bundle\PaymentBundle\Entity\PaymentLinkMethod;
 use Mollie\Bundle\PaymentBundle\Entity\Repository\MollieBaseEntityRepository;
 use Mollie\Bundle\PaymentBundle\Entity\Repository\MollieContextAwareEntityRepository;
 use Mollie\Bundle\PaymentBundle\Entity\Repository\MollieNotificationEntityRepository;
@@ -101,6 +102,10 @@ class BootstrapComponent extends \Mollie\Bundle\PaymentBundle\IntegrationCore\Bu
         );
         RepositoryRegistry::registerRepository(
             OrderReference::getClassName(),
+            MollieBaseEntityRepository::getClassName()
+        );
+        RepositoryRegistry::registerRepository(
+            PaymentLinkMethod::getClassName(),
             MollieBaseEntityRepository::getClassName()
         );
     }

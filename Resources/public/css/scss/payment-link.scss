@@ -9,6 +9,10 @@
   max-width: 600px;
 }
 
+.ui-multiselect-menu.select-filter-widget.mollie-payment-link-multiselect-filter-widget {
+  z-index: 10000
+}
+
 .mollie-copy-button {
   a{
     span {

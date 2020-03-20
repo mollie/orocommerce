@@ -41,19 +41,29 @@ class PaymentMethodController
      * @param string $profileId Website profile id
      * @param string|null $billingCountry The billing country of your customer in ISO 3166-1 alpha-2 format.
      * @param Amount|null $amount
+     * @param string $apiMethod Api method to use for availability checking. Default is orders api
      *
      * @return PaymentMethodConfig[]
      *
-     * @throws UnprocessableEntityRequestException
      * @throws HttpAuthenticationException
      * @throws HttpCommunicationException
      * @throws HttpRequestException
+     * @throws UnprocessableEntityRequestException
      */
-    public function getEnabled($profileId, $billingCountry = null, $amount = null)
-    {
+    public function getEnabled(
+        $profileId,
+        $billingCountry = null,
+        $amount = null,
+        $apiMethod = PaymentMethodConfig::API_METHOD_ORDERS
+    ) {
         /** @var PaymentMethodService $paymentMethodService */
         $paymentMethodService = ServiceRegister::getService(PaymentMethodService::CLASS_NAME);
-        return $paymentMethodService->getEnabledPaymentMethodConfigurations($profileId, $billingCountry, $amount);
+        return $paymentMethodService->getEnabledPaymentMethodConfigurations(
+            $profileId,
+            $billingCountry,
+            $amount,
+            $apiMethod
+        );
     }
 
     /**

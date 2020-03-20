@@ -1,4 +1,5 @@
 parameters:
+  mollie_payment.version: 3.1.1
   mollie_payment.method.identifier_prefix.mollie_payment: 'mollie_payment'
   mollie_payment.uploader.public_image_path: 'bundles/molliepayment/img/uploads'
   mollie_payment.uploader.image_dir: '%kernel.project_dir%/public/%mollie_payment.uploader.public_image_path%'
@@ -8,8 +9,8 @@ services:
   mollie_payment.entity_generator_extension.order:
     class: Mollie\Bundle\PaymentBundle\Entity\GeneratorExtension\MollieSurchargeAwareEntityGeneratorExtension
     calls:
-      - ['registerSupportedEntity', ['%oro_order.entity.order.class%']]
-      - ['registerSupportedEntity', ['%oro_checkout.entity.checkout.class%']]
+      - ['registerSupportedEntity', ['Oro\Bundle\OrderBundle\Entity\Order']]
+      - ['registerSupportedEntity', ['Oro\Bundle\CheckoutBundle\Entity\Checkout']]
     tags:
       - { name: oro_entity_extend.entity_generator_extension }
 
@@ -97,6 +98,7 @@ services:
       - '@router'
       - '@oro_locale.helper.localization'
       - '@mollie_payment.mapper.mollie_dto_mapper'
+      - '@mollie_payment.manager.mollie_payment_link_provider'
       - '%mollie_payment.webhooks_url_replacement%'
     public: false
 
@@ -125,6 +127,14 @@ services:
       - '@logger'
     tags:
       - { name: monolog.logger, channel: mollie }
+
+  mollie_payment.repository.channel_settings:
+    class: 'Mollie\Bundle\PaymentBundle\Entity\Repository\ChannelSettingsRepository'
+    parent: oro_entity.abstract_repository
+    arguments:
+      - 'Mollie\Bundle\PaymentBundle\Entity\ChannelSettings'
+    calls:
+      - [setAclHelper, ['@oro_security.acl_helper']]
 
   mollie_payment.form.type.channel_settings:
     class: Mollie\Bundle\PaymentBundle\Form\Type\ChannelSettingsType
@@ -179,20 +189,22 @@ services:
       - '@oro_currency.rounding.price_rounding_service'
       - '@oro_pricing.subtotal_processor.provider.arguments'
     tags:
-      - { name: oro_pricing.subtotal_provider, priority: 25 }
+      - { name: oro_pricing.subtotal_provider, alias: mollie_payment.subtotal_payment_surcharge_provider, priority: 25 }
 
   mollie_payment.manager.oro_payment_method_utility:
     class: Mollie\Bundle\PaymentBundle\Manager\OroPaymentMethodUtility
     arguments:
       - '@oro_payment.provider.payment_transaction'
-      - '@mollie_payment.payment_method.config.provider'
+      - '@mollie_payment.payment_method.context_aware.config.provider'
     public: true
 
   mollie_payment.manager.mollie_payment_link_provider:
     class: Mollie\Bundle\PaymentBundle\Manager\MolliePaymentLinkProvider
     arguments:
       - '@router'
+      - '@oro_website.resolver.website_url_resolver'
       - '@mollie_payment.manager.oro_payment_method_utility'
+      - '@oro_payment.provider.payment_status'
     public: true
 
   mollie_payment.manager.mollie_refund_provider:

@@ -299,7 +299,7 @@ class Order extends BaseDto
     }
 
     /**
-     * @return string
+     * @return string|string[]
      */
     public function getMethod()
     {
@@ -307,7 +307,7 @@ class Order extends BaseDto
     }
 
     /**
-     * @param string $method
+     * @param string|string[] $method
      */
     public function setMethod($method)
     {

@@ -172,6 +172,10 @@ class ChannelSettingsTypeSubscriber implements EventSubscriberInterface
     {
         $form = $event->getForm();
 
+        /** @var Configuration $configuration */
+        $configuration = ServiceRegister::getService(Configuration::CLASS_NAME);
+        $form->get('mollieVersion')->setData($configuration->getExtensionVersion());
+
         if ($form->get('authToken')->getErrors()->count() > 0) {
             $form->get('isTokenOnlySubmit')->setData('1');
         }

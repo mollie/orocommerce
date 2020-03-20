@@ -3,6 +3,7 @@
 namespace Mollie\Bundle\PaymentBundle\PaymentMethod\Config\Provider;
 
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Amount;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\Model\PaymentMethodConfig;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http\Exceptions\HttpBaseException;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Logger\Logger;
 use Oro\Bundle\PaymentBundle\Context\PaymentContextInterface;
@@ -15,10 +16,22 @@ class MolliePaymentContextAwareConfigProvider extends MolliePaymentConfigProvide
      * @var \Oro\Bundle\PaymentBundle\Context\PaymentContextInterface
      */
     protected $context;
+    /**
+     * @var string PaymentMethodConfig::API_METHOD_ORDERS|PaymentMethodConfig::API_METHOD_PAYMENT
+     */
+    protected $apiMethod = PaymentMethodConfig::API_METHOD_ORDERS;
 
-    public function setPaymentContext(PaymentContextInterface $context)
+    public function setPaymentContext(PaymentContextInterface $context = null)
     {
         $this->context = $context;
+    }
+
+    /**
+     * @param string $apiMethod PaymentMethodConfig::API_METHOD_ORDERS|PaymentMethodConfig::API_METHOD_PAYMENT
+     */
+    public function setApiMethod(string $apiMethod = PaymentMethodConfig::API_METHOD_ORDERS)
+    {
+        $this->apiMethod = $apiMethod;
     }
 
     /**
@@ -41,12 +54,16 @@ class MolliePaymentContextAwareConfigProvider extends MolliePaymentConfigProvide
 
         return $this->configs[$cacheKey];
     }
-    
+
     /**
      * @return \Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\Model\PaymentMethodConfig[]
      */
     protected function getMolliePaymentMethodConfigs()
     {
+        if (!$this->context) {
+            return parent::getMolliePaymentMethodConfigs();
+        }
+
         try {
             $amount = null;
             if ($this->context->getCurrency()) {
@@ -69,7 +86,8 @@ class MolliePaymentContextAwareConfigProvider extends MolliePaymentConfigProvide
             return $this->paymentMethodController->getEnabled(
                 $websiteProfile->getId(),
                 $billingAddress ? $billingAddress->getCountryIso2() : null,
-                $amount
+                $amount,
+                $this->apiMethod
             );
         } catch (HttpBaseException $e) {
             Logger::logError(

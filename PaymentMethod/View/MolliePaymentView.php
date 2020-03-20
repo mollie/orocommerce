@@ -29,7 +29,6 @@ class MolliePaymentView implements PaymentMethodViewInterface
         return [
             'isApplePay' => false !== strpos($this->config->getPaymentMethodIdentifier(), 'applepay'),
             'icon' => $this->config->getIcon(),
-            'isSurchargeSupported' => $this->config->isSurchargeSupported(),
             'surchargeAmount' => $this->config->getSurchargeAmount(),
             'currency' => $context->getCurrency(),
         ];
