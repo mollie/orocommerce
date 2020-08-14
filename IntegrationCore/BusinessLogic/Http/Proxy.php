@@ -94,6 +94,9 @@ class Proxy
         $this->transformer = $transformer;
     }
 
+    /**
+     * @param LogData $data
+     */
     public function createLog(LogData $data)
     {
         // TODO: Implement this when API endpoint is available

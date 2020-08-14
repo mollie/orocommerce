@@ -13,6 +13,11 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\RouterInterface;
 
+/**
+ * Class PaymentCheckoutRedirectListener
+ *
+ * @package Mollie\Bundle\PaymentBundle\EventListener\Callback
+ */
 class PaymentCheckoutRedirectListener
 {
     /** @var Session */
@@ -38,9 +43,13 @@ class PaymentCheckoutRedirectListener
     private $router;
 
     /**
+     * PaymentCheckoutRedirectListener constructor.
+     *
      * @param Session $session
      * @param PaymentMethodProviderInterface $paymentMethodProvider
      * @param PaymentResultMessageProviderInterface $messageProvider
+     * @param DoctrineHelper $doctrineHelper
+     * @param RouterInterface $router
      */
     public function __construct(
         Session $session,

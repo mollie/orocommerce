@@ -2,6 +2,7 @@ services:
   mollie_payment.entity_listener.channel_settings:
     class: Mollie\Bundle\PaymentBundle\EventListener\ChannelSettingsListener
     arguments:
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration'
       - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\WebsiteProfileController'
       - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\PaymentMethodController'
       - '@Mollie\Bundle\PaymentBundle\IntegrationServices\FileUploader'
@@ -23,6 +24,8 @@ services:
   mollie_payment.entity_listener.order:
     class: Mollie\Bundle\PaymentBundle\EventListener\OrderEntityListener
     arguments:
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration'
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Utility\Events\EventBus'
       - '@mollie_payment.manager.oro_payment_method_utility'
       - '@translator'
       - '@mollie_payment.mapper.mollie_dto_mapper'
@@ -34,15 +37,20 @@ services:
   mollie_payment.entity_listener.order_line:
     class: Mollie\Bundle\PaymentBundle\EventListener\OrderLineEntityListener
     arguments:
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration'
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Utility\Events\EventBus'
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\OrderReference\OrderReferenceService'
       - '@mollie_payment.manager.oro_payment_method_utility'
       - '@mollie_payment.mapper.mollie_dto_mapper'
       - '@translator'
       - '@session.flash_bag'
     tags:
       - { name: doctrine.orm.entity_listener, entity: '\Oro\Bundle\OrderBundle\Entity\OrderLineItem', event: preUpdate, method: onPreUpdate }
+
   mollie_payment.entity_listener.datagrids:
     class: Mollie\Bundle\PaymentBundle\EventListener\DatagridsListener
     arguments:
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration'
       - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\NotificationController'
       - "@translator"
     tags:
@@ -59,6 +67,8 @@ services:
     class: 'Mollie\Bundle\PaymentBundle\EventListener\Callback\PaymentCheckoutCallbackListener'
     lazy: true
     arguments:
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration'
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\WebHook\WebHookTransformer'
       - '@request_stack'
       - '@mollie_payment.payment_method_provider.mollie_payment'
       - '@oro_entity.doctrine_helper'
@@ -69,6 +79,7 @@ services:
     class: 'Mollie\Bundle\PaymentBundle\EventListener\KernelEventListener'
     tags:
       - { name: kernel.event_listener, event: kernel.exception, method: onException }
+
   mollie_payment.event_listener.callback.payment_redirect:
     class: 'Mollie\Bundle\PaymentBundle\EventListener\Callback\PaymentCheckoutRedirectListener'
     lazy: true
@@ -81,6 +92,7 @@ services:
     tags:
       # Priority of this listener should always be less then priority of mollie_payment.event_listener.callback.payment_return_handler
       - { name: kernel.event_listener, event: oro_payment.callback.return, method: onReturn, priority: -100 }
+
   mollie_payment.event_listener.callback.admin_link_payment_redirect:
     class: 'Mollie\Bundle\PaymentBundle\EventListener\Callback\AdminLinkPaymentRedirectListener'
     lazy: true

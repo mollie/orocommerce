@@ -8,7 +8,6 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\Or
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\OrderLine;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Payment;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration;
-use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ServiceRegister;
 use Oro\Bundle\EntityBundle\ORM\DoctrineHelper;
 use Oro\Bundle\LocaleBundle\Helper\LocalizationHelper;
 use Oro\Bundle\OrderBundle\Entity\OrderAddress;
@@ -32,6 +31,10 @@ use Oro\Bundle\LocaleBundle\DependencyInjection\Configuration as LocaleConfigura
  */
 class MollieDtoMapper implements MollieDtoMapperInterface
 {
+    /**
+     * @var Configuration
+     */
+    private $configService;
     /**
      * @var TaxProviderRegistry
      */
@@ -64,6 +67,7 @@ class MollieDtoMapper implements MollieDtoMapperInterface
     /**
      * MollieDtoMapper constructor.
      *
+     * @param Configuration $configService
      * @param TaxProviderRegistry $taxProviderRegistry
      * @param SurchargeProvider $surchargeProvider
      * @param TranslatorInterface $translator
@@ -73,6 +77,7 @@ class MollieDtoMapper implements MollieDtoMapperInterface
      * @param string $webhooksUrlReplacement
      */
     public function __construct(
+        Configuration $configService,
         TaxProviderRegistry $taxProviderRegistry,
         SurchargeProvider $surchargeProvider,
         TranslatorInterface $translator,
@@ -81,6 +86,7 @@ class MollieDtoMapper implements MollieDtoMapperInterface
         LocalizationHelper $localizationHelper,
         $webhooksUrlReplacement = ''
     ) {
+        $this->configService = $configService;
         $this->taxProviderRegistry = $taxProviderRegistry;
         $this->surchargeProvider = $surchargeProvider;
         $this->translator = $translator;
@@ -91,7 +97,7 @@ class MollieDtoMapper implements MollieDtoMapperInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getOrderData(PaymentTransaction $paymentTransaction)
     {
@@ -164,7 +170,7 @@ class MollieDtoMapper implements MollieDtoMapperInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getOrderLine(OrderLineItem $orderLine)
     {
@@ -200,7 +206,7 @@ class MollieDtoMapper implements MollieDtoMapperInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getPaymentData(PaymentTransaction $paymentTransaction)
     {
@@ -243,7 +249,7 @@ class MollieDtoMapper implements MollieDtoMapperInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getAddressData(OrderAddress $address, $email)
     {
@@ -274,7 +280,8 @@ class MollieDtoMapper implements MollieDtoMapperInterface
 
         /** @var OroOrder $order */
         $order = $this->doctrineHelper->getEntityReference(
-            $paymentTransaction->getEntityClass(), $paymentTransaction->getEntityIdentifier()
+            $paymentTransaction->getEntityClass(),
+            $paymentTransaction->getEntityIdentifier()
         );
 
         return $order;
@@ -429,9 +436,7 @@ class MollieDtoMapper implements MollieDtoMapperInterface
      */
     protected function ensureDebugWebhookUrl($url)
     {
-        /** @var Configuration $configuration */
-        $configuration = ServiceRegister::getService(Configuration::CLASS_NAME);
-        if (empty($this->webhooksUrlReplacement) || !$configuration->isDebugModeEnabled()) {
+        if (empty($this->webhooksUrlReplacement) || !$this->configService->isDebugModeEnabled()) {
             return $url;
         }
 

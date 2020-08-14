@@ -11,6 +11,11 @@ use Oro\Bundle\PricingBundle\SubtotalProcessor\Provider\AbstractSubtotalProvider
 use Oro\Bundle\PricingBundle\SubtotalProcessor\Provider\SubtotalProviderConstructorArguments;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+/**
+ * Class MollieSurchargeProvider
+ *
+ * @package Mollie\Bundle\PaymentBundle\Provider
+ */
 class MollieSurchargeProvider extends AbstractSubtotalProvider implements SubtotalProviderInterface
 {
     const TYPE = 'mollie_payment_surcharge';
@@ -32,9 +37,12 @@ class MollieSurchargeProvider extends AbstractSubtotalProvider implements Subtot
     private $orderConverter;
 
     /**
+     * MollieSurchargeProvider constructor.
+     *
      * @param TranslatorInterface $translator
      * @param RoundingServiceInterface $rounding
      * @param SubtotalProviderConstructorArguments $arguments
+     * @param CheckoutToOrderConverter $orderConverter
      */
     public function __construct(
         TranslatorInterface $translator,
@@ -50,7 +58,7 @@ class MollieSurchargeProvider extends AbstractSubtotalProvider implements Subtot
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getName()
     {
@@ -89,7 +97,7 @@ class MollieSurchargeProvider extends AbstractSubtotalProvider implements Subtot
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function isSupported($entity)
     {

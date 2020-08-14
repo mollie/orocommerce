@@ -10,6 +10,11 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Orders\OrderServic
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Logger\Logger;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ServiceRegister;
 
+/**
+ * Class IntegrationOrderShippedEventHandler
+ *
+ * @package Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Orders\IntegrationEventHandler
+ */
 class IntegrationOrderShippedEventHandler
 {
     /**

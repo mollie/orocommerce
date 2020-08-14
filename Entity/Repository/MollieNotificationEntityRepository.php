@@ -4,6 +4,11 @@ namespace Mollie\Bundle\PaymentBundle\Entity\Repository;
 
 use Doctrine\ORM\EntityManager;
 
+/**
+ * Class MollieNotificationEntityRepository
+ *
+ * @package Mollie\Bundle\PaymentBundle\Entity\Repository
+ */
 class MollieNotificationEntityRepository extends MollieContextAwareEntityRepository
 {
     /**

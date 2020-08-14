@@ -22,14 +22,14 @@ define(function(require) {
         $el: null,
 
         /**
-         * @inheritDoc
+         * {@inheritdoc}
          */
         constructor: function MollieFormRefresherComponent() {
             MollieFormRefresherComponent.__super__.constructor.apply(this, arguments);
         },
 
         /**
-         * @inheritDoc
+         * {@inheritdoc}
          */
         initialize: function(options) {
             this.options = _.extend({}, this.options, options);

@@ -6,6 +6,11 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\Or
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\OrderReference\Model\OrderReference;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Utility\Events\Event;
 
+/**
+ * Class OrderChangedWebHookEvent
+ *
+ * @package Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\WebHook
+ */
 class OrderChangedWebHookEvent extends Event
 {
     /**

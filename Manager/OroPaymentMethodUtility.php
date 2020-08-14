@@ -87,6 +87,11 @@ class OroPaymentMethodUtility
         return $this->getNoContextMolliePaymentConfigProvider()->hasPaymentConfig($paymentKey);
     }
 
+    /**
+     * @param Order $order
+     *
+     * @return bool
+     */
     public function isOrderValidForOrdersApi(Order $order)
     {
         $billingAddress = $order->getBillingAddress();

@@ -1,0 +1,101 @@
+{
+  "_embedded": {
+    "profiles": [
+      {
+        "resource": "profile",
+        "id": "pfl_htsmhPNGw3",
+        "mode": "live",
+        "name": "Test website profile",
+        "website": "http://magento2.dev.logeecom.com/",
+        "email": "goran.stamenkovski@logeecom.com",
+        "phone": "+381638273823",
+        "categoryCode": 0,
+        "status": "unverified",
+        "createdAt": "2019-11-25T12:46:25+00:00",
+        "review": {
+          "status": "pending"
+        },
+        "_links": {
+          "self": {
+            "href": "https://api.mollie.com/v2/profiles/pfl_htsmhPNGw3?testmode=true",
+            "type": "application/hal+json"
+          },
+          "chargebacks": {
+            "href": "https://api.mollie.com/v2/chargebacks?profileId=pfl_htsmhPNGw3&testmode=true",
+            "type": "application/hal+json"
+          },
+          "methods": {
+            "href": "https://api.mollie.com/v2/methods?profileId=pfl_htsmhPNGw3&testmode=true",
+            "type": "application/hal+json"
+          },
+          "payments": {
+            "href": "https://api.mollie.com/v2/payments?profileId=pfl_htsmhPNGw3&testmode=true",
+            "type": "application/hal+json"
+          },
+          "refunds": {
+            "href": "https://api.mollie.com/v2/refunds?profileId=pfl_htsmhPNGw3&testmode=true",
+            "type": "application/hal+json"
+          },
+          "checkoutPreviewUrl": {
+            "href": "https://www.mollie.com/payscreen/preview/pfl_htsmhPNGw3",
+            "type": "text/html"
+          }
+        }
+      },
+      {
+        "resource": "profile",
+        "id": "pfl_b5f5efDqMS",
+        "mode": "live",
+        "name": "Logeecom",
+        "website": "http://magento2.dev.logeecom.com/",
+        "email": "andrija.papic+mollie@logeecom.com",
+        "phone": "+381641221808",
+        "categoryCode": 0,
+        "status": "unverified",
+        "createdAt": "2019-05-28T09:23:53+00:00",
+        "review": {
+          "status": "pending"
+        },
+        "_links": {
+          "self": {
+            "href": "https://api.mollie.com/v2/profiles/pfl_b5f5efDqMS?testmode=true",
+            "type": "application/hal+json"
+          },
+          "chargebacks": {
+            "href": "https://api.mollie.com/v2/chargebacks?profileId=pfl_b5f5efDqMS&testmode=true",
+            "type": "application/hal+json"
+          },
+          "methods": {
+            "href": "https://api.mollie.com/v2/methods?profileId=pfl_b5f5efDqMS&testmode=true",
+            "type": "application/hal+json"
+          },
+          "payments": {
+            "href": "https://api.mollie.com/v2/payments?profileId=pfl_b5f5efDqMS&testmode=true",
+            "type": "application/hal+json"
+          },
+          "refunds": {
+            "href": "https://api.mollie.com/v2/refunds?profileId=pfl_b5f5efDqMS&testmode=true",
+            "type": "application/hal+json"
+          },
+          "checkoutPreviewUrl": {
+            "href": "https://www.mollie.com/payscreen/preview/pfl_b5f5efDqMS",
+            "type": "text/html"
+          }
+        }
+      }
+    ]
+  },
+  "count": 2,
+  "_links": {
+    "documentation": {
+      "href": "https://docs.mollie.com/reference/v2/profiles-api/list-profiles",
+      "type": "text/html"
+    },
+    "self": {
+      "href": "https://api.mollie.com/v2/profiles?testmode=true&limit=50",
+      "type": "application/hal+json"
+    },
+    "previous": null,
+    "next": null
+  }
+}

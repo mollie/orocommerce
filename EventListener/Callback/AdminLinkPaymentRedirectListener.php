@@ -11,6 +11,11 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+/**
+ * Class AdminLinkPaymentRedirectListener
+ *
+ * @package Mollie\Bundle\PaymentBundle\EventListener\Callback
+ */
 class AdminLinkPaymentRedirectListener
 {
     /** @var Session */
@@ -57,7 +62,7 @@ class AdminLinkPaymentRedirectListener
         }
 
         if ($paymentTransaction->isSuccessful()) {
-            $this->session->getFlashBag()->add('success','oro.checkout.workflow.success.thank_you.label');
+            $this->session->getFlashBag()->add('success', 'oro.checkout.workflow.success.thank_you.label');
             $event->markSuccessful();
             return;
         }

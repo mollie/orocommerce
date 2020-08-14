@@ -6,6 +6,11 @@ use Mollie\Bundle\PaymentBundle\Entity\MollieSurchargeAwareInterface;
 use Mollie\Bundle\PaymentBundle\PaymentMethod\Config\Provider\MolliePaymentConfigProviderInterface;
 use Oro\Bundle\CheckoutBundle\Entity\Checkout;
 
+/**
+ * Class CheckoutEntityListener
+ *
+ * @package Mollie\Bundle\PaymentBundle\EventListener
+ */
 class CheckoutEntityListener
 {
     /**
@@ -13,6 +18,11 @@ class CheckoutEntityListener
      */
     private $paymentConfigProvider;
 
+    /**
+     * CheckoutEntityListener constructor.
+     *
+     * @param MolliePaymentConfigProviderInterface $paymentConfigProvider
+     */
     public function __construct(
         MolliePaymentConfigProviderInterface $paymentConfigProvider
     ) {

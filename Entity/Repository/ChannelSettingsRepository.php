@@ -3,10 +3,15 @@
 namespace Mollie\Bundle\PaymentBundle\Entity\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use Mollie\Bundle\PaymentBundle\Entity\ChannelSettings;
 use Oro\Bundle\SecurityBundle\ORM\Walker\AclHelper;
 
 /**
  * Repository for PaymentSettings entity
+ *
+ * Class ChannelSettingsRepository
+ *
+ * @package Mollie\Bundle\PaymentBundle\Entity\Repository
  */
 class ChannelSettingsRepository extends EntityRepository
 {
@@ -24,7 +29,7 @@ class ChannelSettingsRepository extends EntityRepository
     }
 
     /**
-     * @return \Mollie\Bundle\PaymentBundle\Entity\ChannelSettings[]
+     * @return ChannelSettings[]
      */
     public function getEnabledSettings()
     {

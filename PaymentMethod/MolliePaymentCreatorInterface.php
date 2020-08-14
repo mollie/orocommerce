@@ -4,6 +4,11 @@ namespace Mollie\Bundle\PaymentBundle\PaymentMethod;
 
 use Oro\Bundle\PaymentBundle\Entity\PaymentTransaction;
 
+/**
+ * Interface MolliePaymentCreatorInterface
+ *
+ * @package Mollie\Bundle\PaymentBundle\PaymentMethod
+ */
 interface MolliePaymentCreatorInterface
 {
     /**

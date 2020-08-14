@@ -72,7 +72,10 @@ class OrderReferenceService extends BaseService
         /** @var OrderReference|null $orderReference */
         $orderReference = $this->getRepository(OrderReference::CLASS_NAME)->selectOne(
             $this->setFilterCondition(
-                new QueryFilter(), 'shopReference', Operators::EQUALS, (string)$shopReference
+                new QueryFilter(),
+                'shopReference',
+                Operators::EQUALS,
+                (string)$shopReference
             )
         );
 
@@ -91,7 +94,10 @@ class OrderReferenceService extends BaseService
         /** @var OrderReference|null $orderReference */
         $orderReference = $this->getRepository(OrderReference::CLASS_NAME)->selectOne(
             $this->setFilterCondition(
-                new QueryFilter(), 'mollieReference', Operators::EQUALS, (string)$mollieReference
+                new QueryFilter(),
+                'mollieReference',
+                Operators::EQUALS,
+                (string)$mollieReference
             )
         );
 

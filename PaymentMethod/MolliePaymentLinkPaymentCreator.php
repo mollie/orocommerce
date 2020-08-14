@@ -6,6 +6,11 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\Mode
 use Mollie\Bundle\PaymentBundle\Manager\PaymentLinkConfigProviderInterface;
 use Oro\Bundle\PaymentBundle\Entity\PaymentTransaction;
 
+/**
+ * Class MolliePaymentLinkPaymentCreator
+ *
+ * @package Mollie\Bundle\PaymentBundle\PaymentMethod
+ */
 class MolliePaymentLinkPaymentCreator implements MolliePaymentCreatorInterface
 {
     /**
@@ -26,6 +31,7 @@ class MolliePaymentLinkPaymentCreator implements MolliePaymentCreatorInterface
      *
      * @param MolliePaymentApiPaymentCreator $paymentCreator
      * @param MollieOrdersApiPaymentCreator $orderCreator
+     * @param PaymentLinkConfigProviderInterface $paymentLinkConfigProvider
      */
     public function __construct(
         MolliePaymentApiPaymentCreator $paymentCreator,

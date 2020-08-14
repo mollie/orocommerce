@@ -143,6 +143,9 @@ class BootstrapComponent extends \Mollie\Bundle\PaymentBundle\IntegrationCore\In
         );
     }
 
+    /**
+     * Initialize events
+     */
     protected static function initEvents()
     {
         parent::initEvents();

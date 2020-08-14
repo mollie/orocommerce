@@ -1,0 +1,11 @@
+{
+  "status": 400,
+  "title": "Bad Request",
+  "detail": "The order cannot be canceled from state: canceled",
+  "_links": {
+    "documentation": {
+      "href": "https://docs.mollie.com/guides/handling-errors",
+      "type": "text/html"
+    }
+  }
+}

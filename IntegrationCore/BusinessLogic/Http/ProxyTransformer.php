@@ -20,6 +20,11 @@ class ProxyTransformer
 
     public function transformPayment(Payment $payment)
     {
+        $method = $payment->getMethod();
+        if (count($method) === 1) {
+            $method = implode('', $method);
+        }
+
         $result = array(
             'profileId' => $payment->getProfileId(),
             'description' => $payment->getDescription(),
@@ -27,12 +32,12 @@ class ProxyTransformer
             'redirectUrl' => $payment->getRedirectUrl(),
             'webhookUrl' => $payment->getWebhookUrl(),
             'locale' => $payment->getLocale(),
-            'method' => $payment->getMethod(),
+            'method' => $method,
             'metadata' => $payment->getMetadata(),
         );
 
         $shippingAddress = $payment->getShippingAddress();
-        if ($shippingAddress && $payment->getMethod() === PaymentMethods::PayPal) {
+        if ($shippingAddress && $method === PaymentMethods::PayPal) {
             $result['shippingAddress'] = array(
                 'streetAndNumber' => $shippingAddress->getStreetAndNumber(),
                 'streetAdditional' => $shippingAddress->getStreetAdditional(),
@@ -46,12 +51,22 @@ class ProxyTransformer
         return $result;
     }
 
+    /**
+     * @param Order $order
+     *
+     * @return array
+     */
     public function transformOrder(Order $order)
     {
         $orderLines = $order->getLines();
         $totalAdjustment = $this->getOrderAdjustment($order);
         if ($totalAdjustment) {
             $orderLines[] = $totalAdjustment;
+        }
+
+        $method = $order->getMethod();
+        if (count($method) === 1) {
+            $method = implode('', $method);
         }
 
         $orderData = array(
@@ -65,7 +80,7 @@ class ProxyTransformer
                 'webhookUrl' => $order->getWebhookUrl(),
             ),
             'locale' => $order->getLocale(),
-            'method' => $order->getMethod(),
+            'method' => $method,
             'metadata' => $order->getMetadata(),
             'lines' => $this->transformOrderLines($orderLines),
         );
@@ -262,6 +277,11 @@ class ProxyTransformer
         return null;
     }
 
+    /**
+     * @param Shipment $shipment
+     *
+     * @return array[]
+     */
     public function transformShipment(Shipment $shipment)
     {
         $lines = array();

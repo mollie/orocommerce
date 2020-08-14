@@ -2,13 +2,12 @@
 
 namespace Mollie\Bundle\PaymentBundle\EventListener\Callback;
 
-use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Configuration;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Notifications\NotificationHub;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Notifications\NotificationText;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\WebHook\WebHookContext;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\WebHook\WebHookTransformer;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Logger\Logger;
-use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ServiceRegister;
 use Mollie\Bundle\PaymentBundle\PaymentMethod\MolliePayment;
 use Mollie\Bundle\PaymentBundle\PaymentMethod\Provider\MolliePaymentProvider;
 use Oro\Bundle\EntityBundle\ORM\DoctrineHelper;
@@ -17,6 +16,11 @@ use Oro\Bundle\PaymentBundle\Entity\PaymentTransaction;
 use Oro\Bundle\PaymentBundle\Event\AbstractCallbackEvent;
 use Symfony\Component\HttpFoundation\RequestStack;
 
+/**
+ * Class PaymentCheckoutCallbackListener
+ *
+ * @package Mollie\Bundle\PaymentBundle\EventListener\Callback
+ */
 class PaymentCheckoutCallbackListener
 {
     /**
@@ -31,20 +35,41 @@ class PaymentCheckoutCallbackListener
      * @var DoctrineHelper
      */
     private $doctrineHelper;
+    /**
+     * @var Configuration
+     */
+    private $configService;
+    /**
+     * @var WebHookTransformer
+     */
+    private $webhookTransformer;
 
     /**
+     * PaymentCheckoutCallbackListener constructor.
+     *
+     * @param Configuration $configService
+     * @param WebHookTransformer $webhookTransformer
+     * @param RequestStack $request
      * @param MolliePaymentProvider $paymentMethodProvider
+     * @param DoctrineHelper $doctrineHelper
      */
     public function __construct(
+        Configuration $configService,
+        WebHookTransformer $webhookTransformer,
         RequestStack $request,
         MolliePaymentProvider $paymentMethodProvider,
         DoctrineHelper $doctrineHelper
     ) {
+        $this->configService = $configService;
+        $this->webhookTransformer = $webhookTransformer;
         $this->request = $request;
         $this->paymentMethodProvider = $paymentMethodProvider;
         $this->doctrineHelper = $doctrineHelper;
     }
 
+    /**
+     * @param AbstractCallbackEvent $event
+     */
     public function onNotify(AbstractCallbackEvent $event)
     {
         WebHookContext::start();
@@ -52,6 +77,9 @@ class PaymentCheckoutCallbackListener
         WebHookContext::stop();
     }
 
+    /**
+     * @param AbstractCallbackEvent $event
+     */
     protected function handleEvent(AbstractCallbackEvent $event)
     {
         try {
@@ -103,8 +131,6 @@ class PaymentCheckoutCallbackListener
                 return;
             }
 
-            /** @var Configuration $configuration */
-            $configuration = ServiceRegister::getService(Configuration::CLASS_NAME);
             /** @var MolliePayment $paymentMethod */
             $paymentMethod = $this->paymentMethodProvider->getPaymentMethod($paymentMethodId);
             $webHookPayload = $this->request->getMasterRequest()->getContent();
@@ -120,12 +146,10 @@ class PaymentCheckoutCallbackListener
                 return;
             }
 
-            $configuration->doWithContext(
+            $this->configService->doWithContext(
                 (string)$paymentMethod->getConfig()->getChannelId(),
                 function () use ($webHookPayload) {
-                    /** @var WebHookTransformer $webHookTransformer */
-                    $webHookTransformer = ServiceRegister::getService(WebHookTransformer::CLASS_NAME);
-                    $webHookTransformer->handle($webHookPayload);
+                    $this->webhookTransformer->handle($webHookPayload);
                 }
             );
 
@@ -152,6 +176,10 @@ class PaymentCheckoutCallbackListener
         }
     }
 
+    /**
+     * @param AbstractCallbackEvent $event
+     * @param PaymentTransaction $paymentTransaction
+     */
     private function handleMissingOrder(AbstractCallbackEvent $event, PaymentTransaction $paymentTransaction)
     {
         Logger::logWarning(
@@ -170,9 +198,7 @@ class PaymentCheckoutCallbackListener
         /** @var MolliePayment $paymentMethod */
         $paymentMethod = $this->paymentMethodProvider->getPaymentMethod($paymentTransaction->getPaymentMethod());
 
-        /** @var Configuration $configuration */
-        $configuration = ServiceRegister::getService(Configuration::CLASS_NAME);
-        $configuration->doWithContext(
+        $this->configService->doWithContext(
             (string)$paymentMethod->getConfig()->getChannelId(),
             function () use ($paymentTransaction) {
                 NotificationHub::pushError(

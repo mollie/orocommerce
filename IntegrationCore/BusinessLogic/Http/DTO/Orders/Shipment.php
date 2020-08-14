@@ -4,6 +4,11 @@ namespace Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Ord
 
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\BaseDto;
 
+/**
+ * Class Shipment
+ *
+ * @package Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders
+ */
 class Shipment extends BaseDto
 {
     /**
@@ -50,7 +55,7 @@ class Shipment extends BaseDto
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function toArray()
     {

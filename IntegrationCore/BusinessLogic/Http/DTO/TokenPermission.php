@@ -2,6 +2,11 @@
 
 namespace Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO;
 
+/**
+ * Class TokenPermission
+ *
+ * @package Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO
+ */
 class TokenPermission extends BaseDto
 {
     /**
@@ -22,7 +27,7 @@ class TokenPermission extends BaseDto
     protected $granted;
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public static function fromArray(array $raw)
     {
@@ -36,7 +41,7 @@ class TokenPermission extends BaseDto
         return $result;
     }
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function toArray()
     {

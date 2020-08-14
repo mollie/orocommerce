@@ -4,43 +4,53 @@ namespace Mollie\Bundle\PaymentBundle\PaymentMethod\Config\Factory;
 
 use Doctrine\Common\Collections\Collection;
 use Mollie\Bundle\PaymentBundle\Entity\PaymentMethodSettings;
-use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Configuration;
-use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ServiceRegister;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration;
 use Mollie\Bundle\PaymentBundle\PaymentMethod\Config\MolliePaymentConfig;
 use Mollie\Bundle\PaymentBundle\PaymentMethod\Config\MolliePaymentConfigInterface;
 use Oro\Bundle\LocaleBundle\Helper\LocalizationHelper;
 
+/**
+ * Class PaymentConfigFactory
+ *
+ * @package Mollie\Bundle\PaymentBundle\PaymentMethod\Config\Factory
+ */
 class PaymentConfigFactory implements PaymentConfigFactoryInterface
 {
+    /**
+     * @var Configuration
+     */
+    private $configService;
     /**
      * @var LocalizationHelper
      */
     private $localizationHelper;
-
     /**
      * @var PaymentConfigIdentifierGenerator
      */
     private $identifierGenerator;
 
     /**
+     * PaymentConfigFactory constructor.
+     *
+     * @param Configuration $configService
      * @param LocalizationHelper $localizationHelper
      * @param PaymentConfigIdentifierGenerator $identifierGenerator
      */
     public function __construct(
+        Configuration $configService,
         LocalizationHelper $localizationHelper,
         PaymentConfigIdentifierGenerator $identifierGenerator
     ) {
+        $this->configService = $configService;
         $this->localizationHelper = $localizationHelper;
         $this->identifierGenerator = $identifierGenerator;
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function create(PaymentMethodSettings $paymentMethodSetting)
     {
-        /** @var Configuration $configuration */
-        $configuration = ServiceRegister::getService(Configuration::CLASS_NAME);
         $channelSetting = $paymentMethodSetting->getChannelSettings();
         $channel = $channelSetting->getChannel();
         $mollieMethodConfig = $paymentMethodSetting->getPaymentMethodConfig();
@@ -54,10 +64,10 @@ class PaymentConfigFactory implements PaymentConfigFactoryInterface
             $adminLabel = $paymentLabel;
         }
 
-        $configParams = $configuration->doWithContext((string)$channel->getId(), function () use ($configuration) {
+        $configParams = $this->configService->doWithContext((string)$channel->getId(), function () {
             return [
-                MolliePaymentConfig::API_TOKEN => $configuration->getAuthorizationToken(),
-                MolliePaymentConfig::TEST_MODE => $configuration->isTestMode(),
+                MolliePaymentConfig::API_TOKEN => $this->configService->getAuthorizationToken(),
+                MolliePaymentConfig::TEST_MODE => $this->configService->isTestMode(),
             ];
         });
         $configParams[MolliePaymentConfig::FIELD_LABEL] = $paymentLabel;

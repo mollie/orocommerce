@@ -2,6 +2,11 @@
 
 namespace Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Integration\Interfaces;
 
+/**
+ * Interface OrderTransitionService
+ *
+ * @package Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Integration\Interfaces
+ */
 interface OrderTransitionService
 {
     /**

@@ -23,7 +23,7 @@ class DefaultNotificationChannel implements DefaultNotificationChannelAdapter
     protected $repository;
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      *
      * @param Notification $notification
      */
@@ -33,7 +33,7 @@ class DefaultNotificationChannel implements DefaultNotificationChannelAdapter
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      *
      * @param int $take
      * @param int $skip
@@ -64,7 +64,7 @@ class DefaultNotificationChannel implements DefaultNotificationChannelAdapter
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      *
      * @param int|string $notificationId
      */
@@ -74,7 +74,7 @@ class DefaultNotificationChannel implements DefaultNotificationChannelAdapter
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      *
      * @param int|string $notificationId
      */

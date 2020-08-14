@@ -1,0 +1,12 @@
+{
+  "status": 422,
+  "title": "Unprocessable Entity",
+  "detail": "The 'quantity' field should be a whole number",
+  "field": "quantity",
+  "_links": {
+    "documentation": {
+      "href": "https://docs.mollie.com/guides/handling-errors",
+      "type": "text/html"
+    }
+  }
+}

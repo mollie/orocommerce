@@ -2,6 +2,11 @@
 
 namespace Mollie\Bundle\PaymentBundle\Entity;
 
+/**
+ * Interface MollieSurchargeAwareInterface
+ *
+ * @package Mollie\Bundle\PaymentBundle\Entity
+ */
 interface MollieSurchargeAwareInterface
 {
 

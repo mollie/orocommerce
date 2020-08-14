@@ -8,6 +8,11 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ORM\Configuration
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ORM\Configuration\IndexMap;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ORM\Entity;
 
+/**
+ * Class PaymentMethodConfig
+ *
+ * @package Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\Model
+ */
 class PaymentMethodConfig extends Entity
 {
     /**
@@ -18,15 +23,21 @@ class PaymentMethodConfig extends Entity
     const API_METHOD_PAYMENT = 'payment_api';
     const API_METHOD_ORDERS = 'orders_api';
 
+    /**
+     * @var string[]
+     */
     protected static $adiMethodRestrictions = array(
         PaymentMethods::KlarnaPayLater => self::API_METHOD_ORDERS,
         PaymentMethods::KlarnaSliceIt => self::API_METHOD_ORDERS,
     );
 
+    /**
+     * @var array
+     */
     protected static $surchargeRestrictedPaymentMethods = array(PaymentMethods::KlarnaPayLater, PaymentMethods::KlarnaSliceIt);
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     protected $fields = array(
         'id',
@@ -46,34 +57,34 @@ class PaymentMethodConfig extends Entity
     /**
      * @var string
      */
-    protected  $name;
+    protected $name;
     /**
      * @var string
      */
-    protected  $description;
+    protected $description;
     /**
      * @var string One of PaymentMethodConfig::API_METHOD_PAYMENT or PaymentMethodConfig::API_METHOD_ORDERS
      */
-    protected  $apiMethod;
+    protected $apiMethod;
     /**
      * @var float
      */
-    protected  $surcharge;
+    protected $surcharge;
     /**
      * @var null|string
      */
-    protected  $image;
+    protected $image;
     /**
      * @var bool
      */
-    protected  $enabled = false;
+    protected $enabled = false;
     /**
      * @var PaymentMethod
      */
-    protected  $originalAPIConfig;
+    protected $originalAPIConfig;
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getConfig()
     {
@@ -86,7 +97,7 @@ class PaymentMethodConfig extends Entity
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function inflate(array $data)
     {
@@ -98,7 +109,7 @@ class PaymentMethodConfig extends Entity
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function toArray()
     {
@@ -108,11 +119,17 @@ class PaymentMethodConfig extends Entity
         return $data;
     }
 
+    /**
+     * @return bool
+     */
     public function isSurchargeRestricted()
     {
         return in_array($this->getMollieId(), static::$surchargeRestrictedPaymentMethods, true);
     }
 
+    /**
+     * @return bool
+     */
     public function isApiMethodRestricted()
     {
         return array_key_exists($this->getMollieId(), static::$adiMethodRestrictions);

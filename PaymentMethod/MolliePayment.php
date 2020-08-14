@@ -2,8 +2,7 @@
 
 namespace Mollie\Bundle\PaymentBundle\PaymentMethod;
 
-use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Configuration;
-use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ServiceRegister;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration;
 use Mollie\Bundle\PaymentBundle\PaymentMethod\Config\MolliePaymentConfigInterface;
 use Mollie\Bundle\PaymentBundle\PaymentMethod\Config\Provider\MolliePaymentContextAwareConfigProviderInterface;
 use Oro\Bundle\LocaleBundle\Helper\LocalizationHelper;
@@ -14,6 +13,11 @@ use Oro\Bundle\PaymentBundle\Method\Action\PurchaseActionInterface;
 use Oro\Bundle\PaymentBundle\Method\PaymentMethodInterface;
 use Symfony\Component\Routing\RouterInterface;
 
+/**
+ * Class MolliePayment
+ *
+ * @package Mollie\Bundle\PaymentBundle\PaymentMethod
+ */
 class MolliePayment implements PaymentMethodInterface, PurchaseActionInterface, CaptureActionInterface
 {
     /**
@@ -40,15 +44,23 @@ class MolliePayment implements PaymentMethodInterface, PurchaseActionInterface, 
      * @var string
      */
     protected $webhooksUrlReplacement;
+    /**
+     * @var Configuration
+     */
+    protected $configService;
 
     /**
+     * MolliePayment constructor.
+     *
      * @param MolliePaymentConfigInterface $config
+     * @param MolliePaymentCreatorInterface $paymentCreator
      * @param MolliePaymentContextAwareConfigProviderInterface $contextAwareConfigProvider
      * @param RouterInterface $router
      * @param LocalizationHelper $localizationHelper
      * @param string $webhooksUrlReplacement
      */
     public function __construct(
+        Configuration $configService,
         MolliePaymentConfigInterface $config,
         MolliePaymentCreatorInterface $paymentCreator,
         MolliePaymentContextAwareConfigProviderInterface $contextAwareConfigProvider,
@@ -56,6 +68,7 @@ class MolliePayment implements PaymentMethodInterface, PurchaseActionInterface, 
         LocalizationHelper $localizationHelper,
         $webhooksUrlReplacement = ''
     ) {
+        $this->configService = $configService;
         $this->config = $config;
         $this->paymentCreator = $paymentCreator;
         $this->contextAwareConfigProvider = $contextAwareConfigProvider;
@@ -83,14 +96,11 @@ class MolliePayment implements PaymentMethodInterface, PurchaseActionInterface, 
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function purchase(PaymentTransaction $paymentTransaction): array
     {
-        /** @var Configuration $configuration */
-        $configuration = ServiceRegister::getService(Configuration::CLASS_NAME);
-
-        $purchaseRedirectUrl = $configuration->doWithContext(
+        $purchaseRedirectUrl = $this->configService->doWithContext(
             (string)$this->config->getChannelId(),
             function () use ($paymentTransaction) {
                 $paymentCreationResult = $this->paymentCreator->createMolliePayment($paymentTransaction);
@@ -112,7 +122,7 @@ class MolliePayment implements PaymentMethodInterface, PurchaseActionInterface, 
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function capture(PaymentTransaction $paymentTransaction): array
     {
@@ -141,7 +151,7 @@ class MolliePayment implements PaymentMethodInterface, PurchaseActionInterface, 
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getSourceAction(): string
     {
@@ -149,7 +159,7 @@ class MolliePayment implements PaymentMethodInterface, PurchaseActionInterface, 
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function useSourcePaymentTransaction(): bool
     {
@@ -183,9 +193,7 @@ class MolliePayment implements PaymentMethodInterface, PurchaseActionInterface, 
      */
     protected function ensureDebugWebhookUrl($url)
     {
-        /** @var Configuration $configuration */
-        $configuration = ServiceRegister::getService(Configuration::CLASS_NAME);
-        if (empty($this->webhooksUrlReplacement) || !$configuration->isDebugModeEnabled()) {
+        if (empty($this->webhooksUrlReplacement) || !$this->configService->isDebugModeEnabled()) {
             return $url;
         }
 

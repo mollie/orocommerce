@@ -2,9 +2,13 @@
 
 namespace Mollie\Bundle\PaymentBundle\PaymentMethod\Config\Provider;
 
-
 use Mollie\Bundle\PaymentBundle\PaymentMethod\Config\MolliePaymentConfigInterface;
 
+/**
+ * Interface MolliePaymentConfigProviderInterface
+ *
+ * @package Mollie\Bundle\PaymentBundle\PaymentMethod\Config\Provider
+ */
 interface MolliePaymentConfigProviderInterface
 {
     /**

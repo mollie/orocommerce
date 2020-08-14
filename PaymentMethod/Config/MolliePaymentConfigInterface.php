@@ -4,6 +4,11 @@ namespace Mollie\Bundle\PaymentBundle\PaymentMethod\Config;
 
 use Oro\Bundle\PaymentBundle\Method\Config\PaymentConfigInterface;
 
+/**
+ * Interface MolliePaymentConfigInterface
+ *
+ * @package Mollie\Bundle\PaymentBundle\PaymentMethod\Config
+ */
 interface MolliePaymentConfigInterface extends PaymentConfigInterface
 {
     const ADMIN_PAYMENT_LINK_ID = 'mollie_admin_link';

@@ -8,6 +8,11 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\Proxy;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\PaymentMethodService;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ServiceRegister;
 
+/**
+ * Class AuthorizationController
+ *
+ * @package Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers
+ */
 class AuthorizationController
 {
     private static $REQUIRED_TOKEN_PERMISSIONS = array(
@@ -41,7 +46,7 @@ class AuthorizationController
 
         $tokenPermissions = $configService->doWithContext(
             'token_verification',
-            function () use($token, $testMode, $configService, $proxy) {
+            function () use ($token, $testMode, $configService, $proxy) {
                 $configService->setAuthorizationToken($token);
                 $configService->setTestMode($testMode);
 
@@ -61,6 +66,9 @@ class AuthorizationController
         return $this->isTokenPermissionListValid($tokenPermissions);
     }
 
+    /**
+     * Resets account
+     */
     public function reset()
     {
         /** @var Configuration $configService */

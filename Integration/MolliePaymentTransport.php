@@ -7,6 +7,11 @@ use Mollie\Bundle\PaymentBundle\Form\Type\ChannelSettingsType;
 use Oro\Bundle\IntegrationBundle\Entity\Transport;
 use Oro\Bundle\IntegrationBundle\Provider\TransportInterface;
 
+/**
+ * Class MolliePaymentTransport
+ *
+ * @package Mollie\Bundle\PaymentBundle\Integration
+ */
 class MolliePaymentTransport implements TransportInterface
 {
     /**
