@@ -1,12 +1,15 @@
 <?php
 
-
 namespace Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Refunds\WebHookHandler;
 
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\BaseDto;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Refunds\Refund;
 
-
+/**
+ * Class RefundWebHookHandler
+ *
+ * @package Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Refunds\WebHookHandler
+ */
 abstract class RefundWebHookHandler
 {
     /**

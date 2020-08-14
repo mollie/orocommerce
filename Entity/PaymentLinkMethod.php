@@ -1,13 +1,16 @@
 <?php
 
-
 namespace Mollie\Bundle\PaymentBundle\Entity;
-
 
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ORM\Configuration\EntityConfiguration;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ORM\Configuration\IndexMap;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ORM\Entity;
 
+/**
+ * Class PaymentLinkMethod
+ *
+ * @package Mollie\Bundle\PaymentBundle\Entity
+ */
 class PaymentLinkMethod extends Entity
 {
 
@@ -17,7 +20,7 @@ class PaymentLinkMethod extends Entity
     const CLASS_NAME = __CLASS__;
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     protected $fields = array(
         'id',
@@ -40,7 +43,7 @@ class PaymentLinkMethod extends Entity
     protected $paymentMethods = [];
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getConfig()
     {

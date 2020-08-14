@@ -6,6 +6,11 @@ use Mollie\Bundle\PaymentBundle\Entity\MollieSurchargeAwareInterface;
 use Oro\Bundle\CheckoutBundle\Entity\Checkout;
 use Oro\Bundle\CheckoutBundle\Mapper\MapperInterface;
 
+/**
+ * Class OrderMapperDecorator
+ *
+ * @package Mollie\Bundle\PaymentBundle\Mapper
+ */
 class OrderMapperDecorator implements MapperInterface
 {
     /**

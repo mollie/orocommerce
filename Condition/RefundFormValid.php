@@ -6,6 +6,7 @@ use Mollie\Bundle\PaymentBundle\Form\Entity\MollieRefund;
 use Mollie\Bundle\PaymentBundle\Form\Entity\MollieRefundLineItem;
 use Mollie\Bundle\PaymentBundle\Manager\MollieRefundProvider;
 use Oro\Component\Action\Condition\AbstractCondition;
+use Oro\Component\ConfigExpression\ExpressionInterface;
 
 /**
  * Class RefundFormValidRules
@@ -16,11 +17,18 @@ class RefundFormValid extends AbstractCondition
 {
     const NAME = 'mollie_refund_form_valid';
 
+    /**
+     * @return string
+     */
     public function getName()
     {
         return static::NAME;
     }
 
+    /**
+     * @param array $options
+     * @return $this|ExpressionInterface
+     */
     public function initialize(array $options)
     {
         reset($options);

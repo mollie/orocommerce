@@ -12,6 +12,11 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http\Exceptions\H
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http\Exceptions\HttpRequestException;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ServiceRegister;
 
+/**
+ * Class WebsiteProfileController
+ *
+ * @package Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers
+ */
 class WebsiteProfileController
 {
     protected $websiteProfilesCache = array();

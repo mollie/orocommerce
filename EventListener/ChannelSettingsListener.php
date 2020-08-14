@@ -4,23 +4,30 @@ namespace Mollie\Bundle\PaymentBundle\EventListener;
 
 use Mollie\Bundle\PaymentBundle\Entity\ChannelSettings;
 use Mollie\Bundle\PaymentBundle\Entity\PaymentMethodSettings;
-use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Configuration;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\Exceptions\UnprocessableEntityRequestException;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\PaymentMethodController;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\WebsiteProfileController;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http\Exceptions\HttpAuthenticationException;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http\Exceptions\HttpCommunicationException;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http\Exceptions\HttpRequestException;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ORM\Exceptions\RepositoryNotRegisteredException;
-use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ServiceRegister;
 use Mollie\Bundle\PaymentBundle\IntegrationServices\FileUploader;
 use Oro\Bundle\IntegrationBundle\Entity\Channel;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+/**
+ * Class ChannelSettingsListener
+ * @package Mollie\Bundle\PaymentBundle\EventListener
+ */
 class ChannelSettingsListener
 {
+    /**
+     * @var Configuration
+     */
+    private $configService;
     /**
      * @var WebsiteProfileController
      */
@@ -46,7 +53,19 @@ class ChannelSettingsListener
      */
     private $publicImagePath;
 
+    /**
+     * ChannelSettingsListener constructor.
+     *
+     * @param Configuration $configService
+     * @param WebsiteProfileController $websiteProfileController
+     * @param PaymentMethodController $paymentMethodController
+     * @param FileUploader $fileUploader
+     * @param TranslatorInterface $translator
+     * @param FlashBagInterface $flashBag
+     * @param string $publicImagePath
+     */
     public function __construct(
+        Configuration $configService,
         WebsiteProfileController $websiteProfileController,
         PaymentMethodController $paymentMethodController,
         FileUploader $fileUploader,
@@ -54,6 +73,7 @@ class ChannelSettingsListener
         FlashBagInterface $flashBag,
         $publicImagePath
     ) {
+        $this->configService = $configService;
         $this->websiteProfileController = $websiteProfileController;
         $this->paymentMethodController = $paymentMethodController;
         $this->fileUploader = $fileUploader;
@@ -95,17 +115,15 @@ class ChannelSettingsListener
      */
     protected function updateFor(Channel $channel)
     {
-        /** @var Configuration $configuration */
-        $configuration = ServiceRegister::getService(Configuration::CLASS_NAME);
         /** @var ChannelSettings $channelSettings */
         $channelSettings = $channel->getTransport();
 
         $this->uploadImages($channel, $channelSettings);
-        $configuration->doWithContext((string)$channel->getId(), function () use ($channel, $configuration, $channelSettings) {
-            $configuration->setAuthorizationToken($channelSettings->getAuthToken());
-            $configuration->setTestMode($channelSettings->isTestMode());
+        $this->configService->doWithContext((string)$channel->getId(), function () use ($channel, $channelSettings) {
+            $this->configService->setAuthorizationToken($channelSettings->getAuthToken());
+            $this->configService->setTestMode($channelSettings->isTestMode());
 
-            $oldWebsiteProfile = $configuration->getWebsiteProfile();
+            $oldWebsiteProfile = $this->configService->getWebsiteProfile();
             $newWebsiteProfile = $channelSettings->getWebsiteProfile();
             if (
                 $oldWebsiteProfile &&
@@ -143,7 +161,6 @@ class ChannelSettingsListener
             if ($uploadedImageName) {
                 $paymentMethodSetting->setImagePath("{$this->publicImagePath}/{$uploadedImageName}");
             }
-
         }
     }
 

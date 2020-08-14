@@ -5,6 +5,11 @@ namespace Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\Excepti
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http\Exceptions\HttpRequestException;
 use Throwable;
 
+/**
+ * Class UnprocessableEntityRequestException
+ *
+ * @package Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\Exceptions
+ */
 class UnprocessableEntityRequestException extends HttpRequestException
 {
     /**

@@ -6,6 +6,11 @@ use Mollie\Bundle\PaymentBundle\PaymentMethod\Config\MolliePaymentConfigInterfac
 use Oro\Bundle\PaymentBundle\Context\PaymentContextInterface;
 use Oro\Bundle\PaymentBundle\Method\View\PaymentMethodViewInterface;
 
+/**
+ * Class MolliePaymentView
+ *
+ * @package Mollie\Bundle\PaymentBundle\PaymentMethod\View
+ */
 class MolliePaymentView implements PaymentMethodViewInterface
 {
     /**

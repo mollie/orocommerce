@@ -6,8 +6,16 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Integration\Interf
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\WebHook\PaymentChangedWebHookEvent;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ServiceRegister;
 
+/**
+ * Class StatusWebHookHandler
+ *
+ * @package Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Payments\WebHookHandler
+ */
 class StatusWebHookHandler
 {
+    /**
+     * @var string[]
+     */
     private static $STATUS_TO_SERVICE_METHOD = array(
         'paid' => 'payOrder',
         'expired' => 'expireOrder',
@@ -16,6 +24,9 @@ class StatusWebHookHandler
         'failed' => 'failOrder',
     );
 
+    /**
+     * @param PaymentChangedWebHookEvent $event
+     */
     public function handle(PaymentChangedWebHookEvent $event)
     {
         if ($event->getCurrentPayment()->getStatus() === $event->getNewPayment()->getStatus()) {

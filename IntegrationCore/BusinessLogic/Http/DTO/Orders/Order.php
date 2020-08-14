@@ -32,7 +32,7 @@ class Order extends BaseDto
      */
     protected $profileId;
     /**
-     * @var string
+     * @var string[]
      */
     protected $method;
     /**
@@ -150,7 +150,9 @@ class Order extends BaseDto
         $order->resource = static::getValue($raw, 'resource');
         $order->id = static::getValue($raw, 'id');
         $order->profileId = static::getValue($raw, 'profileId');
-        $order->method = static::getValue($raw, 'method');
+        $method = static::getValue($raw, 'method', array());
+        $method = is_array($method) ? $method : array($method);
+        $order->method = $method;
         $order->amount = Amount::fromArray(static::getValue($raw, 'amount', array()));
         $order->amountCaptured = Amount::fromArray(static::getValue($raw, 'amountCaptured', array()));
         $order->amountRefunded = Amount::fromArray(static::getValue($raw, 'amountRefunded', array()));
@@ -299,7 +301,7 @@ class Order extends BaseDto
     }
 
     /**
-     * @return string|string[]
+     * @return string[]
      */
     public function getMethod()
     {
@@ -307,7 +309,7 @@ class Order extends BaseDto
     }
 
     /**
-     * @param string|string[] $method
+     * @param string[] $method
      */
     public function setMethod($method)
     {

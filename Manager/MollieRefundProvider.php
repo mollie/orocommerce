@@ -5,7 +5,6 @@ namespace Mollie\Bundle\PaymentBundle\Manager;
 use Mollie\Bundle\PaymentBundle\Form\Entity\MollieRefund;
 use Mollie\Bundle\PaymentBundle\Form\Entity\MollieRefundLineItem;
 use Mollie\Bundle\PaymentBundle\Form\Entity\MollieRefundPayment;
-use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Configuration;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Amount;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\OrderLine;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\Order as OrderDTO;
@@ -17,8 +16,8 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\Mode
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Payments\PaymentService;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Refunds\Exceptions\RefundNotAllowedException;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Refunds\RefundService;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Logger\Logger;
-use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ServiceRegister;
 use Oro\Bundle\LocaleBundle\Twig\LocaleExtension;
 use Oro\Bundle\OrderBundle\Entity\Order;
 use Symfony\Component\Form\Form;
@@ -54,19 +53,46 @@ class MollieRefundProvider
      * @var TranslatorInterface
      */
     private $translationService;
+    /**
+     * @var Configuration
+     */
+    private $configService;
+    /**
+     * @var RefundService
+     */
+    private $refundService;
+    /**
+     * @var PaymentService
+     */
+    private $paymentService;
 
     /**
      * MollieRefundProvider constructor.
      *
+     * @param Configuration $configService
+     * @param RefundService $refundService
+     * @param PaymentService $paymentService
+     * @param OrderService $orderService
+     * @param OrderReferenceService $orderReferenceService
      * @param OroPaymentMethodUtility $paymentMethodUtility
      * @param LocaleExtension $localeExtension
      * @param TranslatorInterface $translationService
      */
     public function __construct(
+        Configuration $configService,
+        RefundService $refundService,
+        PaymentService $paymentService,
+        OrderService $orderService,
+        OrderReferenceService $orderReferenceService,
         OroPaymentMethodUtility $paymentMethodUtility,
         LocaleExtension $localeExtension,
         TranslatorInterface $translationService
     ) {
+        $this->configService = $configService;
+        $this->refundService = $refundService;
+        $this->paymentService = $paymentService;
+        $this->orderService = $orderService;
+        $this->orderReferenceService = $orderReferenceService;
         $this->paymentMethodUtility = $paymentMethodUtility;
         $this->localeExtension = $localeExtension;
         $this->translationService = $translationService;
@@ -79,7 +105,8 @@ class MollieRefundProvider
      */
     public function getMollieRefund($order)
     {
-        $isOrdersApiUsed = $this->getOrderReferenceService()->getApiMethod($order->getIdentifier()) === PaymentMethodConfig::API_METHOD_ORDERS;
+        $isOrdersApiUsed = $this->orderReferenceService->getApiMethod($order->getIdentifier()) ===
+            PaymentMethodConfig::API_METHOD_ORDERS;
         $refund = new MollieRefund();
         $refund->setIsOrderApiUsed($isOrdersApiUsed);
 
@@ -106,9 +133,9 @@ class MollieRefundProvider
             /** @var Order $order */
             $order = $form->getData()->data;
             $orderId = $order->getIdentifier();
-            /** @var Configuration $configService */
-            $configService = ServiceRegister::getService(Configuration::CLASS_NAME);
-            return $configService->doWithContext($this->paymentMethodUtility->getChannelId($order), function () use ($orderId, $form) {
+
+            return $this->configService->doWithContext($this->paymentMethodUtility->getChannelId($order), function () use ($orderId,
+                $form) {
                 $mollieRefundForm = $this->extractRefundFromForm($form);
                 if (!$mollieRefundForm) {
                     return [
@@ -117,17 +144,15 @@ class MollieRefundProvider
                     ];
                 }
 
-                /** @var RefundService $refundService */
-                $refundService = ServiceRegister::getService(RefundService::CLASS_NAME);
-                $isOrderApiUsed = $this->getOrderReferenceService()->getApiMethod($orderId) === PaymentMethodConfig::API_METHOD_ORDERS;
+                $isOrderApiUsed = $this->orderReferenceService->getApiMethod($orderId) === PaymentMethodConfig::API_METHOD_ORDERS;
 
                 if ($mollieRefundForm->getSelectedTab() === self::PAYMENT_REFUND) {
                     $refundDto = $this->createRefundDTO($mollieRefundForm, PaymentMethodConfig::API_METHOD_PAYMENT);
                     $refundMethod = $isOrderApiUsed ? 'refundWholeOrder' : 'refundPayment';
-                    $refundService->{$refundMethod}($orderId, $refundDto);
+                    $this->refundService->{$refundMethod}($orderId, $refundDto);
                 } else {
                     $refundDto = $this->createRefundDTO($mollieRefundForm, PaymentMethodConfig::API_METHOD_ORDERS);
-                    $refundService->refundOrderLines($orderId, $refundDto);
+                    $this->refundService->refundOrderLines($orderId, $refundDto);
                 }
 
                 return [
@@ -166,7 +191,7 @@ class MollieRefundProvider
     {
         if ($order) {
             $isMollieSelected = $this->paymentMethodUtility->hasMolliePaymentConfig($order);
-            $orderReference = $this->getOrderReferenceService()->getByShopReference($order->getIdentifier());
+            $orderReference = $this->orderReferenceService->getByShopReference($order->getIdentifier());
 
             return $isMollieSelected && ($orderReference !== null);
         }
@@ -181,11 +206,9 @@ class MollieRefundProvider
      */
     private function setRefundableItems(Order $order, MollieRefund $refund)
     {
-        /** @var \Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration $configService */
-        $configService = ServiceRegister::getService(Configuration::CLASS_NAME);
         /** @var OrderDTO $mollieOrder */
-        $mollieOrder = $configService->doWithContext($this->paymentMethodUtility->getChannelId($order), function () use ($order) {
-            return $this->getOrderService()->getOrder($order->getIdentifier());
+        $mollieOrder = $this->configService->doWithContext($this->paymentMethodUtility->getChannelId($order), function () use ($order) {
+            return $this->orderService->getOrder($order->getIdentifier());
         });
 
         $refundItems = [];
@@ -315,43 +338,14 @@ class MollieRefundProvider
     }
 
     /**
-     * @return OrderReferenceService
-     */
-    private function getOrderReferenceService()
-    {
-        if ($this->orderReferenceService === null) {
-            $this->orderReferenceService = ServiceRegister::getService(OrderReferenceService::CLASS_NAME);
-        }
-
-        return $this->orderReferenceService;
-    }
-
-    /**
-     * @return OrderService
-     */
-    private function getOrderService()
-    {
-        if ($this->orderService === null) {
-            $this->orderService = ServiceRegister::getService(OrderService::CLASS_NAME);
-        }
-
-        return $this->orderService;
-    }
-
-    /**
      * @param Order $order
      * @param MollieRefund $refund
      */
     private function setPaymentRefund(Order $order, MollieRefund $refund)
     {
-        /** @var \Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration $configService */
-        $configService = ServiceRegister::getService(Configuration::CLASS_NAME);
         /** @var Payment $molliePayment */
-        $molliePayment = $configService->doWithContext($this->paymentMethodUtility->getChannelId($order), function () use ($order) {
-            /** @var PaymentService $paymentService */
-            $paymentService = ServiceRegister::getService(PaymentService::CLASS_NAME);
-
-            return $paymentService->getPayment($order->getIdentifier());
+        $molliePayment = $this->configService->doWithContext($this->paymentMethodUtility->getChannelId($order), function () use ($order) {
+            return $this->paymentService->getPayment($order->getIdentifier());
         });
 
         $refund->setIsOrderRefundable($molliePayment->getStatus() === 'paid');

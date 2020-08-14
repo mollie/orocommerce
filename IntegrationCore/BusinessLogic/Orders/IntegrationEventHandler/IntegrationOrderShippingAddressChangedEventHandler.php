@@ -22,7 +22,6 @@ class IntegrationOrderShippingAddressChangedEventHandler extends IntegrationOrde
         try {
             $this->getOrderService()->updateShippingAddress($event->getShopReference(), $event->getShippingAddress());
         } catch (ReferenceNotFoundException $exception) {
-
         } catch (\Exception $exception) {
             $this->handleAddressUpdateError($event, $exception, static::SHIPPING_ADDRESS);
         }

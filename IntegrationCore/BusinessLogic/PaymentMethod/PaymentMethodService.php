@@ -14,6 +14,11 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ORM\QueryFilter\O
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ORM\QueryFilter\QueryFilter;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ServiceRegister;
 
+/**
+ * Class PaymentMethodService
+ *
+ * @package Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod
+ */
 class PaymentMethodService extends BaseService
 {
     /**
@@ -154,5 +159,4 @@ class PaymentMethodService extends BaseService
 
         return $paymentMethodConfigsMap;
     }
-
 }

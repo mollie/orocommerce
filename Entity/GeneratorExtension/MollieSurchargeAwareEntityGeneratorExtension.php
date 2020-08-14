@@ -8,6 +8,10 @@ use Oro\Bundle\EntityExtendBundle\Tools\GeneratorExtensions\AbstractEntityGenera
 
 /**
  * Add MollieSurchargeAwareInterface interface to Entities that has mollie surcharge amount fields
+ *
+ * Class MollieSurchargeAwareEntityGeneratorExtension
+ *
+ * @package Mollie\Bundle\PaymentBundle\Entity\GeneratorExtension
  */
 class MollieSurchargeAwareEntityGeneratorExtension extends AbstractEntityGeneratorExtension
 {

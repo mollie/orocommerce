@@ -3,7 +3,6 @@
 namespace Mollie\Bundle\PaymentBundle\Controller;
 
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration;
-use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ServiceRegister;
 use Mollie\Bundle\PaymentBundle\IntegrationServices\DebugService;
 use Oro\Bundle\SecurityBundle\Annotation\Acl;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,6 +19,22 @@ use Symfony\Component\HttpFoundation\Request;
 class SupportController extends AbstractController
 {
     const DEBUG_DATA_FILE_NAME = 'mollie-debug-data.zip';
+
+
+    /**
+     * @var Configuration
+     */
+    private $configService;
+
+    /**
+     * SupportController constructor.
+     *
+     * @param Configuration $configService
+     */
+    public function __construct(Configuration $configService)
+    {
+        $this->configService = $configService;
+    }
 
     /**
      * @Route(
@@ -39,9 +54,7 @@ class SupportController extends AbstractController
      */
     public function getDebugStatus()
     {
-        /** @var Configuration $configService */
-        $configService = ServiceRegister::getService(Configuration::CLASS_NAME);
-        return new JsonResponse(['isDebugModeEnabled' => $configService->isDebugModeEnabled()]);
+        return new JsonResponse(['isDebugModeEnabled' => $this->configService->isDebugModeEnabled()]);
     }
 
     /**
@@ -69,9 +82,7 @@ class SupportController extends AbstractController
             return new JsonResponse(['success' => false], 400);
         }
 
-        /** @var Configuration $configService */
-        $configService = ServiceRegister::getService(Configuration::CLASS_NAME);
-        $configService->setDebugModeEnabled($data['debugStatus']);
+        $this->configService->setDebugModeEnabled($data['debugStatus']);
 
         return new JsonResponse(['isDebugModeEnabled' => $data['debugStatus']]);
     }

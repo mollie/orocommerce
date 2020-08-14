@@ -37,21 +37,21 @@ class MollieConfigMapperDecorator implements MollieDtoMapperInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getOrderData(PaymentTransaction $paymentTransaction)
     {
         $orderData = $this->dtoMapper->getOrderData($paymentTransaction);
         if ($orderData) {
             $orderData->setProfileId($this->config->getProfileId());
-            $orderData->setMethod($this->config->getMollieId());
+            $orderData->setMethod([$this->config->getMollieId()]);
         }
 
         return $orderData;
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getOrderLine(OrderLineItem $orderLineItem)
     {
@@ -59,19 +59,19 @@ class MollieConfigMapperDecorator implements MollieDtoMapperInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getPaymentData(PaymentTransaction $paymentTransaction)
     {
         $paymentData = $this->dtoMapper->getPaymentData($paymentTransaction);
         $paymentData->setProfileId($this->config->getProfileId());
-        $paymentData->setMethod($this->config->getMollieId());
+        $paymentData->setMethod([$this->config->getMollieId()]);
 
         return $paymentData;
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getAddressData(OrderAddress $address, $email)
     {

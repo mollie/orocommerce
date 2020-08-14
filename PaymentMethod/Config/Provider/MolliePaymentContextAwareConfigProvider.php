@@ -8,6 +8,11 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http\Exceptions\H
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Logger\Logger;
 use Oro\Bundle\PaymentBundle\Context\PaymentContextInterface;
 
+/**
+ * Class MolliePaymentContextAwareConfigProvider
+ *
+ * @package Mollie\Bundle\PaymentBundle\PaymentMethod\Config\Provider
+ */
 class MolliePaymentContextAwareConfigProvider extends MolliePaymentConfigProvider implements
     MolliePaymentContextAwareConfigProviderInterface
 {
@@ -21,6 +26,11 @@ class MolliePaymentContextAwareConfigProvider extends MolliePaymentConfigProvide
      */
     protected $apiMethod = PaymentMethodConfig::API_METHOD_ORDERS;
 
+    /**
+     * @param PaymentContextInterface|null $context
+     *
+     * @return mixed|void
+     */
     public function setPaymentContext(PaymentContextInterface $context = null)
     {
         $this->context = $context;
@@ -35,7 +45,7 @@ class MolliePaymentContextAwareConfigProvider extends MolliePaymentConfigProvide
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getPaymentConfigs()
     {

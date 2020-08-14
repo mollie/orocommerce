@@ -4,16 +4,30 @@ namespace Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\WebHook;
 
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Logger\Logger;
 
+/**
+ * Class WebHookContext
+ *
+ * @package Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\WebHook
+ */
 class WebHookContext
 {
+    /**
+     * @var int
+     */
     private static $startLevel = 0;
 
+    /**
+     * Starts execution context
+     */
     public static function start()
     {
         static::$startLevel++;
         Logger::logDebug('WebHook context execution started.', 'Core', array('level' => static::$startLevel));
     }
 
+    /**
+     * Stops execution context
+     */
     public static function stop()
     {
         static::$startLevel--;
@@ -29,7 +43,7 @@ class WebHookContext
      */
     public static function getProtectedCallable(\Closure $callback)
     {
-        return function () use($callback) {
+        return function () use ($callback) {
             if (!WebHookContext::isStarted()) {
                 return call_user_func_array($callback, func_get_args());
             }
@@ -38,6 +52,9 @@ class WebHookContext
         };
     }
 
+    /**
+     * @return bool
+     */
     public static function isStarted()
     {
         return static::$startLevel > 0;

@@ -21,7 +21,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 class MollieRefundPaymentType extends AbstractType
 {
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      *
      * @param FormBuilderInterface $builder
      * @param array $options

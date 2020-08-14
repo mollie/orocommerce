@@ -23,7 +23,7 @@ use Symfony\Component\Validator\Constraints\Range;
 class MollieRefundLineItemType extends AbstractType
 {
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      *
      * @param FormBuilderInterface $builder
      * @param array $options
@@ -42,6 +42,9 @@ class MollieRefundLineItemType extends AbstractType
         $builder->addEventListener(FormEvents::PRE_SET_DATA, [$this, 'onPreSetData']);
     }
 
+    /**
+     * @param FormEvent $event
+     */
     public function onPreSetData(FormEvent $event)
     {
         /** @var MollieRefundLineItem|null $refundLineItem */
@@ -56,7 +59,8 @@ class MollieRefundLineItemType extends AbstractType
 
         $refundableQuantity = $refundLineItem->getOrderedQuantity() - $refundLineItem->getRefundedQuantity();
 
-        $event->getForm()->add('quantityToRefund',
+        $event->getForm()->add(
+            'quantityToRefund',
             IntegerType::class,
             [
                 'required' => false,

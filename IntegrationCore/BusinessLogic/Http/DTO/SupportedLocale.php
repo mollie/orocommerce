@@ -2,8 +2,16 @@
 
 namespace Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO;
 
+/**
+ * Class SupportedLocale
+ *
+ * @package Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO
+ */
 class SupportedLocale
 {
+    /**
+     * @var string[]
+     */
     private static $defaultLocaleByLanguage = array(
         'en_' => 'en_US',
         'ca_' => 'ca_ES',
@@ -12,6 +20,11 @@ class SupportedLocale
         'da_' => 'da_DK',
     );
 
+    /**
+     * @param string $locale
+     *
+     * @return string
+     */
     public static function ensureValidLocaleFormat($locale)
     {
         if (empty($locale) || false !== strpos($locale, '_')) {

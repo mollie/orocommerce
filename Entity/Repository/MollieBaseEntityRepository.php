@@ -16,6 +16,11 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ORM\Utility\Index
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ServiceRegister;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * Class MollieBaseEntityRepository
+ *
+ * @package Mollie\Bundle\PaymentBundle\Entity\Repository
+ */
 class MollieBaseEntityRepository implements RepositoryInterface
 {
     /**
@@ -201,7 +206,7 @@ class MollieBaseEntityRepository implements RepositoryInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      *
      * @throws \Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ORM\Exceptions\QueryFilterInvalidParamException
      */

@@ -4,6 +4,11 @@ namespace Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http;
 
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Logger\Logger;
 
+/**
+ * Class LoggingHttpClient
+ *
+ * @package Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http
+ */
 class LoggingHttpClient extends HttpClient
 {
     /**

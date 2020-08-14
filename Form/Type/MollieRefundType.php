@@ -21,7 +21,7 @@ class MollieRefundType extends AbstractType
 {
     const NAME = 'oro_order_refund_widget';
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      *
      * @param FormBuilderInterface $builder
      * @param array $options
@@ -52,7 +52,7 @@ class MollieRefundType extends AbstractType
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      *
      * @param FormView $view
      * @param FormInterface $form

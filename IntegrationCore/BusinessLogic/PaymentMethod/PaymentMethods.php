@@ -2,6 +2,11 @@
 
 namespace Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod;
 
+/**
+ * Class PaymentMethods
+ *
+ * @package Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod
+ */
 class PaymentMethods
 {
     const PayPal = 'paypal';

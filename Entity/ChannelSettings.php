@@ -48,6 +48,9 @@ class ChannelSettings extends Transport
      */
     private $settings;
 
+    /**
+     * ChannelSettings constructor.
+     */
     public function __construct()
     {
         $this->paymentMethodSettings = new ArrayCollection();

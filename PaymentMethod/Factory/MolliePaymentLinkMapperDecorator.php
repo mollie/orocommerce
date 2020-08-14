@@ -36,7 +36,7 @@ class MolliePaymentLinkMapperDecorator extends MollieConfigMapperDecorator
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getOrderData(PaymentTransaction $paymentTransaction)
     {
@@ -49,7 +49,7 @@ class MolliePaymentLinkMapperDecorator extends MollieConfigMapperDecorator
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getPaymentData(PaymentTransaction $paymentTransaction)
     {

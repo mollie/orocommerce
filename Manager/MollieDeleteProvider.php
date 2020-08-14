@@ -3,26 +3,43 @@
 namespace Mollie\Bundle\PaymentBundle\Manager;
 
 use Mollie\Bundle\PaymentBundle\Integration\MolliePaymentChannelType;
-use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Configuration;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\AuthorizationController;
-use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ServiceRegister;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration;
 use Oro\Bundle\IntegrationBundle\Entity\Channel as Integration;
 use Oro\Bundle\IntegrationBundle\Manager\DeleteProviderInterface;
 
+/**
+ * Class MollieDeleteProvider
+ *
+ * @package Mollie\Bundle\PaymentBundle\Manager
+ */
 class MollieDeleteProvider implements DeleteProviderInterface
 {
     /**
-     * @var \Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\AuthorizationController
+     * @var AuthorizationController
      */
     private $authorizationController;
+    /**
+     * @var Configuration
+     */
+    private $configService;
 
-    public function __construct(AuthorizationController $authorizationController)
-    {
+    /**
+     * MollieDeleteProvider constructor.
+     *
+     * @param AuthorizationController $authorizationController
+     * @param Configuration $configService
+     */
+    public function __construct(
+        AuthorizationController $authorizationController,
+        Configuration $configService
+    ) {
         $this->authorizationController = $authorizationController;
+        $this->configService = $configService;
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function supports($type)
     {
@@ -36,9 +53,7 @@ class MollieDeleteProvider implements DeleteProviderInterface
      */
     public function deleteRelatedData(Integration $integration)
     {
-        /** @var Configuration $configuration */
-        $configuration = ServiceRegister::getService(Configuration::CLASS_NAME);
-        $configuration->doWithContext((string)$integration->getId(), function () use ($configuration) {
+        $this->configService->doWithContext((string)$integration->getId(), function () {
             $this->authorizationController->reset();
         });
     }

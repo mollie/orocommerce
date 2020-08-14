@@ -2,7 +2,6 @@
 
 namespace Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Logger;
 
-
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Configuration;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\Proxy;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\ProxyTransformer;
@@ -13,6 +12,11 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Logger\Interfaces
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Logger\LogData;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ServiceRegister;
 
+/**
+ * Class DefaultLogger
+ *
+ * @package Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Logger
+ */
 class DefaultLogger implements DefaultLoggerAdapter
 {
     /**

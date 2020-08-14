@@ -4,6 +4,11 @@ namespace Mollie\Bundle\PaymentBundle\PaymentMethod;
 
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\Order;
 
+/**
+ * Class MollieOrdersApiPaymentResult
+ *
+ * @package Mollie\Bundle\PaymentBundle\PaymentMethod
+ */
 class MollieOrdersApiPaymentResult implements MolliePaymentResultInterface
 {
     /**
@@ -16,7 +21,7 @@ class MollieOrdersApiPaymentResult implements MolliePaymentResultInterface
         $this->order = $order;
     }
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getId()
     {
@@ -24,7 +29,7 @@ class MollieOrdersApiPaymentResult implements MolliePaymentResultInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getRedirectLink()
     {

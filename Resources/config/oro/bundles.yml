@@ -1,2 +1,5 @@
 bundles:
-  - Mollie\Bundle\PaymentBundle\MolliePaymentBundle
+  # needs to be loaded after Commerce IntegrationBundle's priority: -40
+  # needs to be loaded after Commerce OrderBundle's priority: 50
+  # needs to be loaded after Commerce CheckoutBundle's priority: 55
+  - { name: Mollie\Bundle\PaymentBundle\MolliePaymentBundle, priority: 56 }

@@ -1,0 +1,281 @@
+{
+  "_embedded": {
+    "permissions": [
+      {
+        "resource": "permission",
+        "id": "customers.read",
+        "description": "View your customers",
+        "granted": true,
+        "_links": {
+          "self": {
+            "href": "https://api.mollie.com/v2/permissions/customers.read",
+            "type": "application/hal+json"
+          }
+        }
+      },
+      {
+        "resource": "permission",
+        "id": "customers.write",
+        "description": "Create new customers",
+        "granted": true,
+        "_links": {
+          "self": {
+            "href": "https://api.mollie.com/v2/permissions/customers.write",
+            "type": "application/hal+json"
+          }
+        }
+      },
+      {
+        "resource": "permission",
+        "id": "invoices.read",
+        "description": "View your invoices",
+        "granted": true,
+        "_links": {
+          "self": {
+            "href": "https://api.mollie.com/v2/permissions/invoices.read",
+            "type": "application/hal+json"
+          }
+        }
+      },
+      {
+        "resource": "permission",
+        "id": "mandates.read",
+        "description": "View your customers' mandates",
+        "granted": true,
+        "_links": {
+          "self": {
+            "href": "https://api.mollie.com/v2/permissions/mandates.read",
+            "type": "application/hal+json"
+          }
+        }
+      },
+      {
+        "resource": "permission",
+        "id": "mandates.write",
+        "description": "Update your customers' mandates",
+        "granted": true,
+        "_links": {
+          "self": {
+            "href": "https://api.mollie.com/v2/permissions/mandates.write",
+            "type": "application/hal+json"
+          }
+        }
+      },
+      {
+        "resource": "permission",
+        "id": "onboarding.read",
+        "description": "View your onboarding status",
+        "granted": true,
+        "_links": {
+          "self": {
+            "href": "https://api.mollie.com/v2/permissions/onboarding.read",
+            "type": "application/hal+json"
+          }
+        }
+      },
+      {
+        "resource": "permission",
+        "id": "onboarding.write",
+        "description": "Submit onboarding data",
+        "granted": true,
+        "_links": {
+          "self": {
+            "href": "https://api.mollie.com/v2/permissions/onboarding.write",
+            "type": "application/hal+json"
+          }
+        }
+      },
+      {
+        "resource": "permission",
+        "id": "orders.read",
+        "description": "View your orders",
+        "granted": true,
+        "_links": {
+          "self": {
+            "href": "https://api.mollie.com/v2/permissions/orders.read",
+            "type": "application/hal+json"
+          }
+        }
+      },
+      {
+        "resource": "permission",
+        "id": "orders.write",
+        "description": "Create new orders",
+        "granted": true,
+        "_links": {
+          "self": {
+            "href": "https://api.mollie.com/v2/permissions/orders.write",
+            "type": "application/hal+json"
+          }
+        }
+      },
+      {
+        "resource": "permission",
+        "id": "organizations.read",
+        "description": "View your organizational information",
+        "granted": true,
+        "_links": {
+          "self": {
+            "href": "https://api.mollie.com/v2/permissions/organizations.read",
+            "type": "application/hal+json"
+          }
+        }
+      },
+      {
+        "resource": "permission",
+        "id": "organizations.write",
+        "description": "Update your organizational information",
+        "granted": true,
+        "_links": {
+          "self": {
+            "href": "https://api.mollie.com/v2/permissions/organizations.write",
+            "type": "application/hal+json"
+          }
+        }
+      },
+      {
+        "resource": "permission",
+        "id": "payments.read",
+        "description": "View your payments",
+        "granted": true,
+        "_links": {
+          "self": {
+            "href": "https://api.mollie.com/v2/permissions/payments.read",
+            "type": "application/hal+json"
+          }
+        }
+      },
+      {
+        "resource": "permission",
+        "id": "payments.write",
+        "description": "Create, cancel and update payments",
+        "granted": true,
+        "_links": {
+          "self": {
+            "href": "https://api.mollie.com/v2/permissions/payments.write",
+            "type": "application/hal+json"
+          }
+        }
+      },
+      {
+        "resource": "permission",
+        "id": "profiles.read",
+        "description": "View your payment profiles",
+        "granted": true,
+        "_links": {
+          "self": {
+            "href": "https://api.mollie.com/v2/permissions/profiles.read",
+            "type": "application/hal+json"
+          }
+        }
+      },
+      {
+        "resource": "permission",
+        "id": "profiles.write",
+        "description": "Manage your payment profiles and its settings",
+        "granted": true,
+        "_links": {
+          "self": {
+            "href": "https://api.mollie.com/v2/permissions/profiles.write",
+            "type": "application/hal+json"
+          }
+        }
+      },
+      {
+        "resource": "permission",
+        "id": "refunds.read",
+        "description": "View your refunds",
+        "granted": true,
+        "_links": {
+          "self": {
+            "href": "https://api.mollie.com/v2/permissions/refunds.read",
+            "type": "application/hal+json"
+          }
+        }
+      },
+      {
+        "resource": "permission",
+        "id": "refunds.write",
+        "description": "Create new refunds",
+        "granted": true,
+        "_links": {
+          "self": {
+            "href": "https://api.mollie.com/v2/permissions/refunds.write",
+            "type": "application/hal+json"
+          }
+        }
+      },
+      {
+        "resource": "permission",
+        "id": "settlements.read",
+        "description": "View your settlements",
+        "granted": true,
+        "_links": {
+          "self": {
+            "href": "https://api.mollie.com/v2/permissions/settlements.read",
+            "type": "application/hal+json"
+          }
+        }
+      },
+      {
+        "resource": "permission",
+        "id": "shipments.read",
+        "description": "View your orders' shipments",
+        "granted": true,
+        "_links": {
+          "self": {
+            "href": "https://api.mollie.com/v2/permissions/shipments.read",
+            "type": "application/hal+json"
+          }
+        }
+      },
+      {
+        "resource": "permission",
+        "id": "shipments.write",
+        "description": "Create new shipments for your orders",
+        "granted": true,
+        "_links": {
+          "self": {
+            "href": "https://api.mollie.com/v2/permissions/shipments.write",
+            "type": "application/hal+json"
+          }
+        }
+      },
+      {
+        "resource": "permission",
+        "id": "subscriptions.read",
+        "description": "View your customers' subscriptions",
+        "granted": true,
+        "_links": {
+          "self": {
+            "href": "https://api.mollie.com/v2/permissions/subscriptions.read",
+            "type": "application/hal+json"
+          }
+        }
+      },
+      {
+        "resource": "permission",
+        "id": "subscriptions.write",
+        "description": "Create, cancel and update subscriptions",
+        "granted": true,
+        "_links": {
+          "self": {
+            "href": "https://api.mollie.com/v2/permissions/subscriptions.write",
+            "type": "application/hal+json"
+          }
+        }
+      }
+    ]
+  },
+  "count": 22,
+  "_links": {
+    "documentation": {
+      "href": "https://docs.mollie.com/reference/v2/permissions-api/list-permissions",
+      "type": "text/html"
+    },
+    "self": {
+      "href": "https://api.mollie.com/v2/permissions",
+      "type": "application/hal+json"
+    }
+  }
+}

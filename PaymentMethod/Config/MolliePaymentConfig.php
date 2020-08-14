@@ -4,6 +4,11 @@ namespace Mollie\Bundle\PaymentBundle\PaymentMethod\Config;
 
 use Oro\Bundle\PaymentBundle\Method\Config\ParameterBag\AbstractParameterBagPaymentConfig;
 
+/**
+ * Class MolliePaymentConfig
+ *
+ * @package Mollie\Bundle\PaymentBundle\PaymentMethod\Config
+ */
 class MolliePaymentConfig extends AbstractParameterBagPaymentConfig implements MolliePaymentConfigInterface
 {
     const API_TOKEN = 'api_token';
@@ -17,7 +22,7 @@ class MolliePaymentConfig extends AbstractParameterBagPaymentConfig implements M
     const SURCHARGE_AMOUNT = 'surcharge_amount';
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getApiToken()
     {
@@ -25,7 +30,7 @@ class MolliePaymentConfig extends AbstractParameterBagPaymentConfig implements M
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function isTestModeEnabled()
     {
@@ -33,7 +38,7 @@ class MolliePaymentConfig extends AbstractParameterBagPaymentConfig implements M
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getIcon()
     {
@@ -41,7 +46,7 @@ class MolliePaymentConfig extends AbstractParameterBagPaymentConfig implements M
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getMollieId()
     {
@@ -49,20 +54,23 @@ class MolliePaymentConfig extends AbstractParameterBagPaymentConfig implements M
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getApiMethod()
     {
         return (string)$this->get(self::API_METHOD);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function isApiMethodRestricted()
     {
         return (bool)$this->get(self::IS_API_METHOD_RESTRICTED);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getProfileId()
     {
@@ -70,7 +78,7 @@ class MolliePaymentConfig extends AbstractParameterBagPaymentConfig implements M
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getChannelId()
     {
@@ -78,7 +86,7 @@ class MolliePaymentConfig extends AbstractParameterBagPaymentConfig implements M
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getSurchargeAmount()
     {

@@ -9,6 +9,11 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Notifications\Noti
 use Oro\Bundle\EntityBundle\ORM\DoctrineHelper;
 use Oro\Bundle\PaymentBundle\Provider\PaymentTransactionProvider;
 
+/**
+ * Class OrderLineTransitionService
+ *
+ * @package Mollie\Bundle\PaymentBundle\IntegrationServices
+ */
 class OrderLineTransitionService implements OrderLineTransitionServiceInterface
 {
     /**
@@ -20,17 +25,22 @@ class OrderLineTransitionService implements OrderLineTransitionServiceInterface
      */
     private $doctrineHelper;
 
+    /**
+     * OrderLineTransitionService constructor.
+     *
+     * @param PaymentTransactionProvider $paymentTransactionProvider
+     * @param DoctrineHelper $doctrineHelper
+     */
     public function __construct(
         PaymentTransactionProvider $paymentTransactionProvider,
         DoctrineHelper $doctrineHelper
-    )
-    {
+    ) {
         $this->paymentTransactionProvider = $paymentTransactionProvider;
         $this->doctrineHelper = $doctrineHelper;
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function payOrderLine($orderId, OrderLine $newOrderLine)
     {
@@ -38,7 +48,7 @@ class OrderLineTransitionService implements OrderLineTransitionServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function cancelOrderLine($orderId, OrderLine $newOrderLine)
     {
@@ -49,7 +59,7 @@ class OrderLineTransitionService implements OrderLineTransitionServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function authorizeOrderLine($orderId, OrderLine $newOrderLine)
     {
@@ -57,13 +67,21 @@ class OrderLineTransitionService implements OrderLineTransitionServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function completeOrderLine($orderId, OrderLine $newOrderLine)
     {
         // Intentionally left blank. For oro integration this method is null operation
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * @param string $orderId
+     * @param OrderLine $newOrderLine
+     *
+     * @return mixed|void
+     */
     public function refundOrderLine($orderId, OrderLine $newOrderLine)
     {
         NotificationHub::pushInfo(

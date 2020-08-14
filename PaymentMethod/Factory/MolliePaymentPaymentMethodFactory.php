@@ -2,7 +2,10 @@
 
 namespace Mollie\Bundle\PaymentBundle\PaymentMethod\Factory;
 
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Orders\OrderService;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\Model\PaymentMethodConfig;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Payments\PaymentService;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration;
 use Mollie\Bundle\PaymentBundle\Manager\PaymentLinkConfigProviderInterface;
 use Mollie\Bundle\PaymentBundle\Mapper\MollieDtoMapperInterface;
 use Mollie\Bundle\PaymentBundle\PaymentMethod\Config\MolliePaymentConfigInterface;
@@ -47,10 +50,25 @@ class MolliePaymentPaymentMethodFactory implements MolliePaymentPaymentMethodFac
      * @var PaymentLinkConfigProviderInterface
      */
     private $paymentLinkConfigProvider;
+    /**
+     * @var Configuration
+     */
+    private $configService;
+    /**
+     * @var PaymentService
+     */
+    private $paymentService;
+    /**
+     * @var OrderService
+     */
+    private $orderService;
 
     /**
      * MolliePaymentPaymentMethodFactory constructor.
      *
+     * @param Configuration $configService
+     * @param PaymentService $paymentService
+     * @param OrderService $orderService
      * @param MolliePaymentContextAwareConfigProviderInterface $contextAwareConfigProvider
      * @param RouterInterface $router
      * @param LocalizationHelper $localizationHelper
@@ -59,6 +77,9 @@ class MolliePaymentPaymentMethodFactory implements MolliePaymentPaymentMethodFac
      * @param string $webhooksUrlReplacement
      */
     public function __construct(
+        Configuration $configService,
+        PaymentService $paymentService,
+        OrderService $orderService,
         MolliePaymentContextAwareConfigProviderInterface $contextAwareConfigProvider,
         RouterInterface $router,
         LocalizationHelper $localizationHelper,
@@ -66,6 +87,9 @@ class MolliePaymentPaymentMethodFactory implements MolliePaymentPaymentMethodFac
         PaymentLinkConfigProviderInterface $paymentLinkConfigProvider,
         $webhooksUrlReplacement = ''
     ) {
+        $this->configService = $configService;
+        $this->paymentService = $paymentService;
+        $this->orderService = $orderService;
         $this->contextAwareConfigProvider = $contextAwareConfigProvider;
         $this->router = $router;
         $this->localizationHelper = $localizationHelper;
@@ -80,6 +104,7 @@ class MolliePaymentPaymentMethodFactory implements MolliePaymentPaymentMethodFac
     public function create(MolliePaymentConfigInterface $config)
     {
         return new MolliePayment(
+            $this->configService,
             $config,
             $this->createPaymentCreator($config),
             $this->contextAwareConfigProvider,
@@ -97,11 +122,13 @@ class MolliePaymentPaymentMethodFactory implements MolliePaymentPaymentMethodFac
     {
         if ($config->getPaymentMethodIdentifier() === MolliePaymentConfigInterface::ADMIN_PAYMENT_LINK_ID) {
             $mapper = new MolliePaymentLinkMapperDecorator(
-                $this->mollieDtoMapper, $config, $this->paymentLinkConfigProvider
+                $this->mollieDtoMapper,
+                $config,
+                $this->paymentLinkConfigProvider
             );
             return new MolliePaymentLinkPaymentCreator(
-                new MolliePaymentApiPaymentCreator($mapper),
-                new MollieOrdersApiPaymentCreator($mapper),
+                new MolliePaymentApiPaymentCreator($mapper, $this->paymentService),
+                new MollieOrdersApiPaymentCreator($mapper, $this->orderService),
                 $this->paymentLinkConfigProvider
             );
         }
@@ -109,9 +136,9 @@ class MolliePaymentPaymentMethodFactory implements MolliePaymentPaymentMethodFac
         $mapper = new MollieConfigMapperDecorator($this->mollieDtoMapper, $config);
 
         if ($config->getApiMethod() === PaymentMethodConfig::API_METHOD_ORDERS) {
-            return new MollieOrdersApiPaymentCreator($mapper);
+            return new MollieOrdersApiPaymentCreator($mapper, $this->orderService);
         }
 
-        return new MolliePaymentApiPaymentCreator($mapper);
+        return new MolliePaymentApiPaymentCreator($mapper, $this->paymentService);
     }
 }

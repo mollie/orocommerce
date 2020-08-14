@@ -7,8 +7,16 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Integration\Interf
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\WebHook\OrderChangedWebHookEvent;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ServiceRegister;
 
+/**
+ * Class StatusWebHookHandler
+ *
+ * @package Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Orders\WebHookHandler
+ */
 class StatusWebHookHandler
 {
+    /**
+     * @var string[]
+     */
     private static $STATUS_TO_SERVICE_METHOD = array(
         'paid' => 'payOrder',
         'expired' => 'expireOrder',
@@ -17,12 +25,18 @@ class StatusWebHookHandler
         'completed' => 'completeOrder',
     );
 
+    /**
+     * @var string[]
+     */
     private static $ORDER_PAYMENT_STATUS_TO_SERVICE_METHOD = array(
         'expired' => 'expireOrder',
         'canceled' => 'cancelOrder',
         'failed' => 'failOrder',
     );
 
+    /**
+     * @param OrderChangedWebHookEvent $event
+     */
     public function handle(OrderChangedWebHookEvent $event)
     {
         if (!$this->isOrderStatusChanged($event)) {
@@ -44,11 +58,19 @@ class StatusWebHookHandler
         );
     }
 
+    /**
+     * @param OrderChangedWebHookEvent $event
+     *
+     * @return bool
+     */
     protected function isOrderStatusChanged(OrderChangedWebHookEvent $event)
     {
         return $event->getCurrentOrder()->getStatus() !== $event->getNewOrder()->getStatus();
     }
 
+    /**
+     * @param OrderChangedWebHookEvent $event
+     */
     protected function handlePaymentStatusChanges(OrderChangedWebHookEvent $event)
     {
         $currentEmbeds = $event->getCurrentOrder()->getEmbedded();
@@ -89,6 +111,9 @@ class StatusWebHookHandler
         }
     }
 
+    /**
+     * @param OrderChangedWebHookEvent $event
+     */
     protected function handleOrderLineChanges(OrderChangedWebHookEvent $event)
     {
         $lineHandler = new LineStatusWebHookHandler();
@@ -109,6 +134,11 @@ class StatusWebHookHandler
         return null;
     }
 
+    /**
+     * @param $status
+     *
+     * @return string|null
+     */
     protected function getOrderPaymentServiceMethodFor($status)
     {
         if (array_key_exists($status, static::$ORDER_PAYMENT_STATUS_TO_SERVICE_METHOD)) {
