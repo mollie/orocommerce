@@ -5,6 +5,11 @@ namespace Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Integration\
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\Tracking;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Utility\Events\Event;
 
+/**
+ * Class IntegrationOrderShippedEvent
+ *
+ * @package Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Integration\Event
+ */
 class IntegrationOrderShippedEvent extends Event
 {
     /**

@@ -7,25 +7,35 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Orders\OrderServic
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http\Exceptions\HttpAuthenticationException;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http\Exceptions\HttpCommunicationException;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http\Exceptions\HttpRequestException;
-use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ServiceRegister;
 use Mollie\Bundle\PaymentBundle\Mapper\MollieDtoMapperInterface;
 use Oro\Bundle\PaymentBundle\Entity\PaymentTransaction;
 
+/**
+ * Class MollieOrdersApiPaymentCreator
+ *
+ * @package Mollie\Bundle\PaymentBundle\PaymentMethod
+ */
 class MollieOrdersApiPaymentCreator implements MolliePaymentCreatorInterface
 {
     /**
      * @var MollieDtoMapperInterface
      */
     private $mapper;
+    /**
+     * @var OrderService
+     */
+    private $orderService;
 
     /**
      * MollieOrdersApiPaymentCreator constructor.
      *
      * @param MollieDtoMapperInterface $mapper
+     * @param OrderService $orderService
      */
-    public function __construct(MollieDtoMapperInterface $mapper)
+    public function __construct(MollieDtoMapperInterface $mapper, OrderService $orderService)
     {
         $this->mapper = $mapper;
+        $this->orderService = $orderService;
     }
 
     /**
@@ -45,9 +55,7 @@ class MollieOrdersApiPaymentCreator implements MolliePaymentCreatorInterface
             return null;
         }
 
-        /** @var OrderService $orderService */
-        $orderService = ServiceRegister::getService(OrderService::CLASS_NAME);
-        $order = $orderService->createOrder(
+        $order = $this->orderService->createOrder(
             $paymentTransaction->getEntityIdentifier(),
             $orderData
         );

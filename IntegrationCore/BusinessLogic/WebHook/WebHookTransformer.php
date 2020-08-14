@@ -21,6 +21,11 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Logger\Logger;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ServiceRegister;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Utility\Events\EventBus;
 
+/**
+ * Class WebHookTransformer
+ *
+ * @package Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\WebHook
+ */
 class WebHookTransformer extends BaseService
 {
     /**
@@ -189,7 +194,7 @@ class WebHookTransformer extends BaseService
         } catch (HttpCommunicationException $e) {
             Logger::logError(
                 'Failed to create web hook event from payload because off network connection problems.',
-            'Core',
+                'Core',
                 array(
                     'ExceptionMessage' => $e->getMessage(),
                     'ExceptionTrace' => $e->getTraceAsString(),

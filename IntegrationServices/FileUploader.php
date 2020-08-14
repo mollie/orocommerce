@@ -6,6 +6,11 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Logger\Logger;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
+/**
+ * Class FileUploader
+ *
+ * @package Mollie\Bundle\PaymentBundle\IntegrationServices
+ */
 class FileUploader
 {
     /**
@@ -13,6 +18,11 @@ class FileUploader
      */
     private $targetDirectory;
 
+    /**
+     * FileUploader constructor.
+     *
+     * @param $targetDirectory
+     */
     public function __construct($targetDirectory)
     {
         $this->targetDirectory = $targetDirectory;
@@ -34,8 +44,8 @@ class FileUploader
             $file->move($this->getTargetDirectory(), $fileName);
         } catch (FileException $e) {
             Logger::logError(
-            'Failed to upload payment method image',
-            'Integration',
+                'Failed to upload payment method image',
+                'Integration',
                 [
                     'ExceptionMessage' => $e->getMessage(),
                     'ExceptionTrace' => $e->getTraceAsString(),
@@ -48,6 +58,9 @@ class FileUploader
         return $fileName;
     }
 
+    /**
+     * @param string $imageName
+     */
     public function remove($imageName)
     {
         $imagePath = "{$this->getTargetDirectory()}/{$imageName}";
@@ -56,6 +69,9 @@ class FileUploader
         }
     }
 
+    /**
+     * @param string $prefix
+     */
     public function removeAllWithPrefix($prefix)
     {
         $iterator = new \GlobIterator("{$this->getTargetDirectory()}/$prefix*.*");
@@ -64,6 +80,9 @@ class FileUploader
         }
     }
 
+    /**
+     * @return string
+     */
     public function getTargetDirectory()
     {
         return $this->targetDirectory;

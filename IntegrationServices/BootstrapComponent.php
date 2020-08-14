@@ -5,13 +5,13 @@ use Mollie\Bundle\PaymentBundle\Entity\PaymentLinkMethod;
 use Mollie\Bundle\PaymentBundle\Entity\Repository\MollieBaseEntityRepository;
 use Mollie\Bundle\PaymentBundle\Entity\Repository\MollieContextAwareEntityRepository;
 use Mollie\Bundle\PaymentBundle\Entity\Repository\MollieNotificationEntityRepository;
-use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Configuration;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Integration\Interfaces\OrderLineTransitionService as OrderLineTransitionServiceInterface;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Integration\Interfaces\OrderTransitionService as OrderTransitionServiceInterface;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Notifications\Model\Notification;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\OrderReference\Model\OrderReference;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\Model\PaymentMethodConfig;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\ConfigEntity;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http\CurlHttpClient;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http\HttpClient;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Logger\Interfaces\ShopLoggerAdapter;
@@ -19,6 +19,11 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ORM\RepositoryReg
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ServiceRegister;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * Class BootstrapComponent
+ *
+ * @package Mollie\Bundle\PaymentBundle\IntegrationServices
+ */
 class BootstrapComponent extends \Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\BootstrapComponent
 {
     /**
@@ -30,6 +35,9 @@ class BootstrapComponent extends \Mollie\Bundle\PaymentBundle\IntegrationCore\Bu
      */
     private static $isInitialized = false;
 
+    /**
+     * @param ContainerInterface $container
+     */
     public static function boot(ContainerInterface $container)
     {
         self::$container = $container;
@@ -46,21 +54,21 @@ class BootstrapComponent extends \Mollie\Bundle\PaymentBundle\IntegrationCore\Bu
     {
         parent::initServices();
 
-        ServiceRegister::registerService(ContainerInterface::class, function() {
+        ServiceRegister::registerService(ContainerInterface::class, function () {
             return self::$container;
         });
 
         ServiceRegister::registerService(
             Configuration::CLASS_NAME,
             function () {
-                return ConfigurationService::getInstance();
+                return static::$container->get(Configuration::class);
             }
         );
 
         ServiceRegister::registerService(
             ShopLoggerAdapter::CLASS_NAME,
             function () {
-                return LoggerAdapter::getInstance();
+                return static::$container->get(ShopLoggerAdapter::class);
             }
         );
 
@@ -87,7 +95,7 @@ class BootstrapComponent extends \Mollie\Bundle\PaymentBundle\IntegrationCore\Bu
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      * @throws \Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ORM\Exceptions\RepositoryClassException
      */
     protected static function initRepositories()

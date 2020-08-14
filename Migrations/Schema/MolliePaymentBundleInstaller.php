@@ -44,6 +44,8 @@ class MolliePaymentBundleInstaller implements Installation
 
     /**
      * @param Schema $schema
+     *
+     * @throws \Doctrine\DBAL\Schema\SchemaException
      */
     public function updateOroIntegrationTransportTable(Schema $schema)
     {
@@ -156,6 +158,8 @@ class MolliePaymentBundleInstaller implements Installation
      * Add mollie_payment_settings_desc foreign keys.
      *
      * @param Schema $schema
+     *
+     * @throws \Doctrine\DBAL\Schema\SchemaException
      */
     protected function addMolliePaymentSettingsDescriptionForeignKeys(Schema $schema)
     {
@@ -178,6 +182,8 @@ class MolliePaymentBundleInstaller implements Installation
      * Add mollie_payment_settings_name foreign keys.
      *
      * @param Schema $schema
+     *
+     * @throws \Doctrine\DBAL\Schema\SchemaException
      */
     protected function addMolliePaymentSettingsNameForeignKeys(Schema $schema)
     {
@@ -196,6 +202,11 @@ class MolliePaymentBundleInstaller implements Installation
         );
     }
 
+    /**
+     * @param Schema $schema
+     *
+     * @throws \Doctrine\DBAL\Schema\SchemaException
+     */
     protected function addExtensionSurchargeColumnToCoreTables(Schema $schema)
     {
         $this->addExtensionSurchargeColumnToCoreTable($schema, 'oro_order');

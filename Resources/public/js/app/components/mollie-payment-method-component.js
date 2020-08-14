@@ -15,14 +15,14 @@ define(function(require) {
         },
 
         /**
-         * @inheritDoc
+         * {@inheritdoc}
          */
         constructor: function MolliePaymentMethodComponent() {
             MolliePaymentMethodComponent.__super__.constructor.apply(this, arguments);
         },
 
         /**
-         * @inheritDoc
+         * {@inheritdoc}
          */
         initialize: function(options) {
             this.options = _.extend({}, this.options, options);

@@ -6,12 +6,16 @@ use Carbon\Carbon;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Notifications\Model\Notification;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\NotificationController;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration;
-use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ServiceRegister;
 use Oro\Bundle\DataGridBundle\Datasource\ArrayDatasource\ArrayDatasource;
 use Oro\Bundle\DataGridBundle\Event\BuildAfter;
 use Oro\Bundle\DataGridBundle\Exception\UnexpectedTypeException;
 use Symfony\Component\Translation\TranslatorInterface;
 
+/**
+ * Class DatagridsListener
+ *
+ * @package Mollie\Bundle\PaymentBundle\EventListener
+ */
 class DatagridsListener
 {
 
@@ -19,17 +23,28 @@ class DatagridsListener
      * @var NotificationController
      */
     private $notificationController;
-
+    /**
+     * @var TranslatorInterface
+     */
     private $translator;
+    /**
+     * @var Configuration
+     */
+    private $configService;
 
     /**
      * DatagridsListener constructor.
      *
+     * @param Configuration $configService
      * @param NotificationController $notificationController
      * @param TranslatorInterface $translator
      */
-    public function __construct(NotificationController $notificationController, TranslatorInterface $translator)
-    {
+    public function __construct(
+        Configuration $configService,
+        NotificationController $notificationController,
+        TranslatorInterface $translator
+    ) {
+        $this->configService = $configService;
         $this->notificationController = $notificationController;
         $this->translator = $translator;
     }
@@ -67,9 +82,7 @@ class DatagridsListener
      */
     public function getPaginatedNotifications($limit, $offset, $channelId)
     {
-        /** @var Configuration $configService */
-        $configService = ServiceRegister::getService(Configuration::CLASS_NAME);
-        $response = $configService->doWithContext($channelId, function () use ($limit, $offset) {
+        $response = $this->configService->doWithContext($channelId, function () use ($limit, $offset) {
             return $this->notificationController->get($limit, (int)$offset);
         });
 
@@ -110,6 +123,10 @@ class DatagridsListener
         return $notificationArray;
     }
 
+    /**
+     * @param array $messageParams
+     * @return array
+     */
     private function adjustParameters(array $messageParams)
     {
         $adjustedParameters = [];

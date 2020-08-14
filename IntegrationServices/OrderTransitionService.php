@@ -15,6 +15,11 @@ use Oro\Bundle\OrderBundle\Provider\OrderStatusesProviderInterface;
 use Oro\Bundle\PaymentBundle\Entity\PaymentTransaction;
 use Oro\Bundle\PaymentBundle\Provider\PaymentTransactionProvider;
 
+/**
+ * Class OrderTransitionService
+ *
+ * @package Mollie\Bundle\PaymentBundle\IntegrationServices
+ */
 class OrderTransitionService implements OrderTransitionServiceInterface
 {
     /**
@@ -26,17 +31,22 @@ class OrderTransitionService implements OrderTransitionServiceInterface
      */
     private $doctrineHelper;
 
+    /**
+     * OrderTransitionService constructor.
+     *
+     * @param PaymentTransactionProvider $paymentTransactionProvider
+     * @param DoctrineHelper $doctrineHelper
+     */
     public function __construct(
         PaymentTransactionProvider $paymentTransactionProvider,
         DoctrineHelper $doctrineHelper
-    )
-    {
+    ) {
         $this->paymentTransactionProvider = $paymentTransactionProvider;
         $this->doctrineHelper = $doctrineHelper;
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function payOrder($orderId, array $metadata)
     {
@@ -57,7 +67,7 @@ class OrderTransitionService implements OrderTransitionServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function expireOrder($orderId, array $metadata)
     {
@@ -78,7 +88,7 @@ class OrderTransitionService implements OrderTransitionServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function cancelOrder($orderId, array $metadata)
     {
@@ -99,7 +109,7 @@ class OrderTransitionService implements OrderTransitionServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function failOrder($orderId, array $metadata)
     {
@@ -120,7 +130,7 @@ class OrderTransitionService implements OrderTransitionServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function completeOrder($orderId, array $metadata)
     {
@@ -141,7 +151,7 @@ class OrderTransitionService implements OrderTransitionServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function authorizeOrder($orderId, array $metadata)
     {
@@ -161,7 +171,7 @@ class OrderTransitionService implements OrderTransitionServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function refundOrder($orderId, array $metadata)
     {

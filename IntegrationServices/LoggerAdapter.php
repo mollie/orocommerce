@@ -2,13 +2,15 @@
 
 namespace Mollie\Bundle\PaymentBundle\IntegrationServices;
 
-
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Logger\Interfaces\ShopLoggerAdapter;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Logger\LogData;
-use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ServiceRegister;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Singleton;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * Class LoggerAdapter
+ *
+ * @package Mollie\Bundle\PaymentBundle\IntegrationServices
+ */
 class LoggerAdapter extends Singleton implements ShopLoggerAdapter
 {
     /**
@@ -19,22 +21,19 @@ class LoggerAdapter extends Singleton implements ShopLoggerAdapter
     protected static $instance;
 
     /**
-     * @var \Mollie\Bundle\PaymentBundle\IntegrationServices\LoggerService
+     * @var LoggerService
      */
     private $logger;
 
     /**
-     * LoggerAdapter constructor.
-     *
-     * @throws \Exception
+     * @return static
      */
-    protected function __construct()
+    public static function create(LoggerService $logger)
     {
-        parent::__construct();
+        $instance = static::getInstance();
+        $instance->logger = $logger;
 
-        /** @var ContainerInterface $container */
-        $container = ServiceRegister::getService(ContainerInterface::class);
-        $this->logger = $container->get('mollie_payment.logger');
+        return $instance;
     }
 
     /**

@@ -4,6 +4,11 @@ namespace Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO;
 
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Refunds\Refund;
 
+/**
+ * Class Payment
+ *
+ * @package Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO
+ */
 class Payment extends BaseDto
 {
     /**
@@ -51,7 +56,7 @@ class Payment extends BaseDto
      */
     protected $locale;
     /**
-     * @var string
+     * @var string[]
      */
     protected $method;
     /**
@@ -74,7 +79,7 @@ class Payment extends BaseDto
     );
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public static function fromArray(array $raw)
     {
@@ -91,7 +96,9 @@ class Payment extends BaseDto
         $result->redirectUrl = static::getValue($raw, 'redirectUrl');
         $result->webhookUrl = static::getValue($raw, 'webhookUrl');
         $result->setLocale(static::getValue($raw, 'locale'));
-        $result->method = static::getValue($raw, 'method');
+        $method = static::getValue($raw, 'method', array());
+        $method = is_array($method) ? $method : array($method);
+        $result->method = $method;
         $result->metadata = static::getValue($raw, 'metadata', array());
 
         $shippingAddress = static::getValue($raw, 'shippingAddress', array());
@@ -111,7 +118,7 @@ class Payment extends BaseDto
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function toArray()
     {
@@ -332,7 +339,7 @@ class Payment extends BaseDto
     }
 
     /**
-     * @return string|string[]
+     * @return string[]
      */
     public function getMethod()
     {
@@ -340,7 +347,7 @@ class Payment extends BaseDto
     }
 
     /**
-     * @param string|string[] $method
+     * @param string[] $method
      */
     public function setMethod($method)
     {

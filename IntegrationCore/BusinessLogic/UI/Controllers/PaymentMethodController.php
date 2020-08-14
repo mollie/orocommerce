@@ -13,6 +13,11 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ORM\Exceptions\Re
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ORM\RepositoryRegistry;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ServiceRegister;
 
+/**
+ * Class PaymentMethodController
+ *
+ * @package Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers
+ */
 class PaymentMethodController
 {
 

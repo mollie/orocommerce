@@ -2,7 +2,6 @@
 
 namespace Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic;
 
-
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\Proxy;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\ORM\Interfaces\RepositoryInterface;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ORM\QueryFilter\QueryFilter;
@@ -17,7 +16,9 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Singleton;
  */
 abstract class BaseService extends Singleton
 {
-    /** @var Proxy */
+    /**
+     * @var Proxy
+     */
     private $proxy;
 
     /**
@@ -34,6 +35,7 @@ abstract class BaseService extends Singleton
         /** @noinspection PhpUnhandledExceptionInspection */
         /** @var RepositoryInterface $repository */
         $repository = RepositoryRegistry::getRepository($entityClass);
+
         return $repository;
     }
 

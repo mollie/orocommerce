@@ -6,21 +6,29 @@ use Doctrine\Common\Persistence\ManagerRegistry;
 use Mollie\Bundle\PaymentBundle\Entity\ChannelSettings;
 use Mollie\Bundle\PaymentBundle\Entity\PaymentMethodSettings;
 use Mollie\Bundle\PaymentBundle\Entity\Repository\ChannelSettingsRepository;
-use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Configuration;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Image;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\Model\PaymentMethodConfig;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\PaymentMethodController;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\WebsiteProfileController;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http\Exceptions\HttpBaseException;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Logger\Logger;
-use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ServiceRegister;
 use Mollie\Bundle\PaymentBundle\PaymentMethod\Config\Factory\PaymentConfigFactoryInterface;
 use Mollie\Bundle\PaymentBundle\PaymentMethod\Config\MolliePaymentConfigInterface;
 use Oro\Bundle\LocaleBundle\Entity\LocalizedFallbackValue;
 use Oro\Bundle\PaymentBundle\Method\Config\PaymentConfigInterface;
 
+/**
+ * Class MolliePaymentConfigProvider
+ *
+ * @package Mollie\Bundle\PaymentBundle\PaymentMethod\Config\Provider
+ */
 class MolliePaymentConfigProvider implements MolliePaymentConfigProviderInterface
 {
+    /**
+     * @var Configuration
+     */
+    private $configService;
     /**
      * @var ManagerRegistry
      */
@@ -47,17 +55,22 @@ class MolliePaymentConfigProvider implements MolliePaymentConfigProviderInterfac
     protected $configs = [];
 
     /**
+     * MolliePaymentConfigProvider constructor.
+     *
+     * @param Configuration $configService
      * @param ManagerRegistry $doctrine
      * @param PaymentConfigFactoryInterface $configFactory
      * @param PaymentMethodController $paymentMethodController
      * @param WebsiteProfileController $websiteProfileController
      */
     public function __construct(
+        Configuration $configService,
         ManagerRegistry $doctrine,
         PaymentConfigFactoryInterface $configFactory,
         PaymentMethodController $paymentMethodController,
         WebsiteProfileController $websiteProfileController
     ) {
+        $this->configService = $configService;
         $this->doctrine = $doctrine;
         $this->configFactory = $configFactory;
         $this->paymentMethodController = $paymentMethodController;
@@ -65,7 +78,7 @@ class MolliePaymentConfigProvider implements MolliePaymentConfigProviderInterfac
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getPaymentConfigs()
     {
@@ -77,7 +90,7 @@ class MolliePaymentConfigProvider implements MolliePaymentConfigProviderInterfac
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getPaymentConfig($identifier)
     {
@@ -91,7 +104,7 @@ class MolliePaymentConfigProvider implements MolliePaymentConfigProviderInterfac
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function hasPaymentConfig($identifier)
     {
@@ -156,11 +169,9 @@ class MolliePaymentConfigProvider implements MolliePaymentConfigProviderInterfac
     protected function getEnabledPaymentMethodSettings()
     {
         $enabledPaymentMethodSettings = [];
-        /** @var Configuration $configuration */
-        $configuration = ServiceRegister::getService(Configuration::CLASS_NAME);
 
         foreach ($this->getEnabledIntegrationSettings() as $channelSetting) {
-            $enabledPaymentMethodSettings[] = $configuration->doWithContext(
+            $enabledPaymentMethodSettings[] = $this->configService->doWithContext(
                 (string)$channelSetting->getChannel()->getId(),
                 function () use ($channelSetting) {
                     return $this->getPaymentMethodConfigurations($channelSetting);
@@ -219,7 +230,6 @@ class MolliePaymentConfigProvider implements MolliePaymentConfigProviderInterfac
         $enabledPaymentMethodSettings = [];
         $paymentMethodConfigs = $this->getMolliePaymentMethodConfigs();
         foreach ($paymentMethodConfigs as $paymentMethodConfig) {
-
             if (!$paymentMethodConfig->isEnabled()) {
                 continue;
             }

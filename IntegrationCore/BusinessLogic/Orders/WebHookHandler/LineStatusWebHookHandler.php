@@ -7,6 +7,11 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Integration\Interf
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\WebHook\OrderChangedWebHookEvent;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ServiceRegister;
 
+/**
+ * Class LineStatusWebHookHandler
+ *
+ * @package Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Orders\WebHookHandler
+ */
 class LineStatusWebHookHandler
 {
     private static $STATUS_TO_SERVICE_METHOD = array(
@@ -16,6 +21,10 @@ class LineStatusWebHookHandler
         'completed' => 'completeOrderLine',
     );
 
+    /**
+     * @param OrderChangedWebHookEvent $event
+     * @param bool $forceExecution
+     */
     public function handle(OrderChangedWebHookEvent $event, $forceExecution = false)
     {
         if (!$forceExecution && $event->getCurrentOrder()->getStatus() !== $event->getNewOrder()->getStatus()) {

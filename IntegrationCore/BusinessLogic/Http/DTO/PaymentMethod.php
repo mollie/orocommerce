@@ -2,6 +2,11 @@
 
 namespace Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO;
 
+/**
+ * Class PaymentMethod
+ *
+ * @package Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO
+ */
 class PaymentMethod extends BaseDto
 {
     /**
@@ -22,7 +27,7 @@ class PaymentMethod extends BaseDto
     protected $image;
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public static function fromArray(array $raw)
     {
@@ -37,7 +42,7 @@ class PaymentMethod extends BaseDto
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function toArray()
     {

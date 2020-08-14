@@ -5,9 +5,13 @@ namespace Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\WebsiteProfile;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Logger\Logger;
 
+/**
+ * Class Configuration
+ *
+ * @package Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic
+ */
 abstract class Configuration extends \Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration
 {
-
     const MIN_LOG_LEVEL = Logger::INFO;
 
     /**

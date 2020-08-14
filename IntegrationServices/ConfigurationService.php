@@ -3,9 +3,7 @@
 namespace Mollie\Bundle\PaymentBundle\IntegrationServices;
 
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Configuration;
-use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ServiceRegister;
 use Oro\Bundle\WebsiteBundle\Manager\WebsiteManager;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class ConfigurationService
@@ -14,6 +12,46 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class ConfigurationService extends Configuration
 {
+    /**
+     * Singleton instance of this class.
+     *
+     * @var static
+     */
+    protected static $instance;
+
+    /**
+     * @var PlatformVersionReader
+     */
+    private $platformVersionReader;
+    /**
+     * @var WebsiteManager
+     */
+    private $websiteManager;
+    /**
+     * @var string
+     */
+    private $version;
+
+    /**
+     * @param PlatformVersionReader $platformVersionReader
+     * @param WebsiteManager $websiteManager
+     * @param $version
+     *
+     * @return ConfigurationService
+     */
+    public static function create(
+        PlatformVersionReader $platformVersionReader,
+        WebsiteManager $websiteManager,
+        $version
+    ) {
+        $instance = static::getInstance();
+        $instance->platformVersionReader = $platformVersionReader;
+        $instance->websiteManager = $websiteManager;
+        $instance->version = $version;
+
+        return $instance;
+    }
+
     /**
      * Returns current system identifier.
      *
@@ -41,11 +79,7 @@ class ConfigurationService extends Configuration
      */
     public function getIntegrationVersion()
     {
-        /** @var ContainerInterface $container */
-        $container = ServiceRegister::getService(ContainerInterface::class);
-        $platformVersionReader = $container->get('mollie_payment.platform_version_reader');
-
-        return $platformVersionReader->getIntegrationVersion();
+        return $this->platformVersionReader->getIntegrationVersion();
     }
 
     /**
@@ -55,11 +89,7 @@ class ConfigurationService extends Configuration
      */
     public function getIntegrationName()
     {
-        /** @var ContainerInterface $container */
-        $container = ServiceRegister::getService(ContainerInterface::class);
-        $platformVersionReader = $container->get('mollie_payment.platform_version_reader');
-
-        return $platformVersionReader->getIntegrationName();
+        return $this->platformVersionReader->getIntegrationName();
     }
 
     /**
@@ -69,12 +99,9 @@ class ConfigurationService extends Configuration
      */
     public function getExtensionVersion()
     {
-        /** @var ContainerInterface $container */
-        $container = ServiceRegister::getService(ContainerInterface::class);
-        $platformVersionReader = $container->get('mollie_payment.platform_version_reader');
-        $installedPackageVersion = $platformVersionReader->getMolliePackageVersion();
+        $installedPackageVersion = $this->platformVersionReader->getMolliePackageVersion();
 
-        return $installedPackageVersion ?: $container->getParameter('mollie_payment.version');
+        return $installedPackageVersion ?: $this->version;
     }
 
     /**
@@ -88,7 +115,7 @@ class ConfigurationService extends Configuration
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     protected function isSystemSpecific($name)
     {
@@ -100,11 +127,6 @@ class ConfigurationService extends Configuration
      */
     private function getWebsite()
     {
-        /** @var ContainerInterface $container */
-        $container = ServiceRegister::getService(ContainerInterface::class);
-        /** @var WebsiteManager $websiteManager */
-        $websiteManager = $container->get('oro_website.manager');
-
-        return $websiteManager->getCurrentWebsite() ?: $websiteManager->getDefaultWebsite();
+        return $this->websiteManager->getCurrentWebsite() ?: $this->websiteManager->getDefaultWebsite();
     }
 }

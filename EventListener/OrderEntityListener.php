@@ -4,7 +4,6 @@ namespace Mollie\Bundle\PaymentBundle\EventListener;
 
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Mollie\Bundle\PaymentBundle\Exceptions\MollieOperationForbiddenException;
-use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Configuration;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\Tracking;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Integration\Event\IntegrationOrderBillingAddressChangedEvent;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Integration\Event\IntegrationOrderCanceledEvent;
@@ -13,7 +12,7 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Integration\Event\
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Integration\Event\IntegrationOrderShippedEvent;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Integration\Event\IntegrationOrderShippingAddressChangedEvent;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Integration\Event\IntegrationOrderTotalChangedEvent;
-use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ServiceRegister;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Utility\Events\Event;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Utility\Events\EventBus;
 use Mollie\Bundle\PaymentBundle\Manager\OroPaymentMethodUtility;
@@ -63,15 +62,21 @@ class OrderEntityListener
     /**
      * OrderEntityListener constructor.
      *
+     * @param Configuration $configService
+     * @param EventBus $eventBus
      * @param OroPaymentMethodUtility $paymentMethodUtility
      * @param TranslatorInterface $translator
      * @param MollieDtoMapperInterface $mollieDtoMapper
      */
     public function __construct(
+        Configuration $configService,
+        EventBus $eventBus,
         OroPaymentMethodUtility $paymentMethodUtility,
         TranslatorInterface $translator,
         MollieDtoMapperInterface $mollieDtoMapper
     ) {
+        $this->configService = $configService;
+        $this->eventBus = $eventBus;
         $this->paymentMethodUtility = $paymentMethodUtility;
         $this->translator = $translator;
         $this->mollieDtoMapper = $mollieDtoMapper;
@@ -113,9 +118,9 @@ class OrderEntityListener
         }
 
         if (!$this->orderChangeIsProcessing) {
-            $this->getConfigService()->doWithContext((string)$channelId, function () use ($order) {
+            $this->configService->doWithContext((string)$channelId, function () use ($order) {
                 $this->orderChangeIsProcessing = true;
-                $this->getEventBus()->fire(new IntegrationOrderDeletedEvent($order->getIdentifier()));
+                $this->eventBus->fire(new IntegrationOrderDeletedEvent($order->getIdentifier()));
             });
         }
     }
@@ -134,23 +139,26 @@ class OrderEntityListener
      */
     protected function handleAddressChange(Order $order, $channelId)
     {
-        $this->getConfigService()->doWithContext((string)$channelId, function () use ($order){
+        $this->configService->doWithContext((string)$channelId, function () use ($order) {
             $billingAddress = $order->getBillingAddress();
             if ($billingAddress && $billingAddress->getId() === self::$addressChanged->getId()) {
                 try {
-                    $this->getEventBus()->fire(new IntegrationOrderBillingAddressChangedEvent(
-                        $order->getIdentifier(), $this->mollieDtoMapper->getAddressData($billingAddress, $order->getEmail())));
+                    $this->eventBus->fire(new IntegrationOrderBillingAddressChangedEvent(
+                        $order->getIdentifier(),
+                        $this->mollieDtoMapper->getAddressData($billingAddress, $order->getEmail())
+                    ));
                 } catch (\Exception $exception) {
                     $this->handleAddressException($exception, 'billing');
                 }
-
             }
 
             $shippingAddress = $order->getShippingAddress();
             if ($shippingAddress && $shippingAddress->getId() === self::$addressChanged->getId()) {
                 try {
-                    $this->getEventBus()->fire(new IntegrationOrderShippingAddressChangedEvent(
-                        $order->getIdentifier(), $this->mollieDtoMapper->getAddressData($shippingAddress, $order->getEmail())));
+                    $this->eventBus->fire(new IntegrationOrderShippingAddressChangedEvent(
+                        $order->getIdentifier(),
+                        $this->mollieDtoMapper->getAddressData($shippingAddress, $order->getEmail())
+                    ));
                 } catch (\Exception $exception) {
                     $this->handleAddressException($exception, 'shipping');
                 }
@@ -222,7 +230,7 @@ class OrderEntityListener
      */
     protected function handleInternalStatusChangedEvents(Order $order, $channelId)
     {
-        $this->getConfigService()->doWithContext(
+        $this->configService->doWithContext(
             (string)$channelId,
             function () use ($order) {
                 $this->orderChangeIsProcessing = true;
@@ -249,7 +257,7 @@ class OrderEntityListener
     protected function handleEvent($event, $eventType)
     {
         try {
-            $this->getEventBus()->fire($event);
+            $this->eventBus->fire($event);
         } catch (\Exception $exception) {
             $this->handleStatusUpdateException($exception, $eventType);
         }
@@ -272,30 +280,6 @@ class OrderEntityListener
     }
 
     /**
-     * @return EventBus
-     */
-    protected function getEventBus()
-    {
-        if ($this->eventBus === null) {
-            $this->eventBus = ServiceRegister::getService(EventBus::CLASS_NAME);
-        }
-
-        return $this->eventBus;
-    }
-
-    /**
-     * @return Configuration
-     */
-    protected function getConfigService()
-    {
-        if ($this->configService === null) {
-            $this->configService = ServiceRegister::getService(Configuration::CLASS_NAME);
-        }
-
-        return $this->configService;
-    }
-
-    /**
      * @param Order $order
      * @param string $channelId
      * @throws MollieOperationForbiddenException
@@ -303,10 +287,10 @@ class OrderEntityListener
     protected function handleOrderTotalChange(Order $order, $channelId)
     {
         try {
-            OrderLineEntityListener::$handleLineEvent = false;
-            $this->getConfigService()->doWithContext((string)$channelId, function () use ($order) {
+            OrderLineEntityListener::setHandleLineEvent(false);
+            $this->configService->doWithContext((string)$channelId, function () use ($order) {
                 $this->orderChangeIsProcessing = true;
-                $this->getEventBus()->fire(new IntegrationOrderTotalChangedEvent($order->getIdentifier()));
+                $this->eventBus->fire(new IntegrationOrderTotalChangedEvent($order->getIdentifier()));
             });
         } catch (\Exception $exception) {
             $screenMessage = $this->translator->trans(

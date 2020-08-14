@@ -6,6 +6,11 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Payment;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\OrderReference\Model\OrderReference;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Utility\Events\Event;
 
+/**
+ * Class PaymentChangedWebHookEvent
+ *
+ * @package Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\WebHook
+ */
 class PaymentChangedWebHookEvent extends Event
 {
     /**
@@ -26,6 +31,12 @@ class PaymentChangedWebHookEvent extends Event
      */
     private $newPayment;
 
+    /**
+     * PaymentChangedWebHookEvent constructor.
+     *
+     * @param OrderReference $orderReference
+     * @param Payment $newPayment
+     */
     public function __construct(OrderReference $orderReference, Payment $newPayment)
     {
         $this->orderReference = $orderReference;

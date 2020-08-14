@@ -46,6 +46,7 @@ class MolliePaymentLinkProvider implements PaymentLinkConfigProviderInterface
      * MolliePaymentLinkProvider constructor.
      *
      * @param UrlGeneratorInterface $urlGenerator
+     * @param WebsiteUrlResolver $websiteUrlResolver
      * @param OroPaymentMethodUtility $paymentMethodUtility
      * @param PaymentStatusProviderInterface $paymentStatusProvider
      */
@@ -217,6 +218,11 @@ class MolliePaymentLinkProvider implements PaymentLinkConfigProviderInterface
         return PaymentMethodConfig::API_METHOD_PAYMENT;
     }
 
+    /**
+     * @param Order $order
+     *
+     * @return string
+     */
     private function getSiteSpecificPaymentLink(Order $order)
     {
         $paymentLinkUrl = $this->urlGenerator->generate(

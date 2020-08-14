@@ -8,6 +8,11 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ORM\Exceptions\Re
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ORM\RepositoryRegistry;
 use ZipArchive;
 
+/**
+ * Class DebugServic
+ *
+ * @package Mollie\Bundle\PaymentBundle\IntegrationServices
+ */
 class DebugService
 {
     const PHP_INFO_FILE_NAME = 'phpinfo.html';
@@ -21,6 +26,7 @@ class DebugService
 
     /**
      * DebugService constructor.
+     *
      * @param string $logsPath
      */
     public function __construct($logsPath)
@@ -77,13 +83,16 @@ class DebugService
         // Store the path into the variable
         $dir = opendir($this->logsPath);
 
-        while(false !== ($file = readdir($dir))) {
-            if(is_file($this->logsPath.'/'.$file)) {
+        while (false !== ($file = readdir($dir))) {
+            if (is_file($this->logsPath.'/'.$file)) {
                 $zipArchive->addFile($this->logsPath.'/'.$file, static::LOG_FILE_DIR.'/'.$file);
             }
         }
     }
 
+    /**
+     * @return string
+     */
     protected function getOrderReferences()
     {
         $result = [];

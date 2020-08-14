@@ -4,6 +4,11 @@ namespace Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Ord
 
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\BaseDto;
 
+/**
+ * Class Tracking
+ *
+ * @package Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders
+ */
 class Tracking extends BaseDto
 {
     /**
@@ -20,7 +25,7 @@ class Tracking extends BaseDto
     protected $url;
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public static function fromArray(array $raw)
     {
@@ -34,7 +39,7 @@ class Tracking extends BaseDto
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function toArray()
     {

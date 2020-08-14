@@ -8,6 +8,11 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ORM\QueryFilter\Q
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ServiceRegister;
 use Mollie\Bundle\PaymentBundle\IntegrationServices\ConfigurationService;
 
+/**
+ * Class MollieContextAwareEntityRepository
+ *
+ * @package Mollie\Bundle\PaymentBundle\Entity\Repository
+ */
 class MollieContextAwareEntityRepository extends MollieBaseEntityRepository
 {
     /**
@@ -20,6 +25,9 @@ class MollieContextAwareEntityRepository extends MollieBaseEntityRepository
      */
     private $configurationService;
 
+    /**
+     * MollieContextAwareEntityRepository constructor.
+     */
     public function __construct()
     {
         parent::__construct();
@@ -27,6 +35,12 @@ class MollieContextAwareEntityRepository extends MollieBaseEntityRepository
         $this->configurationService = ServiceRegister::getService(ConfigurationService::CLASS_NAME);
     }
 
+    /**
+     * @param QueryFilter|null $filter
+     * @param bool $isCount
+     * @return \Doctrine\ORM\QueryBuilder
+     * @throws \Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ORM\Exceptions\QueryFilterInvalidParamException
+     */
     protected function getBaseDoctrineQuery(QueryFilter $filter = null, $isCount = false)
     {
         $query = parent::getBaseDoctrineQuery($filter, $isCount);
@@ -40,6 +54,13 @@ class MollieContextAwareEntityRepository extends MollieBaseEntityRepository
         return $query;
     }
 
+    /**
+     * @param Entity $entity
+     * @param MollieBaseEntity $persistedEntity
+     * @return int
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
     protected function persistEntity(Entity $entity, MollieBaseEntity $persistedEntity)
     {
         $context = $this->configurationService->getContext();

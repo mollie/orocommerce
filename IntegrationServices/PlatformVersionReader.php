@@ -4,6 +4,11 @@ namespace Mollie\Bundle\PaymentBundle\IntegrationServices;
 
 use Oro\Bundle\PlatformBundle\Provider\PackageProvider;
 
+/**
+ * Class PlatformVersionReader
+ *
+ * @package Mollie\Bundle\PaymentBundle\IntegrationServices
+ */
 class PlatformVersionReader
 {
     /**

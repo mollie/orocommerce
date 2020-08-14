@@ -31,6 +31,11 @@ class PaymentMethodSettingsType extends AbstractType
      */
     private $translator;
 
+    /**
+     * PaymentMethodSettingsType constructor.
+     *
+     * @param TranslatorInterface $translator
+     */
     public function __construct(TranslatorInterface $translator)
     {
         $this->translator = $translator;

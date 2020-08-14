@@ -4,6 +4,11 @@ namespace Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Integration\
 
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\OrderLine;
 
+/**
+ * Interface OrderLineTransitionService
+ *
+ * @package Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Integration\Interfaces
+ */
 interface OrderLineTransitionService
 {
     /**

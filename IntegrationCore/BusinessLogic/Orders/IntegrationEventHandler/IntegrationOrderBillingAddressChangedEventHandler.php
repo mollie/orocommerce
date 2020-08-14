@@ -22,7 +22,6 @@ class IntegrationOrderBillingAddressChangedEventHandler extends IntegrationOrder
         try {
             $this->getOrderService()->updateBillingAddress($event->getShopReference(), $event->getBillingAddress());
         } catch (ReferenceNotFoundException $exception) {
-
         } catch (\Exception $exception) {
             $this->handleAddressUpdateError($event, $exception, static::BILLING_ADDRESS);
         }

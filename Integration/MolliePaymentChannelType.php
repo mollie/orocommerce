@@ -5,6 +5,11 @@ namespace Mollie\Bundle\PaymentBundle\Integration;
 use Oro\Bundle\IntegrationBundle\Provider\ChannelInterface;
 use Oro\Bundle\IntegrationBundle\Provider\IconAwareIntegrationInterface;
 
+/**
+ * Class MolliePaymentChannelType
+ *
+ * @package Mollie\Bundle\PaymentBundle\Integration
+ */
 class MolliePaymentChannelType implements ChannelInterface, IconAwareIntegrationInterface
 {
     const TYPE = 'mollie_payment_channel';

@@ -19,7 +19,7 @@ class OrderReference extends Entity
     const CLASS_NAME = __CLASS__;
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     protected $fields = array(
         'id',
@@ -47,7 +47,7 @@ class OrderReference extends Entity
     protected $payload = array();
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getConfig()
     {

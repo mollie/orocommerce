@@ -5,16 +5,15 @@ namespace Mollie\Bundle\PaymentBundle\Form\EventListener;
 use Mollie\Bundle\PaymentBundle\Entity\ChannelSettings;
 use Mollie\Bundle\PaymentBundle\Entity\PaymentMethodSettings;
 use Mollie\Bundle\PaymentBundle\Form\Type\PaymentMethodSettingsType;
-use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Configuration;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\WebsiteProfile;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\Exceptions\UnprocessableEntityRequestException;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\AuthorizationController;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\PaymentMethodController;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\WebsiteProfileController;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http\Exceptions\HttpAuthenticationException;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http\Exceptions\HttpCommunicationException;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http\Exceptions\HttpRequestException;
-use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ServiceRegister;
 use Oro\Bundle\LocaleBundle\Entity\LocalizedFallbackValue;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -26,8 +25,17 @@ use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Form\FormInterface;
 
+/**
+ * Class ChannelSettingsTypeSubscriber
+ *
+ * @package Mollie\Bundle\PaymentBundle\Form\EventListener
+ */
 class ChannelSettingsTypeSubscriber implements EventSubscriberInterface
 {
+    /**
+     * @var Configuration
+     */
+    private $configService;
     /**
      * @var TranslatorInterface
      */
@@ -44,22 +52,28 @@ class ChannelSettingsTypeSubscriber implements EventSubscriberInterface
      * @var PaymentMethodController
      */
     private $paymentMethodController;
+    /**
+     * @var array
+     */
     private $tokenValidationCache = [];
 
     /**
      * ChannelSettingsTypeSubscriber constructor.
      *
+     * @param Configuration $configService
      * @param TranslatorInterface $translator
      * @param AuthorizationController $authorizationController
      * @param WebsiteProfileController $websiteProfileController
      * @param PaymentMethodController $paymentMethodController
      */
     public function __construct(
+        Configuration $configService,
         TranslatorInterface $translator,
         AuthorizationController $authorizationController,
         WebsiteProfileController $websiteProfileController,
         PaymentMethodController $paymentMethodController
     ) {
+        $this->configService = $configService;
         $this->translator = $translator;
         $this->authorizationController = $authorizationController;
         $this->websiteProfileController = $websiteProfileController;
@@ -67,7 +81,7 @@ class ChannelSettingsTypeSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public static function getSubscribedEvents()
     {
@@ -96,13 +110,11 @@ class ChannelSettingsTypeSubscriber implements EventSubscriberInterface
             return;
         }
 
-        /** @var Configuration $configuration */
-        $configuration = ServiceRegister::getService(Configuration::CLASS_NAME);
-        $configuration->doWithContext(
+        $this->configService->doWithContext(
             (string)$channelSettings->getChannel()->getId(),
-            static function () use ($configuration, $channelSettings) {
-                $channelSettings->setAuthToken($configuration->getAuthorizationToken());
-                $channelSettings->setTestMode($configuration->isTestMode());
+            function () use ($channelSettings) {
+                $channelSettings->setAuthToken($this->configService->getAuthorizationToken());
+                $channelSettings->setTestMode($this->configService->isTestMode());
             }
         );
 
@@ -118,6 +130,9 @@ class ChannelSettingsTypeSubscriber implements EventSubscriberInterface
         }
     }
 
+    /**
+     * @param FormEvent $event
+     */
     public function setWebsiteProfile(FormEvent $event)
     {
         /** @var ChannelSettings|null $channelSettings */
@@ -131,18 +146,15 @@ class ChannelSettingsTypeSubscriber implements EventSubscriberInterface
             return;
         }
 
-        /** @var Configuration $configuration */
-        $configuration = ServiceRegister::getService(Configuration::CLASS_NAME);
-
         // Set website profile if not already set. Oro sets form data multiple times during submit, presetting data once is enough.
         if (!$channelSettings->getWebsiteProfile()) {
-            $configuration->doWithContext(
+            $this->configService->doWithContext(
                 (string)$channelSettings->getChannel()->getId(),
-                function () use ($channelSettings, $configuration) {
+                function () use ($channelSettings) {
                     $savedProfile = $this->websiteProfileController->getCurrent();
                     if (!$savedProfile || $this->isWebsiteProfileDeleted($savedProfile)) {
-                        $configuration->setWebsiteProfile(null);
-                        $configuration->setAuthorizationToken('');
+                        $this->configService->setWebsiteProfile(null);
+                        $this->configService->setAuthorizationToken('');
                         $channelSettings->setAuthToken('');
 
                         return;
@@ -168,19 +180,23 @@ class ChannelSettingsTypeSubscriber implements EventSubscriberInterface
         $this->addWebsiteProfileAndPaymentSettingsToForm($form, $channelSettings);
     }
 
+    /**
+     * @param FormEvent $event
+     */
     public function onPostSetData(FormEvent $event)
     {
         $form = $event->getForm();
 
-        /** @var Configuration $configuration */
-        $configuration = ServiceRegister::getService(Configuration::CLASS_NAME);
-        $form->get('mollieVersion')->setData($configuration->getExtensionVersion());
+        $form->get('mollieVersion')->setData($this->configService->getExtensionVersion());
 
         if ($form->get('authToken')->getErrors()->count() > 0) {
             $form->get('isTokenOnlySubmit')->setData('1');
         }
     }
 
+    /**
+     * @param FormEvent $event
+     */
     public function onPreSubmit(FormEvent $event)
     {
         $form = $event->getForm();
@@ -207,12 +223,10 @@ class ChannelSettingsTypeSubscriber implements EventSubscriberInterface
             return;
         }
 
-        /** @var Configuration $configuration */
-        $configuration = ServiceRegister::getService(Configuration::CLASS_NAME);
-        $configToken = $configuration->doWithContext(
+        $configToken = $this->configService->doWithContext(
             (string)$channelSettings->getChannel()->getId(),
-            static function () use ($configuration) {
-                return $configuration->getAuthorizationToken();
+            function () {
+                return $this->configService->getAuthorizationToken();
             }
         );
 
@@ -231,11 +245,11 @@ class ChannelSettingsTypeSubscriber implements EventSubscriberInterface
 
             $channelSettings->setAuthToken($data['authToken']);
             $channelSettings->setTestMode((bool)$data['testMode']);
-            $configuration->doWithContext(
+            $this->configService->doWithContext(
                 (string)$channelSettings->getChannel()->getId(),
-                static function () use ($channelSettings, $configuration) {
-                    $configuration->setAuthorizationToken($channelSettings->getAuthToken());
-                    $configuration->setTestMode($channelSettings->isTestMode());
+                function () use ($channelSettings) {
+                    $this->configService->setAuthorizationToken($channelSettings->getAuthToken());
+                    $this->configService->setTestMode($channelSettings->isTestMode());
                 }
             );
 
@@ -245,17 +259,17 @@ class ChannelSettingsTypeSubscriber implements EventSubscriberInterface
         $channelSettings->setAuthToken($data['authToken']);
         $channelSettings->setTestMode((bool)$data['testMode']);
 
-        $configuration->doWithContext(
+        $this->configService->doWithContext(
             (string)$channelSettings->getChannel()->getId(),
-            function () use ($channelSettings, $data, $configuration) {
-                $oldToken = $configuration->getAuthorizationToken();
-                $oldTestMode = $configuration->isTestMode();
+            function () use ($channelSettings, $data) {
+                $oldToken = $this->configService->getAuthorizationToken();
+                $oldTestMode = $this->configService->isTestMode();
 
-                $configuration->setAuthorizationToken($channelSettings->getAuthToken());
-                $configuration->setTestMode($channelSettings->isTestMode());
+                $this->configService->setAuthorizationToken($channelSettings->getAuthToken());
+                $this->configService->setTestMode($channelSettings->isTestMode());
 
 
-                $oldWebsiteProfile = $configuration->getWebsiteProfile();
+                $oldWebsiteProfile = $this->configService->getWebsiteProfile();
                 $newWebsiteProfile = null;
                 if (!empty($data['websiteProfile'])) {
                     foreach ($this->websiteProfileController->getAll() as $websiteProfile) {
@@ -276,8 +290,8 @@ class ChannelSettingsTypeSubscriber implements EventSubscriberInterface
                     !$newWebsiteProfile ||
                     ($oldWebsiteProfile && $newWebsiteProfile->getId() === $oldWebsiteProfile->getId())
                 ) {
-                    $configuration->setAuthorizationToken($oldToken);
-                    $configuration->setTestMode($oldTestMode);
+                    $this->configService->setAuthorizationToken($oldToken);
+                    $this->configService->setTestMode($oldTestMode);
 
                     return;
                 }
@@ -293,8 +307,8 @@ class ChannelSettingsTypeSubscriber implements EventSubscriberInterface
 
                 $this->setPaymentMethodConfigurations($channelSettings, true);
 
-                $configuration->setAuthorizationToken($oldToken);
-                $configuration->setTestMode($oldTestMode);
+                $this->configService->setAuthorizationToken($oldToken);
+                $this->configService->setTestMode($oldTestMode);
             }
         );
 
@@ -310,6 +324,9 @@ class ChannelSettingsTypeSubscriber implements EventSubscriberInterface
         $event->setData($data);
     }
 
+    /**
+     * @param FormEvent $event
+     */
     public function onPostSubmit(FormEvent $event)
     {
         /** @var ChannelSettings|null $channelSettings */
@@ -419,20 +436,22 @@ class ChannelSettingsTypeSubscriber implements EventSubscriberInterface
         return true;
     }
 
+    /**
+     * @param FormInterface $form
+     * @param ChannelSettings $channelSettings
+     */
     private function addWebsiteProfileAndPaymentSettingsToForm(FormInterface $form, ChannelSettings $channelSettings)
     {
-        /** @var Configuration $configuration */
-        $configuration = ServiceRegister::getService(Configuration::CLASS_NAME);
         if (!$form->has('websiteProfile')) {
             $form->add('websiteProfile', ChoiceType::class, [
-                'choices' => $configuration->doWithContext(
+                'choices' => $this->configService->doWithContext(
                     (string)$channelSettings->getChannel()->getId(),
-                    function () use($configuration, $channelSettings) {
-                        $oldToken = $configuration->getAuthorizationToken();
-                        $oldTestMode = $configuration->isTestMode();
+                    function () use ($channelSettings) {
+                        $oldToken = $this->configService->getAuthorizationToken();
+                        $oldTestMode = $this->configService->isTestMode();
 
-                        $configuration->setAuthorizationToken($channelSettings->getAuthToken());
-                        $configuration->setTestMode($channelSettings->isTestMode());
+                        $this->configService->setAuthorizationToken($channelSettings->getAuthToken());
+                        $this->configService->setTestMode($channelSettings->isTestMode());
 
                         try {
                             $choices = $this->websiteProfileController->getAll();
@@ -440,13 +459,13 @@ class ChannelSettingsTypeSubscriber implements EventSubscriberInterface
                             $choices = [];
                         }
 
-                        $configuration->setAuthorizationToken($oldToken);
-                        $configuration->setTestMode($oldTestMode);
+                        $this->configService->setAuthorizationToken($oldToken);
+                        $this->configService->setTestMode($oldTestMode);
 
                         return $choices;
                     }
                 ),
-                'choice_label' => static function(WebsiteProfile $profile) {
+                'choice_label' => static function (WebsiteProfile $profile) {
                     return $profile->getName();
                 },
                 'choice_value' => static function (WebsiteProfile $profile = null) {

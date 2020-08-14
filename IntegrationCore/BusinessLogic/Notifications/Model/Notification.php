@@ -6,6 +6,7 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Notifications\Noti
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ORM\Configuration\EntityConfiguration;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ORM\Configuration\IndexMap;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ORM\Entity;
+
 /**
  * Class Notification
  *
@@ -68,7 +69,7 @@ class Notification extends Entity
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      *
      * @return array
      */
@@ -82,7 +83,7 @@ class Notification extends Entity
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      *
      * @param array $data
      */

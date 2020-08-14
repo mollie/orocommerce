@@ -4,6 +4,11 @@ namespace Mollie\Bundle\PaymentBundle\PaymentMethod;
 
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Payment;
 
+/**
+ * Class MolliePaymentApiPaymentResult
+ *
+ * @package Mollie\Bundle\PaymentBundle\PaymentMethod
+ */
 class MolliePaymentApiPaymentResult implements MolliePaymentResultInterface
 {
     /**
@@ -11,12 +16,17 @@ class MolliePaymentApiPaymentResult implements MolliePaymentResultInterface
      */
     private $payment;
 
+    /**
+     * MolliePaymentApiPaymentResult constructor.
+     *
+     * @param Payment $payment
+     */
     public function __construct(Payment $payment)
     {
         $this->payment = $payment;
     }
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getId()
     {
@@ -24,7 +34,7 @@ class MolliePaymentApiPaymentResult implements MolliePaymentResultInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getRedirectLink()
     {

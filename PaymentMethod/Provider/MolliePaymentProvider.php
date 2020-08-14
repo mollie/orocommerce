@@ -7,6 +7,11 @@ use Mollie\Bundle\PaymentBundle\PaymentMethod\Config\Provider\MolliePaymentConfi
 use Mollie\Bundle\PaymentBundle\PaymentMethod\Factory\MolliePaymentPaymentMethodFactoryInterface;
 use Oro\Bundle\PaymentBundle\Method\Provider\AbstractPaymentMethodProvider;
 
+/**
+ * Class MolliePaymentProvider
+ *
+ * @package Mollie\Bundle\PaymentBundle\PaymentMethod\Provider
+ */
 class MolliePaymentProvider extends AbstractPaymentMethodProvider
 {
     /**

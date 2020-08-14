@@ -7,6 +7,11 @@ use Mollie\Bundle\PaymentBundle\PaymentMethod\Config\Provider\MolliePaymentConfi
 use Mollie\Bundle\PaymentBundle\PaymentMethod\View\Factory\MolliePaymentViewFactoryInterface;
 use Oro\Bundle\PaymentBundle\Method\View\AbstractPaymentMethodViewProvider;
 
+/**
+ * Class MolliePaymentViewProvider
+ *
+ * @package Mollie\Bundle\PaymentBundle\PaymentMethod\View\Provider
+ */
 class MolliePaymentViewProvider extends AbstractPaymentMethodViewProvider
 {
     /** @var MOlliePaymentViewFactoryInterface */
@@ -16,8 +21,10 @@ class MolliePaymentViewProvider extends AbstractPaymentMethodViewProvider
     private $configProvider;
 
     /**
+     * MolliePaymentViewProvider constructor.
+     *
      * @param MolliePaymentConfigProviderInterface $configProvider
-     * @param MOlliePaymentViewFactoryInterface $factory
+     * @param MolliePaymentViewFactoryInterface $factory
      */
     public function __construct(
         MolliePaymentConfigProviderInterface $configProvider,

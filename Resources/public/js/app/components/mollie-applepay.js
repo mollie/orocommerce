@@ -22,14 +22,14 @@ define(function(require) {
         $el: null,
 
         /**
-         * @inheritDoc
+         * {@inheritdoc}
          */
         constructor: function MollieApplepayComponent() {
             MollieApplepayComponent.__super__.constructor.apply(this, arguments);
         },
 
         /**
-         * @inheritDoc
+         * {@inheritdoc}
          */
         initialize: function(options) {
             this.options = _.extend({}, this.options, options);

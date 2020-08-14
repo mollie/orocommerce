@@ -4,6 +4,11 @@ namespace Mollie\Bundle\PaymentBundle\PaymentMethod;
 
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Link;
 
+/**
+ * Interface MolliePaymentResultInterface
+ *
+ * @package Mollie\Bundle\PaymentBundle\PaymentMethod
+ */
 interface MolliePaymentResultInterface
 {
     /**

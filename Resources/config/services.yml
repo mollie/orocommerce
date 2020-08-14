@@ -49,12 +49,14 @@ services:
     class: Mollie\Bundle\PaymentBundle\PaymentMethod\Config\Factory\PaymentConfigFactory
     public: false
     arguments:
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration'
       - '@oro_locale.helper.localization'
       - '@mollie_payment.generator.mollie_payment_config_identifier'
 
   mollie_payment.payment_method.config.provider:
     class: Mollie\Bundle\PaymentBundle\PaymentMethod\Config\Provider\MolliePaymentConfigProvider
     arguments:
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration'
       - '@doctrine'
       - '@mollie_payment.factory.payment_config'
       - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\PaymentMethodController'
@@ -63,6 +65,7 @@ services:
   mollie_payment.payment_method.context_aware.config.provider:
     class: Mollie\Bundle\PaymentBundle\PaymentMethod\Config\Provider\MolliePaymentContextAwareConfigProvider
     arguments:
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration'
       - '@doctrine'
       - '@mollie_payment.factory.payment_config'
       - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\PaymentMethodController'
@@ -94,6 +97,9 @@ services:
   mollie_payment.factory.method.mollie_payment:
     class: Mollie\Bundle\PaymentBundle\PaymentMethod\Factory\MolliePaymentPaymentMethodFactory
     arguments:
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration'
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Payments\PaymentService'
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Orders\OrderService'
       - '@mollie_payment.payment_method.context_aware.config.provider'
       - '@router'
       - '@oro_locale.helper.localization'
@@ -105,6 +111,7 @@ services:
   mollie_payment.mapper.mollie_dto_mapper:
     class: Mollie\Bundle\PaymentBundle\Mapper\MollieDtoMapper
     arguments:
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration'
       - '@oro_tax.provider.tax_provider_registry'
       - '@oro_payment.provider.surcharge'
       - '@translator'
@@ -125,6 +132,7 @@ services:
     public: true
     arguments:
       - '@logger'
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration'
     tags:
       - { name: monolog.logger, channel: mollie }
 
@@ -169,6 +177,7 @@ services:
     class: Mollie\Bundle\PaymentBundle\Form\EventListener\ChannelSettingsTypeSubscriber
     public: false
     arguments:
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration'
       - "@translator"
       - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\AuthorizationController'
       - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\WebsiteProfileController'
@@ -178,6 +187,7 @@ services:
     class: Mollie\Bundle\PaymentBundle\Manager\MollieDeleteProvider
     arguments:
       - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\AuthorizationController'
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration'
     tags:
       - { name: oro_integration.delete_provider }
 
@@ -211,9 +221,25 @@ services:
     class: Mollie\Bundle\PaymentBundle\Manager\MollieRefundProvider
     public: true
     arguments:
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration'
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Refunds\RefundService'
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Payments\PaymentService'
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Orders\OrderService'
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\OrderReference\OrderReferenceService'
       - '@mollie_payment.manager.oro_payment_method_utility'
       - '@oro_locale.twig.locale'
       - '@translator'
+
+  mollie_payment.manager.admin_link_handler:
+    class: Mollie\Bundle\PaymentBundle\Manager\AdminLinkVisitHandler
+    public: true
+    arguments:
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration'
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\CheckoutLink\CheckoutLinkService'
+      - '@mollie_payment.manager.oro_payment_method_utility'
+      - '@oro_payment.provider.payment_transaction'
+      - '@oro_payment.payment_method.composite_provider'
+      - '@router'
 
   mollie_payment.condition.refund_form_valid:
     class: Mollie\Bundle\PaymentBundle\Condition\RefundFormValid
@@ -227,12 +253,16 @@ services:
     arguments:
       - '%kernel.logs_dir%'
     public: true
+
   Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\AuthorizationController:
     public: true
+
   Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\WebsiteProfileController:
     public: true
+
   Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\PaymentMethodController:
     public: true
+
   Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\NotificationController:
     public: true
 
@@ -241,8 +271,61 @@ services:
     arguments:
       - '@oro_payment.provider.payment_transaction'
       - '@oro_entity.doctrine_helper'
+
   Mollie\Bundle\PaymentBundle\IntegrationServices\OrderLineTransitionService:
     public: true
     arguments:
       - '@oro_payment.provider.payment_transaction'
       - '@oro_entity.doctrine_helper'
+
+  Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Logger\Interfaces\ShopLoggerAdapter:
+    factory: ['Mollie\Bundle\PaymentBundle\IntegrationServices\LoggerAdapter', 'create']
+    arguments:
+      - '@mollie_payment.logger'
+    public: true
+
+  Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration:
+    factory: ['Mollie\Bundle\PaymentBundle\IntegrationServices\ConfigurationService', 'create']
+    arguments:
+      - '@mollie_payment.platform_version_reader'
+      - '@oro_website.manager'
+      - '%mollie_payment.version%'
+    public: true
+
+  Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\CheckoutLink\CheckoutLinkService:
+    factory: ['Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\CheckoutLink\CheckoutLinkService', 'getInstance']
+    public: true
+
+  Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\OrderReference\OrderReferenceService:
+    factory: ['Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\OrderReference\OrderReferenceService', 'getInstance']
+    public: true
+
+  Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Orders\OrderService:
+    factory: ['Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Orders\OrderService', 'getInstance']
+    public: true
+
+  Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Refunds\RefundService:
+    factory: ['Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Refunds\RefundService', 'getInstance']
+    public: true
+
+  Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Payments\PaymentService:
+    factory: ['Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Payments\PaymentService', 'getInstance']
+    public: true
+
+  Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\WebHook\WebHookTransformer:
+    factory: ['Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\WebHook\WebHookTransformer', 'getInstance']
+    public: true
+
+  Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Utility\Events\EventBus:
+    factory: ['Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Utility\Events\EventBus', 'getInstance']
+    public: true
+
+  Mollie\Bundle\PaymentBundle\Controller\SupportController:
+    public: true
+    arguments:
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration'
+
+  Mollie\Bundle\PaymentBundle\Controller\PaymentLinkController:
+      public: true
+      arguments:
+        - '@mollie_payment.manager.admin_link_handler'
