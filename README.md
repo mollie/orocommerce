@@ -53,7 +53,7 @@ Mollie requires no minimum costs, no fixed contracts, no hidden costs. At Mollie
 - Apple Pay
 
 ## Configuration, FAQ and Troubleshooting  ##
-If you experience problems with the extension installation, setup or whenever you need more information about how to setup the Mollie Payment extension in OROCommerce® 4.x, please see our [WIKI Page](https://<oro>/wiki) or send an e-mail to [info@mollie.com](mailto:info@mollie.com) with an exact description of the problem.
+If you experience problems with the extension installation, setup or whenever you need more information about how to setup the Mollie Payment extension in OROCommerce® 4.x, please send an e-mail to [info@mollie.com](mailto:info@mollie.com) with an exact description of the problem.
 
 
 ## License ##
