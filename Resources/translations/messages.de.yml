@@ -1,0 +1,136 @@
+mollie:
+  payment:
+    channel_type.label: 'Mollie'
+    transport.label: 'Mollie'
+    payment_link:
+      label: 'Zahlungslink erstellen'
+      message: 'Ist Ihre Zahlung noch ausstehend? Kopieren Sie den Zahlungslink und senden Sie ihn Ihrem Kunden. Der Link führt ihn auf die Checkout-Seite, wo er die Zahlung erneut veranlassen kann'
+      only_payments_message: 'Einschränkung verfügbarer Zahlungsmethoden aufgrund fehlender Rechnungsinformationen'
+      copy_button.label: 'Kopieren und Speichern'
+    capture:
+      message: 'Es ist nicht möglich, die Zahlung manuell zu erfassen. Die Zahlung wird automatisch von Mollie erfasst..'
+    refund:
+      label: 'Erstattung'
+      identifier: 'Identifier'
+      refundedQuantity: 'Erstattete Menge'
+      quantityToRefund: 'Zu erstattende Menge'
+      orderLineRefund: 'Bestellposition Rückerstattung'
+      orderLineRefundMessage: 'Diese Zahlung wurde als Teil einer Bestellung getätigt. Es wird empfohlen, einzelne Bestellpositionen zu erstatten.'
+      paymentRefundMessage: 'Sie können den Gesamtbetrag oder einen Teilbetrag des Transaktionswerts zurückerstatten. Es sind mehrere Rückerstattungen möglich.'
+      paymentRefund: 'Rückerstattung'
+      amountToRefund: 'Zu erstattender Betrag'
+      description: 'Beschreibung'
+      totalRefunded: 'Gesamt'
+      errorMessage: 'Zahlung kann nicht erstattet werden. Antwort Mollie-API: {api_message}'
+      invalidForm: 'Formular kann nicht verarbeitet werden'
+      successMessage: 'Rückzahlung erfolgreich'
+      totalAmountRefundedMessage: 'Gesamtbetrag wurde bereits zurückerstattet'
+      orderIsNotRefundableMessage: 'Bestellung nicht erstattungsfähig'
+      tooltip:
+        refunded: 'Bislang erstatteter Betrag'
+        total: 'Für Rückerstattung verfügbarer Gesamtbetrag'
+    checkout:
+      subtotals.mollie_payment_surcharge: 'Zahlungsaufschlag'
+      redirect_to_mollie_payment: 'Nach dem Kontrollieren Ihrer Bestellung werden Sie zur Website des Zahlungsanbieters weitergeleitet, um den Einkauf abzuschließen.'
+      admin_link_error: 'Wir konnten Ihre Zahlung nicht verarbeiten. Überprüfen Sie bitte die Zahlungsinformationen und <a href="{adminPaymentLink}">versuchen Sie es erneut</a>.'
+    config:
+      authorization:
+        label: 'Befugnis'
+        version.label: 'Version'
+        auth_token.label: 'Organisations-API-Token'
+        verification:
+          success.message: 'Verbindung zu Mollie-API erfolgreich.'
+          fail.message: 'Authentifizierungsfehler. Ungültiges Zugriffstoken für Organisation oder unzureichende Token-Berechtigungen.'
+          deleted_website.message: 'Rekonfiguration erforderlich. Kein existierendes Website-Profil erkannt.'
+        test_mode.label: 'Test-Modus'
+        connection_validation.button.text: 'Token bestätigen'
+        new_token.link.text: 'Neues Organisations-API-Token erstellen'
+      website_profile:
+        label: 'Website-Profil'
+        id.label: 'Website-Profil'
+      payment_methods:
+        label: 'Zahlungsmethoden'
+        status.active.label: 'Aktiv'
+        status.inactive.label: 'Inaktiv'
+        name.label: 'Name'
+        description.label: 'Beschreibung'
+        image:
+          label: 'Abbildung'
+          mime_type_error: 'Bitte laden Sie eine gültige Abbildung hoch'
+          upload_error: 'Fehler beim Hochladen von Abb. {image_name}.'
+        method:
+          label: 'Methode'
+          tooltip: 'Zahlungs-API<br>
+                     Verwenden Sie für Transaktionen die Zahlungs-API-Plattform.<br><br>
+
+                     Auftrags-API<br>
+                     Verwenden Sie die neue Auftrags-API-Plattform, um mehr Einblicke in die Bestellungen zu erhalten. <a href="https://docs.Mollie.com/orders/why-use-orders" target="_blank">Read more</a>.'
+          option.payment_api.label: 'Zahlungs-API'
+          option.order_api.label: 'Auftrags-API'
+        surcharge:
+          label: 'Aufschlag'
+          klarna_tooltip: "Geben Sie die zusätzlichen Kosten für eine Klarna-Zahlung mit einem Höchstbetrag von 1,95 € ein. Höhere Beträge werden nicht akzeptiert."
+          tooltip: "Geben Sie die zusätzlichen Kosten für eine Zahlung ein."
+      notifications:
+        label: 'Benachrichtigungen'
+        warning: 'Warnung'
+        error: 'Fehler'
+        info: 'Info'
+        label.website: 'Website'
+        label.type: 'Typ'
+        label.date: 'Datum'
+        label.message: 'Nachricht'
+        label.details: 'Details'
+        label.order: 'Order'
+      support:
+        label: 'Support'
+    integration.event:
+      notification:
+        order_total_change_error.title: 'Synchronisieren von Shop-Änderungen fehlgeschlagen'
+        order_total_change_error.description: 'Ändern Gesamtbestellwert für zugehörige Mollie-Bestellung fehlgeschlagen. Antwort Mollie-API {api_message}'
+        order_close_error.title: 'Synchronisieren von Shop-Änderungen fehlgeschlagen'
+        order_close_error.description: 'Schließen Mollie-Bestellung fehlgeschlagen. Antwort Mollie-API {api_message}'
+        order_ship_error.title: 'Synchronisieren von Shop-Änderungen fehlgeschlagen'
+        order_ship_error.description: 'Erstellen Lieferung für zugehörige Mollie-Bestellung fehlgeschlagen. Antwort Mollie-API {api_message}'
+        order_cancel_error.title: 'Synchronisieren von Shop-Änderungen fehlgeschlagen'
+        order_cancel_error.description: 'Mollie-Bestellung konnte nicht storniert werden. Antwort Mollie-API {api_message}'
+        order_closed.title: 'Ereignis Bestellung abgeschlossen erkannt'
+        order_closed.description: 'Bestellung Abschließen wird nicht unterstützt; die Änderung wird nicht mit Mollie synchronisiert'
+        order_deleted.title: 'Ereignis Bestellung gelöscht erkannt'
+        order_deleted.description: 'Bestellung Löschen wird nicht unterstützt; die Änderung wird nicht mit Mollie synchronisiert'
+        order_total_changed.title: 'Ereignis Gesamtbestellwert geändert erkannt'
+        order_total_changed.description: 'Gesamtbestellwert Ändern wird nicht unterstützt; die Änderung wird nicht mit Mollie synchronisiert'
+        order_line_changed_error.title: 'Synchronisieren Bestellposition fehlgeschlagen'
+        order_line_changed_error.description: 'Aktualisieren Bestellposition für zugehörige Mollie-Bestellung fehlgeschlagen. Antwort Mollie-API {api_message}'
+        shipping_address_change_error.title: 'Synchronisieren von Shop-Änderungen fehlgeschlagen'
+        shipping_address_change_error.description: 'Aktualisieren der Lieferadresse für die Mollie-Bestellung fehlgeschlagen. Antwort Mollie-API {api_message}'
+        billing_address_change_error.title: 'Synchronisieren von Shop-Änderungen fehlgeschlagen'
+        billing_address_change_error.description: 'Aktualisieren der Rechnungsadresse für die Mollie-Bestellung fehlgeschlagen. Antwort Mollie-API {api_message}'
+    webhook:
+      notification:
+        invalid_shop_order.title: 'Mollie-Änderung für unbekannte Bestellung'
+        invalid_shop_order.description: 'Änderung von Mollie wurde erkannt, aber es wurde keine zugehörige Bestellung im System gefunden'
+        invalid_credentials.title: 'Molllie-Änderung wurde nicht synchronisiert'
+        invalid_credentials.description: 'Ein Authentifizierungsfehler ist aufgetreten. Ungültiges Zugriffstoken der Organisation.'
+        invalid_api_order.title: 'Mollie-Änderung für unbekannte Bestellung'
+        invalid_api_order.description: 'Änderung von Mollie erkannt, aber es wurde keine entsprechende Zahlung in der Mollie-API gefunden. Antwort Mollie-API {api_message}.'
+        network_communication_problem.title: 'Molllie-Änderung wurde nicht synchronisiert'
+        network_communication_problem.description: 'Änderung von Mollie erkannt, aber Netzwerkverbindung mit Mollie-API konnte nicht hergestellt werden. Technische Details: {technical_message}.'
+        order_pay_error.title: 'Molllie-Änderung wurde nicht synchronisiertd'
+        order_pay_error.description: 'Bestellung im Mollie-Portal bezahlt.'
+        order_expire_error.title: 'Molllie-Änderung wurde nicht synchronisiert'
+        order_expire_error.description: 'Bestellung im Mollie-Portal abgelaufen..'
+        order_cancel_error.title: 'Molllie-Änderung wurde nicht synchronisiert'
+        order_cancel_error.description: 'Bestellung im Mollie-Portal storniert.'
+        order_refund_error.title: 'Molllie-Änderung wurde nicht synchronisiert'
+        order_refund_error.description: 'Bestellung im Mollie-Portal erstattet.'
+        order_fail_error.title: 'Molllie-Änderung wurde nicht synchronisiert'
+        order_fail_error.description: 'Order failed in Mollie portal.'
+        order_complete_error.title: 'Molllie-Änderung wurde nicht synchronisiert'
+        order_complete_error.description: 'Order is closed in Mollie portal.'
+        order_authorize_error.title: 'Molllie-Änderung wurde nicht synchronisiert'
+        order_authorize_error.description: 'Order is authorized in Mollie portal.'
+        order_line_cancel_info.title: 'Mollie-Bestellposition geändert'
+        order_line_cancel_info.description: 'Bestellposition im Molli-Portal storniert.'
+        order_line_refund_info.title: 'Mollie-Bestellposition geändert'
+        order_line_refund_info.description: 'Bestellposition im Mollie-Portal erstattet.'
