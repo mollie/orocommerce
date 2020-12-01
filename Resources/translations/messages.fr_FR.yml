@@ -1,0 +1,136 @@
+mollie:
+  payment:
+    channel_type.label: 'Mollie'
+    transport.label: 'Mollie'
+    payment_link:
+      label: 'Générer un lien de paiement'
+      message: 'Votre paiement est toujours en attente ? Copiez ce lien de paiement et envoyez-le à votre client. Cela le redirigera vers la page de checkout où il pourra à nouveau procéder au paiement'
+      only_payments_message: "Les moyens de paiement sont limités en raison de l'absence d'informations sur l'adresse de facturation"
+      copy_button.label: 'Copier et sauvegarder'
+    capture:
+      message: "Il n'est pas possible de saisir manuellement le paiement. Le paiement sera saisi automatiquement par Mollie."
+    refund:
+      label: 'Rembourser'
+      identifier: 'Identifier'
+      refundedQuantity: 'Quantité remboursée'
+      quantityToRefund: 'Quantité à rembourser'
+      orderLineRefund: 'Remboursement de la ligne de commande'
+      orderLineRefundMessage: "Ce payement a été réalisé comme partie d'une commande et il est recommandé de rembourser les lignes de commande individuelles."
+      paymentRefundMessage: 'Vous pouvez rembourser le montant total du paiement ou seulement une partie du montant de la transaction. Il est possible de réaliser différents remboursements.'
+      paymentRefund: 'Remboursement du paiement'
+      amountToRefund: 'Montant à rembourser'
+      description: 'Description'
+      totalRefunded: 'Total'
+      errorMessage: "Le payement ne peut pas être remboursé. Réponse de l'API Mollie: {api_message}"
+      invalidForm: 'Le formulaire ne peut pas être traité'
+      successMessage: 'Le paiement a été correctement remboursé'
+      totalAmountRefundedMessage: 'Le montant total a déjà été remboursé'
+      orderIsNotRefundableMessage: "La commande n'est pas en état de remboursement"
+      tooltip:
+        refunded: 'Montant actuellement remboursé'
+        total: 'Montant disponible total à rembourser'
+    checkout:
+      subtotals.mollie_payment_surcharge: 'Supplément de paiement'
+      redirect_to_mollie_payment: "Vous allez être redirigé vers le site web de la passerelle de paiement pour effectuer votre achat après l'étape de révision de la commande."
+      admin_link_error: "Nous n'avons pas pu traiter votre paiement. Veuillez vérifier vos informations de paiement et <a href='{adminPaymentLink}'>try again</a>."
+    config:
+      authorization:
+        label: 'Autorisation'
+        version.label: 'Version'
+        auth_token.label: "Organisation des jetons d'API"
+        verification:
+          success.message: "Une connexion a été correctement établie avec l'API Mollie"
+          fail.message: "Une erreur d'authentification est survenue. Organisation des jetons d'authentification non valide ou autorisations par jeton insuffisantes."
+          deleted_website.message: 'Reconfiguration nécessaire. Profil de site web non existant détecté.'
+        test_mode.label: 'Mode test'
+        connection_validation.button.text: 'Vérifier les jetons'
+        new_token.link.text: "Créer une nouvelle organisation des jetons d'API"
+      website_profile:
+        label: 'Profil du site web'
+        id.label: 'Profil du site web'
+      payment_methods:
+        label: 'Moyens de paiement'
+        status.active.label: 'Actif'
+        status.inactive.label: 'Inactif'
+        name.label: 'Nom'
+        description.label: 'Description'
+        image:
+          label: 'Image'
+          mime_type_error: 'Veuillez charger une image valide'
+          upload_error: "L'image {image_name} n'a pas pu être chargée."
+        method:
+          label: 'Moyen'
+          tooltip: "API de paiement<br>
+                    Utilisez la plateforme d'API de paiement pour les transactions.<br><br>
+
+                    API de commande<br><br>
+                    Utilisez la nouvelle plateforme d'API de commande et obtenez plus d'informations sur les commandes. <a href='https://docs.Mollie.com/orders/why-use-orders' target='_blank'>Read more</a>."
+          option.payment_api.label: 'API Paiements'
+          option.order_api.label: 'API Commandes'
+        surcharge:
+          label: 'Supplément'
+          klarna_tooltip: "Entrez le coût additionnel pour un paiement Klarna, avec un maximum de 1,95 €. Les montants supérieurs ne seront pas acceptés."
+          tooltip: "Entrez le coût additionnel pour un paiement."
+      notifications:
+        label: 'Notifications'
+        warning: 'Attention'
+        error: 'Erreur'
+        info: 'Information'
+        label.website: 'Site web'
+        label.type: 'Type'
+        label.date: 'Date'
+        label.message: 'Message'
+        label.details: 'Détails'
+        label.order: 'Commande'
+      support:
+        label: 'Support'
+    integration.event:
+      notification:
+        order_total_change_error.title: 'La synchronisation du changement de magasin a échoué'
+        order_total_change_error.description: "Échec du changement du total de la commande pour la commande Mollie associée. Réponse de l'API Mollie {api_message}"
+        order_close_error.title: 'La synchronisation du changement de magasin a échoué'
+        order_close_error.description: "Échec de la clôture de la commande Mollie. Réponse de l'API Mollie {api_message}"
+        order_ship_error.title: 'La synchronisation du changement de magasin a échoué'
+        order_ship_error.description: "Échec de la création d'un envoi pour la commande Mollie associée. Réponse de l'API Mollie {api_message}"
+        order_cancel_error.title: 'La synchronisation du changement de magasin a échoué'
+        order_cancel_error.description: "Échec de l'annulation de la commande Mollie. Réponse de l'API Mollie {api_message}"
+        order_closed.title: 'Événement détecté de commande clôturée'
+        order_closed.description: "La clôture de la commande n'est pas prise en charge, ce changement n'est donc pas synchronisé avec Mollie"
+        order_deleted.title: 'Événement détecté de commande supprimée'
+        order_deleted.description: "La suppression de la commande n'est pas prise en charge, ce changement n'est donc pas synchronisé avec Mollie"
+        order_total_changed.title: 'Événement détecté de changement total de commande'
+        order_total_changed.description: "La changement total de la commande n'est pas pris en charge, ce changement n'est donc pas synchronisé avec Mollie"
+        order_line_changed_error.title: 'La synchronisation de la ligne de commande a échoué'
+        order_line_changed_error.description: "Échec de la mise à jour de la ligne de commande pour la commande Mollie associée. Réponse de l'API Mollie {api_message}"
+        shipping_address_change_error.title: 'La synchronisation du changement de magasin a échoué'
+        shipping_address_change_error.description: "Échec de la mise à jour de l'adresse de livraison de la commande Mollie. Réponse de l'API Mollie {api_message}"
+        billing_address_change_error.title: 'La synchronisation du changement de magasin a échoué'
+        billing_address_change_error.description: "Échec de la mise à jour de l'adresse de facturation de la commande Mollie. Réponse de l'API Mollie {api_message}"
+    webhook:
+      notification:
+        invalid_shop_order.title: "Changement Mollie pour une commande inconnue"
+        invalid_shop_order.description: "Le changement depuis Mollie est détecté mais la commande correspondante n'a pas été trouvée dans le système."
+        invalid_credentials.title: "Le changement de Mollie n'est pas synchronisé"
+        invalid_credentials.description: "Une erreur d'authentification est survenue. Organisation des jetons d'authentification non valide."
+        invalid_api_order.title: 'Changement Mollie pour une commande inconnue'
+        invalid_api_order.description: "Le changement depuis Mollie est détecté mais le paiement correspondant n'a pas été trouvé dans l'API Mollie. Réponse de l'API Mollie {api_message}."
+        network_communication_problem.title: "Le changement de Mollie n'est pas synchronisé"
+        network_communication_problem.description: "Le changement depuis Mollie est déctecté mais la connexion au  réseau avec l'API Mollie n'a pas été établie. Détails techniques: {technical_message}."
+        order_pay_error.title: "Le changement de Mollie n'est pas synchronisé"
+        order_pay_error.description: 'La commande est payée sur le portail Mollie.'
+        order_expire_error.title: "Le changement de Mollie n'est pas synchronisé"
+        order_expire_error.description: 'La commande est expirée sur le portail Mollie.'
+        order_cancel_error.title: "Le changement de Mollie n'est pas synchronisé"
+        order_cancel_error.description: 'La commande est annulée sur le portail Mollie.'
+        order_refund_error.title: "Le changement de Mollie n'est pas synchronisé"
+        order_refund_error.description: 'La commande est remboursée sur le portail Mollie.'
+        order_fail_error.title: "Le changement de Mollie n'est pas synchronisé"
+        order_fail_error.description: 'Order failed in Mollie portal.'
+        order_complete_error.title: "Le changement de Mollie n'est pas synchronisé"
+        order_complete_error.description: 'Order is closed in Mollie portal.'
+        order_authorize_error.title: "Le changement de Mollie n'est pas synchronisé"
+        order_authorize_error.description: 'Order is authorized in Mollie portal.'
+        order_line_cancel_info.title: "Le changement de Mollie n'est pas synchronisé"
+        order_line_cancel_info.description: 'La ligne de commande est annulée sur le portail Mollie..'
+        order_line_refund_info.title: 'La ligne de commande Mollie a changé'
+        order_line_refund_info.description: 'La ligne de commande est remboursée sur le portail Mollie.'
