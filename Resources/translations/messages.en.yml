@@ -122,6 +122,8 @@ mollie:
         order_expire_error.description: 'Order is expired in Mollie portal.'
         order_cancel_error.title: 'Mollie change is not synchronized'
         order_cancel_error.description: 'Order is canceled in Mollie portal.'
+        order_refund_error.title: "Mollie change is not synchronized"
+        order_refund_error.description: 'Order is refunded in Mollie portal.'
         order_fail_error.title: 'Mollie change is not synchronized'
         order_fail_error.description: 'Order failed in Mollie portal.'
         order_complete_error.title: 'Mollie change is not synchronized'

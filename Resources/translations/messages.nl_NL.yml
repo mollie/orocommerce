@@ -1,0 +1,136 @@
+mollie:
+  payment:
+    channel_type.label: 'Mollie'
+    transport.label: 'Mollie'
+    payment_link:
+      label: 'Een betaallink aanmaken'
+      message: 'Is je betaling nog in behandeling? Kopieer de betaallink en stuur deze naar je klant. Ze worden doorverwezen naar de checkout-pagina, waar ze opnieuw kunnen betaling'
+      only_payments_message: 'Beschikbare betalingsmethodes zijn beperkt door ontbrekende factuuradresgegevens'
+      copy_button.label: 'Kopiëren en Opslaan'
+    capture:
+      message: 'Het is niet mogelijk om de betaling handmatig te capturen. Dit wordt automatisch gedaan door Mollie.'
+    refund:
+      label: 'Terugbetaling'
+      identifier: 'Identifier'
+      refundedQuantity: 'Terugbetaalde hoeveelheid'
+      quantityToRefund: 'Terug te betalen aantal'
+      orderLineRefund: 'Orderregel terugbetaling'
+      orderLineRefundMessage: 'Deze betaling is gedaan als onderdeel van een bestelling. Het wordt aanbevolen om individuele orderregels terug te betalen.'
+      paymentRefundMessage: 'Je kunt het totale bedrag of een deel ervan terugstorten. Het is mogelijk om meerdere terugbetalingen uit te voeren.'
+      paymentRefund: 'Terugbetaling'
+      amountToRefund: 'Terug te betalen bedrag'
+      description: 'Beschrijving'
+      totalRefunded: 'Totaal'
+      errorMessage: 'Betaling kan niet worden terugbetaald. Reactie Mollie API: {api_message}'
+      invalidForm: 'Formulier kan niet worden verwerkt'
+      successMessage: 'Betaling succesvol terugbetaald'
+      totalAmountRefundedMessage: 'Het totale bedrag is al terugbetaald'
+      orderIsNotRefundableMessage: 'Bestelling is niet in een terugbetaalbare staat'
+      tooltip:
+        refunded: 'Op dit moment terugbetaald bedrag'
+        total: 'Totaal beschikbaar om terug te betalen'
+    checkout:
+      subtotals.mollie_payment_surcharge: 'Betalingstoeslag'
+      redirect_to_mollie_payment: 'Nadat je de bestelling hebt gecontroleerd, word je doorgestuurd naar de website van de betalingsprovider om je aankoop af te ronden.'
+      admin_link_error: 'We hebben je betaling niet kunnen verwerken. Controleer je betalingsgegevens en <a href="{adminPaymentLink}">probeer het opnieuw</a>.'
+    config:
+      authorization:
+        label: 'Autorisatie'
+        version.label: 'Versie'
+        auth_token.label: 'Organisatie API-token'
+        verification:
+          success.message: 'Er is een verbinding tot stand gebracht met de Mollie API.'
+          fail.message: 'Er heeft zich een authenticatiefout voorgedaan. Ongeldig toegangstoken voor Organisatie of onvoldoende tokenmachtigingen.'
+          deleted_website.message: 'Herconfiguratie vereist. Geen bestaand websiteprofiel gedetecteerd.'
+        test_mode.label: 'Test Mode'
+        connection_validation.button.text: 'Verifieer token'
+        new_token.link.text: 'Maak een nieuwe organisatie-API-token aan'
+      website_profile:
+        label: 'Websiteprofiel'
+        id.label: 'Websiteprofiel'
+      payment_methods:
+        label: 'Betaalmethodes'
+        status.active.label: 'Actief'
+        status.inactive.label: 'Inactief'
+        name.label: 'Naam'
+        description.label: 'Beschrijving'
+        image:
+          label: 'Afbeelding'
+          mime_type_error: 'Upload een geldige afbeelding'
+          upload_error: 'Afbeelding {image_name} kan niet worden geüpload.'
+        method:
+          label: 'Methode'
+          tooltip: 'Payment API<br>
+                    Gebruik het Payment API Platform voor de transacties.<br><br>
+
+                    Order API<br>
+                    Gebruik het nieuwe Order API Platform en krijg extra inzichten in de bestellingen. <a href="https://docs.Mollie.com/orders/why-use-orders" target="_blank">Lees meer</a>.'
+          option.payment_api.label: 'Payment API'
+          option.order_api.label: 'Orders API'
+        surcharge:
+          label: 'Toeslag'
+          klarna_tooltip: "Vul de extra kosten voor een Klarna-betaling in, met een maximum van € 1,95. Hogere bedragen worden niet geaccepteerd."
+          tooltip: "Vul de extra kosten voor een betaling in."
+      notifications:
+        label: 'Meldingen'
+        warning: 'Waarschuwing'
+        error: 'Fout'
+        info: 'Info'
+        label.website: 'Website'
+        label.type: 'Type'
+        label.date: 'Datum'
+        label.message: 'Bericht'
+        label.details: 'Details'
+        label.order: 'Bestelling'
+      support:
+        label: 'Support'
+    integration.event:
+      notification:
+        order_total_change_error.title: 'Synchronisatie van winkelwijziging mislukt'
+        order_total_change_error.description: 'Het bestellingstotaal voor de gerelateerde Mollie-bestelling kan niet worden gewijzigd. Reactie Mollie API: {api_message}'
+        order_close_error.title: 'Synchronisatie van winkelwijziging mislukt'
+        order_close_error.description: 'Kan Mollie-bestelling niet sluiten. Reactie Mollie API: {api_message}'
+        order_ship_error.title: 'Synchronisatie van winkelwijziging mislukt'
+        order_ship_error.description: 'Kan geen verzending aanmaken voor gerelateerde Mollie-bestelling. Reactie Mollie API: {api_message}'
+        order_cancel_error.title: 'Synchronisatie van winkelwijziging mislukt'
+        order_cancel_error.description: 'De bestelling van Mollie kan niet worden geannuleerd. Reactie Mollie API: {api_message}'
+        order_closed.title: 'Bestelling gesloten gedetecteerd'
+        order_closed.description: 'Ordersluiting wordt niet ondersteund, dus deze wijziging wordt niet gesynchroniseerd met de Mollie'
+        order_deleted.title: 'Verwijderde bestelling gedetecteerd'
+        order_deleted.description: 'Het verwijderen van bestellingen wordt niet ondersteund, dus deze wijziging wordt niet gesynchroniseerd met de Mollie'
+        order_total_changed.title: 'Wijziging bestellingstotaal gedetecteerd'
+        order_total_changed.description: 'Wijziging van bestellingstotaal wordt niet ondersteund, dus deze wijziging wordt niet gesynchroniseerd met de Mollie'
+        order_line_changed_error.title: 'Synchronisatie van orderregel is mislukt'
+        order_line_changed_error.description: 'Bijwerken van orderregel voor gerelateerde Mollie-bestelling is mislukt. Reactie Mollie API: {api_message}'
+        shipping_address_change_error.title: 'Synchronisatie van winkelwijziging mislukt'
+        shipping_address_change_error.description: 'Het factuuradres van de Mollie-bestelling kan niet worden bijgewerkt. Reactie Mollie API: {api_message}'
+        billing_address_change_error.title: 'Synchronisatie van winkelwijziging mislukt'
+        billing_address_change_error.description: 'Het factuuradres van de Mollie-bestelling kan niet worden bijgewerkt. Reactie Mollie API: {api_message}'
+    webhook:
+      notification:
+        invalid_shop_order.title: 'Mollie-wijziging voor onbekende bestelling'
+        invalid_shop_order.description: 'Wijziging van Mollie is gedetecteerd, maar de overeenkomende bestelling is niet gevonden in het systeem..'
+        invalid_credentials.title: 'De wijziging van Mollie is niet gesynchroniseerd'
+        invalid_credentials.description: 'Er heeft zich een authenticatiefout voorgedaan. Ongeldig toegangstoken voor Organisatie.'
+        invalid_api_order.title: 'Mollie-wijziging voor onbekende bestelling'
+        invalid_api_order.description: 'Er is een wijziging van Mollie gedetecteerd, maar de overeenkomende betaling is niet gevonden in de Mollie-API. Reactie Mollie API: {api_message}.'
+        network_communication_problem.title: 'De wijziging van Mollie is niet gesynchroniseerd'
+        network_communication_problem.description: 'Verandering vanuit Mollie is gedetecteerd, maar netwerkverbinding met Mollie-API kon niet tot stand worden gebracht. Technische gegevens: {technical_message}.'
+        order_pay_error.title: 'De wijziging van Mollie is niet gesynchroniseerd'
+        order_pay_error.description: 'Bestelling is betaald in het Mollie-portaal.'
+        order_expire_error.title: 'De wijziging van Mollie is niet gesynchroniseerd'
+        order_expire_error.description: 'Bestelling is verlopen in het Mollie-portaal.'
+        order_cancel_error.title: 'De wijziging van Mollie is niet gesynchroniseerd'
+        order_cancel_error.description: 'Bestelling is geannuleerd in het Mollie-portaal.'
+        order_refund_error.title: 'De wijziging van Mollie is niet gesynchroniseerd'
+        order_refund_error.description: 'Bestelling wordt terugbetaald in het Mollie-portaal.'
+        order_fail_error.title: 'De wijziging van Mollie is niet gesynchroniseerd'
+        order_fail_error.description: 'Order failed in Mollie portal.'
+        order_complete_error.title: 'De wijziging van Mollie is niet gesynchroniseerd'
+        order_complete_error.description: 'Order is closed in Mollie portal.'
+        order_authorize_error.title: 'De wijziging van Mollie is niet gesynchroniseerd'
+        order_authorize_error.description: 'Order is authorized in Mollie portal.'
+        order_line_cancel_info.title: 'De orderregel van Mollie is gewijzigd'
+        order_line_cancel_info.description: 'Orderregel is geannuleerd in het Mollie-portaal.'
+        order_line_refund_info.title: 'De orderregel van Mollie is gewijzigd'
+        order_line_refund_info.description: 'Orderregel wordt terugbetaald in het Mollie-portaal..'
