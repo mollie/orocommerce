@@ -166,4 +166,4 @@ The payment methods are disabled by default in your account so you firstly need 
  6. **Check if there is any information in the logfile inside shop /var/logs/ folder**
 
 # Release notes
- - **4.1.3:** Translations for NL, DE, and FR are added.
+ - **3.1.3:** Translations for NL, DE, and FR are added.
