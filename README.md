@@ -12,6 +12,8 @@
 
 [- Troubleshooting](#troubleshooting)
 
+[- Release notes](#release-notes)
+
 
 ## About Mollie Payments ##
 With Mollie, you can accept payments and donations online and expand your customer base internationally with support for all major payment methods through a single integration. No need to spend weeks on paperwork or security compliance procedures. No more lost conversions because you don’t support a shopper’s favourite payment method or because they don’t feel safe. We made our products and API expansive, intuitive, and safe for merchants, customers and developers alike. 
@@ -162,3 +164,6 @@ The payment methods are disabled by default in your account so you firstly need 
  4. **Check if the order amount min and/or max value is fulfilled**
  5. **Check if there is any information in the Notifications section ‘System’ » ‘Manage Integrations’ » ’Mollie’ » ’Notifications’**
  6. **Check if there is any information in the logfile inside shop /var/logs/ folder**
+
+# Release notes
+ - **4.1.3:** Translations for NL, DE, and FR are added.
