@@ -5,8 +5,8 @@ namespace Mollie\Bundle\PaymentBundle\Tests\Unit\BusinessLogic\CheckoutLink;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\CheckoutLink\CheckoutLinkService;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\CheckoutLink\Exceptions\CheckoutLinkNotAvailableException;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\Exceptions\UnprocessableEntityRequestException;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\OrgToken\ProxyDataProvider;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\Proxy;
-use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\ProxyTransformer;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\OrderReference\Model\OrderReference;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\OrderReference\OrderReferenceService;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Orders\OrderService;
@@ -36,7 +36,7 @@ class CheckoutLinkTest extends BaseTestWithServices
      */
     public $httpClient;
     /**
-     * @var ProxyTransformer
+     * @var ProxyDataProvider
      */
     public $proxyTransformer;
     /**
@@ -57,7 +57,7 @@ class CheckoutLinkTest extends BaseTestWithServices
         RepositoryRegistry::registerRepository(OrderReference::CLASS_NAME, MemoryRepository::getClassName());
 
         $this->httpClient = new TestHttpClient();
-        $this->proxyTransformer = new ProxyTransformer();
+        $this->proxyTransformer = new ProxyDataProvider();
         TestServiceRegister::registerService(
             HttpClient::CLASS_NAME,
             function () use ($me) {

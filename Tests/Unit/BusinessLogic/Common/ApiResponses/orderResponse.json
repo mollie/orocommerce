@@ -75,7 +75,7 @@
         "value": "0.00",
         "currency": "EUR"
       },
-      "shippableQuantity": 0,
+      "shippableQuantity": 5,
       "refundableQuantity": 2,
       "cancelableQuantity": 0,
       "unitPrice": {
@@ -133,7 +133,7 @@
         "value": "0.00",
         "currency": "EUR"
       },
-      "shippableQuantity": 0,
+      "shippableQuantity": 5,
       "refundableQuantity": 1,
       "cancelableQuantity": 0,
       "unitPrice": {

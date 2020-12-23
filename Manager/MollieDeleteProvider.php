@@ -3,7 +3,7 @@
 namespace Mollie\Bundle\PaymentBundle\Manager;
 
 use Mollie\Bundle\PaymentBundle\Integration\MolliePaymentChannelType;
-use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\AuthorizationController;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Authorization\Interfaces\AuthorizationService;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration;
 use Oro\Bundle\IntegrationBundle\Entity\Channel as Integration;
 use Oro\Bundle\IntegrationBundle\Manager\DeleteProviderInterface;
@@ -16,9 +16,9 @@ use Oro\Bundle\IntegrationBundle\Manager\DeleteProviderInterface;
 class MollieDeleteProvider implements DeleteProviderInterface
 {
     /**
-     * @var AuthorizationController
+     * @var AuthorizationService
      */
-    private $authorizationController;
+    private $authorizationService;
     /**
      * @var Configuration
      */
@@ -27,14 +27,14 @@ class MollieDeleteProvider implements DeleteProviderInterface
     /**
      * MollieDeleteProvider constructor.
      *
-     * @param AuthorizationController $authorizationController
+     * @param AuthorizationService $authorizationService
      * @param Configuration $configService
      */
     public function __construct(
-        AuthorizationController $authorizationController,
+        AuthorizationService $authorizationService,
         Configuration $configService
     ) {
-        $this->authorizationController = $authorizationController;
+        $this->authorizationService = $authorizationService;
         $this->configService = $configService;
     }
 
@@ -54,7 +54,7 @@ class MollieDeleteProvider implements DeleteProviderInterface
     public function deleteRelatedData(Integration $integration)
     {
         $this->configService->doWithContext((string)$integration->getId(), function () {
-            $this->authorizationController->reset();
+            $this->authorizationService->reset();
         });
     }
 }

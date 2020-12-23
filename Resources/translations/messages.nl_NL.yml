@@ -33,6 +33,11 @@ mollie:
       subtotals.mollie_payment_surcharge: 'Betalingstoeslag'
       redirect_to_mollie_payment: 'Nadat je de bestelling hebt gecontroleerd, word je doorgestuurd naar de website van de betalingsprovider om je aankoop af te ronden.'
       admin_link_error: 'We hebben je betaling niet kunnen verwerken. Controleer je betalingsgegevens en <a href="{adminPaymentLink}">probeer het opnieuw</a>.'
+      selectBank: 'Selecteer Bank'
+      cardHolder: 'Kaarthouder'
+      cardNumber: 'Kaartnummer'
+      expiryDate: 'Vervaldatum'
+      verificationCode: 'Verificatie code'
     config:
       authorization:
         label: 'Autorisatie'
@@ -67,6 +72,14 @@ mollie:
                     Gebruik het nieuwe Order API Platform en krijg extra inzichten in de bestellingen. <a href="https://docs.Mollie.com/orders/why-use-orders" target="_blank">Lees meer</a>.'
           option.payment_api.label: 'Payment API'
           option.order_api.label: 'Orders API'
+        mollie_components:
+          label: 'Gebruik Mollie Components'
+          tooltip: 'Read more about <a href="https://www.mollie.com/en/news/post/better-checkout-flows-with-mollie-components" target="_blank">Mollie Components</a> and how it improves your conversion'
+        issuer_list:
+          label: 'Issuer List Style'
+          tooltip: 'Choose the style in which issuer list will be displayed on checkout.'
+          option.dropdown: "Dropdown"
+          option.list: "Lijst met afbeeldingen"
         surcharge:
           label: 'Toeslag'
           klarna_tooltip: "Vul de extra kosten voor een Klarna-betaling in, met een maximum van € 1,95. Hogere bedragen worden niet geaccepteerd."

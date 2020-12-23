@@ -4,6 +4,7 @@ namespace Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\OrderReferen
 
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\BaseService;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\BaseDto;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\OrderReference\Exceptions\ReferenceNotFoundException;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\OrderReference\Model\OrderReference;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ORM\QueryFilter\Operators;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ORM\QueryFilter\QueryFilter;
@@ -79,7 +80,7 @@ class OrderReferenceService extends BaseService
             )
         );
 
-        return  $orderReference;
+        return $orderReference;
     }
 
     /**
@@ -102,5 +103,32 @@ class OrderReferenceService extends BaseService
         );
 
         return $orderReference;
+    }
+
+    /**
+     * Gets order reference with restrictions:
+     *  - Order reference should be stored
+     *  - Mollie reference should be present on order reference
+     *  - Api method must be equal to given api method
+     *
+     * @param string $shopReference
+     * @param string $allowedApiMethod
+     *
+     * @return OrderReference
+     *
+     * @throws ReferenceNotFoundException
+     */
+    public function getValidOrderReference($shopReference, $allowedApiMethod)
+    {
+        $orderReference = $this->getByShopReference($shopReference);
+        if (
+            $orderReference &&
+            $orderReference->getMollieReference() &&
+            $orderReference->getApiMethod() === $allowedApiMethod
+        ) {
+            return $orderReference;
+        }
+
+        throw new ReferenceNotFoundException("Valid order reference not found for shop reference: {$shopReference}");
     }
 }

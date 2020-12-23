@@ -2,6 +2,7 @@
 
 namespace Mollie\Bundle\PaymentBundle\PaymentMethod;
 
+use Mollie\Bundle\PaymentBundle\EventListener\OrderLineEntityListener;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration;
 use Mollie\Bundle\PaymentBundle\PaymentMethod\Config\MolliePaymentConfigInterface;
 use Mollie\Bundle\PaymentBundle\PaymentMethod\Config\Provider\MolliePaymentContextAwareConfigProviderInterface;
@@ -11,6 +12,7 @@ use Oro\Bundle\PaymentBundle\Entity\PaymentTransaction;
 use Oro\Bundle\PaymentBundle\Method\Action\CaptureActionInterface;
 use Oro\Bundle\PaymentBundle\Method\Action\PurchaseActionInterface;
 use Oro\Bundle\PaymentBundle\Method\PaymentMethodInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
@@ -118,6 +120,16 @@ class MolliePayment implements PaymentMethodInterface, PurchaseActionInterface, 
         $paymentTransaction->setActive(true);
         $paymentTransaction->setSuccessful(true);
 
+        if (empty($purchaseRedirectUrl)) {
+            OrderLineEntityListener::setHandleLineEvent(false);
+
+            $purchaseRedirectUrl = $this->router->generate(
+                'oro_payment_callback_return',
+                ['accessIdentifier' => $paymentTransaction->getAccessIdentifier()],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            );
+        }
+
         return !empty($purchaseRedirectUrl) ? ['purchaseRedirectUrl' => $purchaseRedirectUrl] : [];
     }
 
@@ -181,6 +193,23 @@ class MolliePayment implements PaymentMethodInterface, PurchaseActionInterface, 
     public function getConfig()
     {
         return $this->config;
+    }
+
+    /**
+     *
+     * @param PaymentTransaction $paymentTransaction
+     *
+     * @return string
+     */
+    protected function getCheckoutRedirectUrl(PaymentTransaction $paymentTransaction)
+    {
+        OrderLineEntityListener::setHandleLineEvent(false);
+
+        return $this->router->generate(
+            'oro_payment_callback_return',
+            ['accessIdentifier' => $paymentTransaction->getAccessIdentifier()],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
     }
 
     /**

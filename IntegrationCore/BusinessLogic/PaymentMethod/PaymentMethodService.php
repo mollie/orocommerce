@@ -50,8 +50,8 @@ class PaymentMethodService extends BaseService
         $proxy = ServiceRegister::getService(Proxy::CLASS_NAME);
         $paymentMethodConfigs = array();
 
-        $allPaymentMethods = $proxy->getAllPaymentMethods($profileId);
-        $enabledPaymentMethods = $proxy->getEnabledPaymentMethodsMap($profileId);
+        $allPaymentMethods = $proxy->getAllPaymentMethods();
+        $enabledPaymentMethods = $proxy->getEnabledPaymentMethodsMap();
         $savedPaymentMethodConfigs = $this->getPaymentMethodConfigurationsMap($profileId);
 
         foreach ($allPaymentMethods as $paymentMethod) {
@@ -95,7 +95,7 @@ class PaymentMethodService extends BaseService
         $proxy = ServiceRegister::getService(Proxy::CLASS_NAME);
         $paymentMethodConfigs = array();
 
-        $enabledPaymentMethods = $proxy->getEnabledPaymentMethodsMap($profileId, $billingCountry, $amount, $apiMethod);
+        $enabledPaymentMethods = $proxy->getEnabledPaymentMethodsMap($billingCountry, $amount, $apiMethod);
         $savedPaymentMethodConfigs = $this->getPaymentMethodConfigurationsMap($profileId);
 
         foreach ($enabledPaymentMethods as $paymentMethod) {

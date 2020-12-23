@@ -127,7 +127,7 @@ class OrderLine extends BaseDto
     {
         $orderLine = new static();
         $orderLine->name = static::getValue($raw, 'name');
-        $orderLine->quantity = static::getValue($raw, 'quantity', 0);
+        $orderLine->quantity = (int)static::getValue($raw, 'quantity', 0);
         $orderLine->vatRate = static::getValue($raw, 'vatRate');
         $orderLine->unitPrice = Amount::fromArray(static::getValue($raw, 'unitPrice', array()));
         $orderLine->totalAmount = Amount::fromArray(static::getValue($raw, 'totalAmount', array()));
@@ -143,18 +143,18 @@ class OrderLine extends BaseDto
         $orderLine->isCancelable = static::getValue($raw, 'isCancelable', false);
         $orderLine->resource = static::getValue($raw, 'resource');
 
-        $orderLine->quantityShipped = static::getValue($raw, 'quantityShipped', 0);
+        $orderLine->quantityShipped = (int)static::getValue($raw, 'quantityShipped', 0);
         $orderLine->amountShipped = Amount::fromArray(static::getValue($raw, 'amountShipped', array()));
 
-        $orderLine->quantityRefunded = static::getValue($raw, 'quantityRefunded', 0);
+        $orderLine->quantityRefunded = (int)static::getValue($raw, 'quantityRefunded', 0);
         $orderLine->amountRefunded = Amount::fromArray(static::getValue($raw, 'amountRefunded', array()));
 
-        $orderLine->quantityCanceled = static::getValue($raw, 'quantityCanceled', 0);
+        $orderLine->quantityCanceled = (int)static::getValue($raw, 'quantityCanceled', 0);
         $orderLine->amountCanceled = Amount::fromArray(static::getValue($raw, 'amountCanceled', array()));
 
-        $orderLine->shippableQuantity = static::getValue($raw, 'shippableQuantity', 0);
-        $orderLine->refundableQuantity = static::getValue($raw, 'refundableQuantity', 0);
-        $orderLine->cancelableQuantity = static::getValue($raw, 'cancelableQuantity', 0);
+        $orderLine->shippableQuantity = (int)static::getValue($raw, 'shippableQuantity', 0);
+        $orderLine->refundableQuantity = (int)static::getValue($raw, 'refundableQuantity', 0);
+        $orderLine->cancelableQuantity = (int)static::getValue($raw, 'cancelableQuantity', 0);
         $orderLine->status = static::getValue($raw, 'status');
         $orderLine->createdAt = \DateTime::createFromFormat(DATE_ATOM, static::getValue($raw, 'createdAt'));
 
@@ -187,19 +187,19 @@ class OrderLine extends BaseDto
             'isCancelable' => $this->isCancelable,
             'quantity' => $this->quantity,
             'quantityShipped' => $this->quantityShipped,
-            'amountShipped' => $this->amountShipped->toArray(),
+            'amountShipped' => $this->amountShipped ? $this->amountShipped->toArray() : array(),
             'quantityRefunded' => $this->quantityRefunded,
-            'amountRefunded' => $this->amountRefunded->toArray(),
+            'amountRefunded' => $this->amountRefunded ? $this->amountRefunded->toArray() : array(),
             'quantityCanceled' => $this->quantityCanceled,
-            'amountCanceled' => $this->amountCanceled->toArray(),
+            'amountCanceled' => $this->amountCanceled ? $this->amountCanceled->toArray() : array(),
             'shippableQuantity' => $this->shippableQuantity,
             'refundableQuantity' => $this->refundableQuantity,
             'cancelableQuantity' => $this->cancelableQuantity,
-            'unitPrice' => $this->unitPrice->toArray(),
+            'unitPrice' => $this->unitPrice  ? $this->unitPrice->toArray() : array(),
             'vatRate' => $this->vatRate,
-            'vatAmount' => $this->vatAmount->toArray(),
+            'vatAmount' => $this->vatAmount ? $this->vatAmount->toArray() : array(),
             'discountAmount' => $this->discountAmount ? $this->discountAmount->toArray() : array(),
-            'totalAmount' => $this->totalAmount->toArray(),
+            'totalAmount' => $this->totalAmount ? $this->totalAmount->toArray() : array(),
             'createdAt' => $this->createdAt ? $this->createdAt->format(DATE_ATOM) : null,
             '_links' => $links,
         );

@@ -31,6 +31,10 @@ class Shipment extends BaseDto
      * @var OrderLine[]
      */
     protected $lines;
+    /**
+     * @var \DateTime
+     */
+    protected $createdAt;
 
     /**
      * @param array $raw
@@ -45,7 +49,7 @@ class Shipment extends BaseDto
         $result->id = static::getValue($raw, 'id');
         $result->orderId = static::getValue($raw, 'orderId');
         $result->setLines(OrderLine::fromArrayBatch(static::getValue($raw, 'lines', array())));
-
+        $result->createdAt = \DateTime::createFromFormat(DATE_ATOM, static::getValue($raw, 'createdAt'));
         $trackingData = static::getValue($raw, 'tracking', array());
         if (!empty($trackingData)) {
             $result->tracking = Tracking::fromArray($trackingData);
@@ -69,10 +73,11 @@ class Shipment extends BaseDto
             'id' => $this->id,
             'orderId' => $this->orderId,
             'lines' => $lines,
+            'createdAt' => $this->createdAt ? $this->createdAt->format(DATE_ATOM) : null,
         );
 
         if ($this->tracking) {
-            $result['tracking'] = $this->tracking;
+            $result['tracking'] = $this->tracking->toArray();
         }
 
         return $result;
@@ -156,5 +161,26 @@ class Shipment extends BaseDto
     public function setLines($lines)
     {
         $this->lines = $lines;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * @return array
+     */
+    public function getShipmentLinesMap()
+    {
+        $map = array();
+        foreach ($this->getLines() as $line) {
+            $map[$line->getId()] = $line;
+        }
+
+        return $map;
     }
 }

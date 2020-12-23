@@ -43,9 +43,6 @@ abstract class Configuration extends \Mollie\Bundle\PaymentBundle\IntegrationCor
     public function removeConfigValue($name)
     {
         $entity = $this->getConfigEntity($name);
-        if ($entity) {
-            $this->getRepository()->delete($entity);
-        }
 
         return $entity ? $this->getRepository()->delete($entity) : true;
     }

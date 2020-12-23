@@ -13,7 +13,92 @@
                 {% endif %}
                 <p>{{ 'mollie.payment.checkout.redirect_to_mollie_payment'|trans }}</p>
             </div>
+
         </div>
+        {% if (view.options.issuers is not empty and view.options.issuerListStyle is not empty) %}
+            {% set issuerOptions = {
+                paymentMethod: view.options.paymentMethod,
+            } %}
+            <div class="mollie-issuer-list-container"
+                 id="{{ view.options.paymentMethod }}-issuer-list"
+                 data-page-component-module="molliepayment/js/app/components/mollie-issuer"
+                 data-page-component-options="{{ issuerOptions|json_encode }}"
+            >
+                {% if (view.options.issuerListStyle == 'dropdown') %}
+                    <label for="mollie-issuer-list-dropdown">
+                        {{ 'mollie.payment.checkout.selectBank'|trans }}
+                    </label>
+                    <select id="{{ view.options.paymentMethod }}-issuer"
+                            name="oro_workflow_transition[{{ view.options.paymentMethod }}-mollie-issuer]"
+                            class="mollie-issuer-list-dropdown">
+                        {% for issuer in view.options.issuers %}
+                            <option value="{{ issuer.id }}">{{ issuer.name }}</option>
+                        {% endfor %}
+                    </select>
+                {% elseif (view.options.issuerListStyle == 'list') %}
+                    <span>
+                        {{ 'mollie.payment.checkout.selectBank'|trans }}
+                    </span>
+                    {% for issuer in view.options.issuers %}
+                        <div class="mollie-issuer-list-item">
+                            <input type="radio"
+                                   id="{{ issuer.id }}-issuer-item"
+                                   name="oro_workflow_transition[{{ view.options.paymentMethod }}-mollie-issuer]"
+                                   value="{{ issuer.id }}"
+                                   {% if loop.first %}checked{% endif %}
+                            >
+                            <label for="{{ issuer.id }}-issuer-item">
+                                <img src="{{ issuer.image.svg }}">
+                                <span>{{ issuer.name }}</span>
+                            </label>
+                        </div>
+                    {% endfor %}
+
+                {% endif %}
+            </div>
+        {% endif %}
+        {% if (view.options.useMollieComponents) %}
+            {% set creditCardOptions = {
+                profileId: view.options.profileId,
+                testMode: view.options.isTestMode,
+                paymentMethod: view.options.paymentMethod,
+            } %}
+            <div class="mollie-component-wrapper"
+                 data-page-component-module="molliepayment/js/app/components/mollie-credit-card"
+                 data-page-component-options="{{ creditCardOptions|json_encode }}"
+            >
+                <div class="form-fields">
+
+                    <input id="{{ view.options.paymentMethod }}-mollie-card-token"
+                           required="required" type="hidden"
+                           name="oro_workflow_transition[{{ view.options.paymentMethod }}-mollie-card-token]"
+                    >
+                    <div id="card-holder-group" class="form-group form-group--cardHolder">
+                        <label class="label" for="{{ view.options.paymentMethod }}-vcard-holder">{{ 'mollie.payment.checkout.cardHolder'|trans }}</label>
+                        <div id="{{ view.options.paymentMethod }}-card-holder"></div>
+                        <div id="{{ view.options.paymentMethod }}-card-holder-error" class="field-error" role="alert"></div>
+                    </div>
+
+                    <div class="form-group form-group--cardNumber">
+                        <label class="label" for="{{ view.options.paymentMethod }}-card-number">{{ 'mollie.payment.checkout.cardNumber'|trans }}</label>
+                        <div id="{{ view.options.paymentMethod }}-card-number"></div>
+                        <div id="{{ view.options.paymentMethod }}-card-number-error" class="field-error" role="alert"></div>
+                    </div>
+
+                    <div class="form-group form-group--expiryDate">
+                        <label class="label" for="{{ view.options.paymentMethod }}-expiry-date">{{ 'mollie.payment.checkout.expiryDate'|trans }}</label>
+                        <div id="{{ view.options.paymentMethod }}-expiry-date"></div>
+                        <div id="{{ view.options.paymentMethod }}-expiry-date-error" class="field-error" role="alert"></div>
+                    </div>
+
+                    <div class="form-group form-group--verificationCode">
+                        <label class="label" for="{{ view.options.paymentMethod }}-verification-code">{{ 'mollie.payment.checkout.verificationCode'|trans }}</label>
+                        <div id="{{ view.options.paymentMethod }}-verification-code"></div>
+                        <div id="{{ view.options.paymentMethod }}-verification-code-error" class="field-error" role="alert"></div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
     </div>
 {% endblock %}
 

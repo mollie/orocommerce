@@ -33,6 +33,11 @@ mollie:
       subtotals.mollie_payment_surcharge: 'Zahlungsaufschlag'
       redirect_to_mollie_payment: 'Nach dem Kontrollieren Ihrer Bestellung werden Sie zur Website des Zahlungsanbieters weitergeleitet, um den Einkauf abzuschließen.'
       admin_link_error: 'Wir konnten Ihre Zahlung nicht verarbeiten. Überprüfen Sie bitte die Zahlungsinformationen und <a href="{adminPaymentLink}">versuchen Sie es erneut</a>.'
+      selectBank: 'Bank auswählen'
+      cardHolder: 'Kartenhalter'
+      cardNumber: 'Kartennummer'
+      expiryDate: 'Verfallsdatum'
+      verificationCode: 'Verifizierungs-Schlüssel'
     config:
       authorization:
         label: 'Befugnis'
@@ -67,6 +72,14 @@ mollie:
                      Verwenden Sie die neue Auftrags-API-Plattform, um mehr Einblicke in die Bestellungen zu erhalten. <a href="https://docs.Mollie.com/orders/why-use-orders" target="_blank">Read more</a>.'
           option.payment_api.label: 'Zahlungs-API'
           option.order_api.label: 'Auftrags-API'
+        mollie_components:
+          label: 'Mollie Components verwenden'
+          tooltip: 'Read more about <a href="https://www.mollie.com/en/news/post/better-checkout-flows-with-mollie-components" target="_blank">Mollie Components</a> and how it improves your conversion'
+        issuer_list:
+          label: 'Issuer List Style'
+          tooltip: 'Choose the style in which issuer list will be displayed on checkout.'
+          option.dropdown: "Dropdown"
+          option.list: "Liste mit Abbildungen"
         surcharge:
           label: 'Aufschlag'
           klarna_tooltip: "Geben Sie die zusätzlichen Kosten für eine Klarna-Zahlung mit einem Höchstbetrag von 1,95 € ein. Höhere Beträge werden nicht akzeptiert."

@@ -19,6 +19,7 @@ use Oro\Bundle\TaxBundle\Model\Result;
 use Oro\Bundle\TaxBundle\Model\ResultElement;
 use Oro\Bundle\TaxBundle\Provider\TaxProviderRegistry;
 use Oro\Bundle\OrderBundle\Entity\Order as OroOrder;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -31,6 +32,10 @@ use Oro\Bundle\LocaleBundle\DependencyInjection\Configuration as LocaleConfigura
  */
 class MollieDtoMapper implements MollieDtoMapperInterface
 {
+    /**
+     * @var RequestStack
+     */
+    private $requestStack;
     /**
      * @var Configuration
      */
@@ -67,6 +72,7 @@ class MollieDtoMapper implements MollieDtoMapperInterface
     /**
      * MollieDtoMapper constructor.
      *
+     * @param RequestStack $requestStack
      * @param Configuration $configService
      * @param TaxProviderRegistry $taxProviderRegistry
      * @param SurchargeProvider $surchargeProvider
@@ -77,6 +83,7 @@ class MollieDtoMapper implements MollieDtoMapperInterface
      * @param string $webhooksUrlReplacement
      */
     public function __construct(
+        RequestStack $requestStack,
         Configuration $configService,
         TaxProviderRegistry $taxProviderRegistry,
         SurchargeProvider $surchargeProvider,
@@ -86,6 +93,7 @@ class MollieDtoMapper implements MollieDtoMapperInterface
         LocalizationHelper $localizationHelper,
         $webhooksUrlReplacement = ''
     ) {
+        $this->requestStack = $requestStack;
         $this->configService = $configService;
         $this->taxProviderRegistry = $taxProviderRegistry;
         $this->surchargeProvider = $surchargeProvider;
@@ -136,6 +144,10 @@ class MollieDtoMapper implements MollieDtoMapperInterface
                     UrlGeneratorInterface::ABSOLUTE_URL
                 )
             ),
+            'payment' => [
+                'issuer' => $this->getRequestParam('mollie-issuer', $paymentTransaction->getPaymentMethod()),
+                'cardToken' => $this->getRequestParam('mollie-card-token', $paymentTransaction->getPaymentMethod()),
+            ],
             'webhookUrl' => $this->ensureDebugWebhookUrl(
                 $this->router->generate(
                     'oro_payment_callback_notify',
@@ -239,6 +251,8 @@ class MollieDtoMapper implements MollieDtoMapperInterface
                     UrlGeneratorInterface::ABSOLUTE_URL
                 )
             ),
+            'issuer' => $this->getRequestParam('mollie-issuer', $paymentTransaction->getPaymentMethod()),
+            'cardToken' => $this->getRequestParam('mollie-card-token', $paymentTransaction->getPaymentMethod()),
         ]);
 
         if (($order = $this->getOrderEntity($paymentTransaction)) && ($shippingAddress = $order->getShippingAddress())) {
@@ -445,5 +459,24 @@ class MollieDtoMapper implements MollieDtoMapperInterface
             rtrim($this->webhooksUrlReplacement, '/') . '/',
             $url
         );
+    }
+
+    /**
+     * @param string $key
+     * @param string $paymentMethod
+     *
+     * @return mixed|null
+     */
+    protected function getRequestParam($key, $paymentMethod)
+    {
+        $currentRequest = $this->requestStack->getCurrentRequest();
+        if (!$currentRequest) {
+            return null;
+        }
+
+        $form = $currentRequest->get('oro_workflow_transition');
+        $fullKey = "{$paymentMethod}-{$key}";
+
+        return !empty($form[$fullKey]) ? $form[$fullKey] : null;
     }
 }

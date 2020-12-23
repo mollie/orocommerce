@@ -12,6 +12,7 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Refunds\R
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\TokenPermission;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\WebsiteProfile;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\Exceptions\UnprocessableEntityRequestException;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\OrgToken\ProxyDataProvider;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\Model\PaymentMethodConfig;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http\Exceptions\HttpAuthenticationException;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http\Exceptions\HttpCommunicationException;
@@ -76,7 +77,7 @@ class Proxy
      */
     private $configService;
     /**
-     * @var ProxyTransformer
+     * @var ProxyDataProvider
      */
     private $transformer;
 
@@ -85,9 +86,9 @@ class Proxy
      *
      * @param Configuration $configService Configuration service.
      * @param HttpClient $client System HTTP client.
-     * @param ProxyTransformer $transformer
+     * @param ProxyDataProvider $transformer
      */
-    public function __construct(Configuration $configService, HttpClient $client, ProxyTransformer $transformer)
+    public function __construct(Configuration $configService, HttpClient $client, ProxyDataProvider $transformer)
     {
         $this->client = $client;
         $this->configService = $configService;
@@ -243,6 +244,23 @@ class Proxy
     }
 
     /**
+     * Return current mollie profile
+     *
+     * @return DTO\BaseDto|WebsiteProfile
+     * @throws HttpAuthenticationException
+     * @throws HttpCommunicationException
+     * @throws HttpRequestException
+     * @throws UnprocessableEntityRequestException
+     */
+    public function getCurrentProfile()
+    {
+        $response = $this->call(self::HTTP_METHOD_GET, '/profiles/me');
+        $result = $response->decodeBodyAsJson();
+
+        return WebsiteProfile::fromArray($result);
+    }
+
+    /**
      * Gets list of website profiles from Mollie API
      *
      * @return WebsiteProfile[]
@@ -265,8 +283,6 @@ class Proxy
     /**
      * Gets all payment methods that Mollie API offers and can be activated by the Organization
      *
-     * @param string $profileId Mollie website profile id
-     *
      * @return PaymentMethod[]
      *
      * @throws UnprocessableEntityRequestException
@@ -274,9 +290,9 @@ class Proxy
      * @throws HttpCommunicationException
      * @throws HttpRequestException
      */
-    public function getAllPaymentMethods($profileId)
+    public function getAllPaymentMethods()
     {
-        $response = $this->call(self::HTTP_METHOD_GET, "/methods/all?profileId={$profileId}");
+        $response = $this->call(self::HTTP_METHOD_GET, '/methods/all');
         $result = $response->decodeBodyAsJson();
 
         return PaymentMethod::fromArrayBatch(
@@ -286,8 +302,6 @@ class Proxy
 
     /**
      * Gets all enabled payment methods from Mollie API
-     *
-     * @param string $profileId Mollie website profile id
      *
      * @param string|null $billingCountry The billing country of your customer in ISO 3166-1 alpha-2 format.
      * @param Amount|null $amount
@@ -301,15 +315,14 @@ class Proxy
      * @throws UnprocessableEntityRequestException
      */
     public function getEnabledPaymentMethods(
-        $profileId,
         $billingCountry = null,
         $amount = null,
         $apiMethod = PaymentMethodConfig::API_METHOD_ORDERS
     ) {
         $params = array(
+            'include' => 'issuers',
             'includeWallets' => 'applepay',
             'resource' => $apiMethod === PaymentMethodConfig::API_METHOD_PAYMENT ? 'payments' : 'orders',
-            'profileId' => $profileId,
         );
         if (!empty($billingCountry)) {
             $params['billingCountry'] = $billingCountry;
@@ -333,7 +346,6 @@ class Proxy
      * Gets all enabled payment methods from Mollie API in form of a dictionary, where dictionary key is payment method id and
      * value is payment method DTO
      *
-     * @param string $profileId Mollie website profile id
      * @param string|null $billingCountry The billing country of your customer in ISO 3166-1 alpha-2 format.
      * @param Amount|null $amount
      * @param string $apiMethod Api method to use for availability checking. Default is orders api
@@ -346,13 +358,12 @@ class Proxy
      * @throws UnprocessableEntityRequestException
      */
     public function getEnabledPaymentMethodsMap(
-        $profileId,
         $billingCountry = null,
         $amount = null,
         $apiMethod = PaymentMethodConfig::API_METHOD_ORDERS
     ) {
         $paymentMethodsMap = array();
-        $paymentMethods = $this->getEnabledPaymentMethods($profileId, $billingCountry, $amount, $apiMethod);
+        $paymentMethods = $this->getEnabledPaymentMethods($billingCountry, $amount, $apiMethod);
         foreach ($paymentMethods as $paymentMethod) {
             $paymentMethodsMap[$paymentMethod->getId()] = $paymentMethod;
         }
@@ -468,6 +479,29 @@ class Proxy
     }
 
     /**
+     * Returns all shipments for given order id
+     *
+     * @param string $orderId
+     *
+     * @return array|Shipment[]
+     * @throws HttpAuthenticationException
+     * @throws HttpCommunicationException
+     * @throws HttpRequestException
+     * @throws UnprocessableEntityRequestException
+     */
+    public function getShipments($orderId)
+    {
+        $endpoint = "/orders/$orderId/shipments";
+        $response = $this->call(self::HTTP_METHOD_GET, $endpoint);
+        $result = $response->decodeBodyAsJson();
+        if (empty($result['_embedded']['shipments'])) {
+            return array();
+        }
+
+        return Shipment::fromArrayBatch($result['_embedded']['shipments']);
+    }
+
+    /**
      * Makes a HTTP call and returns response.
      *
      * @param string $method HTTP method (GET, POST, PUT, etc.).
@@ -508,11 +542,7 @@ class Proxy
     protected function getRequestUrl($method, $endpoint)
     {
         $url = static::BASE_URL . static::API_VERSION . $endpoint;
-
-        if ($this->isTestMode($endpoint) && strtoupper($method) === self::HTTP_METHOD_GET) {
-            $url .= false === strpos($url, '?') ? '?' : '&';
-            $url .= 'testmode=true';
-        }
+        $this->transformer->adjustUrl($url, $endpoint, $method);
 
         return $url;
     }
@@ -530,26 +560,9 @@ class Proxy
             return '';
         }
 
-        if ($this->isTestMode($endpoint)) {
-            $body['testmode'] = true;
-        }
+        $this->transformer->adjustBody($body, $endpoint);
 
-        return json_encode($body);
-    }
-
-    /**
-     * Checks if test mode is enabled for a provided endpoint
-     *
-     * @param string $endpoint Endpoint resource on remote API.
-     *
-     * @return bool True if test mode is on; false otherwise
-     */
-    protected function isTestMode($endpoint)
-    {
-        $unsupportedTestModeEndpoints = array('permissions');
-
-        // Test mode is on if it is configured and requesting endpoint supports test mode
-        return $this->configService->isTestMode() && !in_array($endpoint, $unsupportedTestModeEndpoints, true);
+        return empty($body) ? '{}' : json_encode($body);
     }
 
     /**

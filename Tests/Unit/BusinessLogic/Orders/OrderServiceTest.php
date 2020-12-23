@@ -1,11 +1,11 @@
 <?php
 
-namespace Mollie\Bundle\PaymentBundle\Tests\Unit\BusinessLogic\Payments;
+namespace Mollie\Bundle\PaymentBundle\Tests\Unit\BusinessLogic\Orders;
 
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\Order;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\Exceptions\UnprocessableEntityRequestException;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\OrgToken\ProxyDataProvider;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\Proxy;
-use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\ProxyTransformer;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\OrderReference\Exceptions\ReferenceNotFoundException;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\OrderReference\Model\OrderReference;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\OrderReference\OrderReferenceService;
@@ -34,7 +34,7 @@ class OrderServiceTest extends BaseTestWithServices
      */
     public $httpClient;
     /**
-     * @var ProxyTransformer
+     * @var ProxyDataProvider
      */
     public $proxyTransformer;
     /**
@@ -55,7 +55,7 @@ class OrderServiceTest extends BaseTestWithServices
         RepositoryRegistry::registerRepository(OrderReference::CLASS_NAME, MemoryRepository::getClassName());
 
         $this->httpClient = new TestHttpClient();
-        $this->proxyTransformer = new ProxyTransformer();
+        $this->proxyTransformer = new ProxyDataProvider();
         TestServiceRegister::registerService(
             HttpClient::CLASS_NAME,
             function () use ($me) {
@@ -156,6 +156,7 @@ class OrderServiceTest extends BaseTestWithServices
         $this->httpClient->setMockResponses(array($this->getMockOrderResponse(), $this->getMockOrderResponse()));
 
         $createdOrder = $this->orderService->createOrder($shopReference, $order);
+        $createdOrder->setStatus(null);
 
         $queryFilter = new QueryFilter();
         $queryFilter->where('shopReference', Operators::EQUALS, $shopReference);
@@ -275,7 +276,66 @@ class OrderServiceTest extends BaseTestWithServices
         $this->assertEquals($shopReference, $savedOrderReferences[0]->getShopReference());
         $this->assertEquals($createdOrder->getId(), $savedOrderReferences[0]->getMollieReference());
         $this->assertEquals(PaymentMethodConfig::API_METHOD_ORDERS, $savedOrderReferences[0]->getApiMethod());
+        $createdOrder->setStatus(null);
         $this->assertEquals($createdOrder->toArray(), $savedOrderReferences[0]->getPayload());
+    }
+
+    public function testCreationRemovesInvalidPhoneNumbers()
+    {
+        $shopReference = 'test_reference_id';
+        $profileId = 'pfl_URR55HPMGx';
+        $invalidPhone = '123-AA';
+        $order = $this->getOrderData($shopReference, $profileId);
+        $this->httpClient->setMockResponses(array($this->getMockOrderResponse(), $this->getMockOrderResponse()));
+        $order->getShippingAddress()->setPhone($invalidPhone);
+
+        $this->orderService->createOrder($shopReference, $order);
+
+        $apiRequestHistory = $this->httpClient->getHistory();
+        $this->assertCount(2, $apiRequestHistory);
+        $requestBody = json_decode($apiRequestHistory[0]['body'], true);
+        $this->assertNotEmpty($requestBody['shippingAddress']);
+        $this->assertArrayNotHasKey('phone', $requestBody['shippingAddress']);
+        $this->assertNotEmpty($requestBody['billingAddress']);
+        $this->assertArrayHasKey('phone', $requestBody['billingAddress']);
+    }
+
+    public function testCreationSanitizePhoneNumbers()
+    {
+        $shopReference = 'test_reference_id';
+        $profileId = 'pfl_URR55HPMGx';
+        $commonDelimitedPhoneEntry = '123 45/ 67 - 89 12-34';
+        $order = $this->getOrderData($shopReference, $profileId);
+        $this->httpClient->setMockResponses(array($this->getMockOrderResponse(), $this->getMockOrderResponse()));
+        $order->getShippingAddress()->setPhone($commonDelimitedPhoneEntry);
+
+        $this->orderService->createOrder($shopReference, $order);
+
+        $apiRequestHistory = $this->httpClient->getHistory();
+        $this->assertCount(2, $apiRequestHistory);
+        $requestBody = json_decode($apiRequestHistory[0]['body'], true);
+        $this->assertNotEmpty($requestBody['shippingAddress']);
+        $this->assertArrayHasKey('phone', $requestBody['shippingAddress']);
+        $this->assertSame('+1234567891234', $requestBody['shippingAddress']['phone']);
+    }
+
+    public function testCreationRemovesLeadingZerosFromPhoneNumbers()
+    {
+        $shopReference = 'test_reference_id';
+        $profileId = 'pfl_URR55HPMGx';
+        $phoneNumberWithLeadingZeros = '00123456789';
+        $order = $this->getOrderData($shopReference, $profileId);
+        $this->httpClient->setMockResponses(array($this->getMockOrderResponse(), $this->getMockOrderResponse()));
+        $order->getShippingAddress()->setPhone($phoneNumberWithLeadingZeros);
+
+        $this->orderService->createOrder($shopReference, $order);
+
+        $apiRequestHistory = $this->httpClient->getHistory();
+        $this->assertCount(2, $apiRequestHistory);
+        $requestBody = json_decode($apiRequestHistory[0]['body'], true);
+        $this->assertNotEmpty($requestBody['shippingAddress']);
+        $this->assertArrayHasKey('phone', $requestBody['shippingAddress']);
+        $this->assertSame('+123456789', $requestBody['shippingAddress']['phone']);
     }
 
     /**

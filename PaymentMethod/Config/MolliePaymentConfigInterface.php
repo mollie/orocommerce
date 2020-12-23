@@ -56,4 +56,19 @@ interface MolliePaymentConfigInterface extends PaymentConfigInterface
      * @return float
      */
     public function getSurchargeAmount();
+
+    /**
+     * @return bool
+     */
+    public function useMollieComponents();
+
+    /**
+     * @return string
+     */
+    public function getIssuerListStyle();
+
+    /**
+     * @return array
+     */
+    public function getIssuers();
 }
