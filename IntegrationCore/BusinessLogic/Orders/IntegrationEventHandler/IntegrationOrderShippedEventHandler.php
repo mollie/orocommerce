@@ -6,7 +6,7 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Integration\Event\
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Notifications\NotificationHub;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Notifications\NotificationText;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\OrderReference\Exceptions\ReferenceNotFoundException;
-use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Orders\OrderService;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Shipments\ShipmentService;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Logger\Logger;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ServiceRegister;
 
@@ -24,10 +24,14 @@ class IntegrationOrderShippedEventHandler
      */
     public function handle(IntegrationOrderShippedEvent $event)
     {
-        /** @var OrderService $orderService */
-        $orderService = ServiceRegister::getService(OrderService::CLASS_NAME);
+        /** @var ShipmentService $shipmentService */
+        $shipmentService = ServiceRegister::getService(ShipmentService::CLASS_NAME);
         try {
-            $orderService->shipOrder($event->getShopOrderReference(), $event->getTracking());
+            $shipmentService->shipOrder(
+                $event->getShopOrderReference(),
+                $event->getTracking(),
+                $event->getLineItems()
+            );
         } catch (ReferenceNotFoundException $e) {
             // Intentionally left blank. Not existing shop reference should be skipped silently
         } catch (\Exception $e) {

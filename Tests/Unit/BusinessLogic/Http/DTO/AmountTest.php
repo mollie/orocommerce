@@ -24,4 +24,49 @@ class AmountTest extends TestCase
         $this->assertSame('123.20', $oneDecimalAmount->getAmountValue());
         $this->assertSame('123.46', $fourDecimalAmount->getAmountValue());
     }
+
+    public function testAmountValueFromCurrencySmallestUnit()
+    {
+        $amount = Amount::fromSmallestUnit(10147, 'KWD');
+
+        $this->assertEquals(10.147, $amount->getAmountValue());
+
+        $amountArray = $amount->toArray();
+
+        $this->assertSame('10.147', $amountArray['value']);
+    }
+
+    public function testAmountValueToCurrencySmallestUnit()
+    {
+        $amount = Amount::fromArray(array(
+            'value' => 10.147,
+            'currency' => 'KWD'
+        ));
+
+        $this->assertEquals(10147, $amount->getAmountValueInSmallestUnit());
+    }
+
+    public function testExistingCurrency()
+    {
+        $amount = Amount::fromSmallestUnit(101475, 'UYW');
+
+        $this->assertEquals('UYW', $amount->getCurrency());
+        $this->assertEquals(10.1475, $amount->getAmountValue());
+
+        $amountArray = $amount->toArray();
+
+        $this->assertSame('10.1475', $amountArray['value']);
+    }
+
+    public function testNonExistentCurrency()
+    {
+        $amount = Amount::fromSmallestUnit(10147, 'TES');
+
+        $this->assertEquals('TES', $amount->getCurrency());
+        $this->assertEquals(101.47, $amount->getAmountValue());
+
+        $amountArray = $amount->toArray();
+
+        $this->assertSame('101.47', $amountArray['value']);
+    }
 }

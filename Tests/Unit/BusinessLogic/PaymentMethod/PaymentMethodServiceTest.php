@@ -7,8 +7,9 @@ namespace Mollie\Bundle\PaymentBundle\Tests\Unit\BusinessLogic\PaymentMethod;
 
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Amount;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\PaymentMethod;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\WebsiteProfile;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\OrgToken\ProxyDataProvider;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\Proxy;
-use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\ProxyTransformer;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\ORM\Interfaces\RepositoryInterface;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\Model\PaymentMethodConfig;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\PaymentMethodService;
@@ -54,12 +55,15 @@ class PaymentMethodServiceTest extends BaseTestWithServices
         TestServiceRegister::registerService(
             Proxy::CLASS_NAME,
             function () use ($me) {
-                return new Proxy($me->shopConfig, $me->httpClient, new ProxyTransformer());
+                return new Proxy($me->shopConfig, $me->httpClient, new ProxyDataProvider());
             }
         );
 
         $this->shopConfig->setAuthorizationToken('test_token');
         $this->shopConfig->setTestMode(true);
+        $testProfile = new WebsiteProfile();
+        $testProfile->setId('pfl_htsmhPNGw3');
+        $this->shopConfig->setWebsiteProfile($testProfile);
         $this->paymentMethodService = PaymentMethodService::getInstance();
         $this->paymentMethodConfigRepository = RepositoryRegistry::getRepository(PaymentMethodConfig::CLASS_NAME);
     }
@@ -111,7 +115,11 @@ class PaymentMethodServiceTest extends BaseTestWithServices
             $result[0]->getImage()
         );
         $this->assertTrue($result[0]->isEnabled());
+        $applePayOriginalConfig = $result[0]->getOriginalAPIConfig();
+        $this->assertEmpty($applePayOriginalConfig->getIssuers());
         $this->assertEquals('ideal', $result[1]->getMollieId());
+        $idealOriginalConfig = $result[1]->getOriginalAPIConfig();
+        $this->assertNotEmpty($idealOriginalConfig->getIssuers());
         $this->assertFalse($result[1]->isEnabled());
     }
 

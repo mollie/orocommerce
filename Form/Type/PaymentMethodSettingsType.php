@@ -7,6 +7,7 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\Mode
 use Oro\Bundle\ApiBundle\Form\Type\NumberType;
 use Oro\Bundle\LocaleBundle\Form\Type\LocalizedFallbackValueCollectionType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -137,6 +138,37 @@ class PaymentMethodSettingsType extends AbstractType
                     'choices' => $paymentMethodApiChoices,
                     'label' => 'mollie.payment.config.payment_methods.method.label',
                     'tooltip' => 'mollie.payment.config.payment_methods.method.tooltip',
+                    'required' => true,
+                    'placeholder' => false,
+                ]
+            );
+        }
+
+        if ($paymentMethodConfig->isMollieComponentsSupported()) {
+            $event->getForm()->add(
+                'mollieComponents',
+                CheckboxType::class,
+                [
+                    'value' => 1,
+                    'label' => 'mollie.payment.config.payment_methods.mollie_components.label',
+                    'tooltip' => 'mollie.payment.config.payment_methods.mollie_components.tooltip',
+                    'required' => true,
+                ]
+            );
+        }
+
+        if ($paymentMethodConfig->isIssuerListSupported()) {
+            $issuerListStyleOptions = [
+                'mollie.payment.config.payment_methods.issuer_list.option.list' => PaymentMethodConfig::ISSUER_LIST,
+                'mollie.payment.config.payment_methods.issuer_list.option.dropdown' => PaymentMethodConfig::ISSUER_DROPDOWN,
+            ];
+            $event->getForm()->add(
+                'issuerListStyle',
+                ChoiceType::class,
+                [
+                    'choices' => $issuerListStyleOptions,
+                    'label' => 'mollie.payment.config.payment_methods.issuer_list.label',
+                    'tooltip' => 'mollie.payment.config.payment_methods.issuer_list.tooltip',
                     'required' => true,
                     'placeholder' => false,
                 ]

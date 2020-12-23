@@ -1,19 +1,17 @@
 <?php
 
-namespace Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers;
+namespace Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Authorization\OrgToken;
 
-use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Configuration;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Authorization\AuthorizationService;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Authorization\Interfaces\TokenInterface;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\TokenPermission;
-use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\Proxy;
-use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\PaymentMethodService;
-use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ServiceRegister;
 
 /**
- * Class AuthorizationController
+ * Class OrgTokenAuthService
  *
- * @package Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers
+ * @package Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Authorization\OrgToken
  */
-class AuthorizationController
+class OrgTokenAuthService extends AuthorizationService
 {
     private static $REQUIRED_TOKEN_PERMISSIONS = array(
         'customers.read', 'customers.write',
@@ -32,23 +30,20 @@ class AuthorizationController
     /**
      * Validates access token
      *
-     * @param string $token
-     * @param bool $testMode
+     * @param TokenInterface $token
      *
      * @return bool Validation result
      */
-    public function validateToken($token, $testMode)
+    public function validateToken(TokenInterface $token)
     {
-        /** @var Configuration $configService */
-        $configService = ServiceRegister::getService(Configuration::CLASS_NAME);
-        /** @var Proxy $proxy */
-        $proxy = ServiceRegister::getService(Proxy::CLASS_NAME);
+        $configService = $this->getConfigService();
+        $proxy = $this->getProxy();
 
         $tokenPermissions = $configService->doWithContext(
             'token_verification',
-            function () use ($token, $testMode, $configService, $proxy) {
-                $configService->setAuthorizationToken($token);
-                $configService->setTestMode($testMode);
+            function () use ($token, $configService, $proxy) {
+                $configService->setAuthorizationToken($token->getToken());
+                $configService->setTestMode($token->isTest());
 
                 try {
                     $result = $proxy->getAccessTokenPermissions();
@@ -64,25 +59,6 @@ class AuthorizationController
         );
 
         return $this->isTokenPermissionListValid($tokenPermissions);
-    }
-
-    /**
-     * Resets account
-     */
-    public function reset()
-    {
-        /** @var Configuration $configService */
-        $configService = ServiceRegister::getService(Configuration::CLASS_NAME);
-        /** @var PaymentMethodService $paymentMethodService */
-        $paymentMethodService = ServiceRegister::getService(PaymentMethodService::CLASS_NAME);
-        $websiteProfile = $configService->getWebsiteProfile();
-
-        $configService->removeConfigValue('authToken');
-        $configService->removeConfigValue('testMode');
-        $configService->removeConfigValue('websiteProfile');
-        if ($websiteProfile) {
-            $paymentMethodService->clear($websiteProfile->getId());
-        }
     }
 
     /**

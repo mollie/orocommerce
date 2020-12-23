@@ -6,8 +6,6 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\BaseService;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Address;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\Order;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\OrderLine;
-use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\Shipment;
-use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\Tracking;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\Exceptions\UnprocessableEntityRequestException;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\OrderReference\Exceptions\ReferenceNotFoundException;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\OrderReference\Model\OrderReference;
@@ -52,7 +50,12 @@ class OrderService extends BaseService
     public function createOrder($shopReference, Order $order)
     {
         $createdOrder = $this->getProxy()->createOrder($order);
-        $this->updateOrderReference($shopReference, $createdOrder);
+
+        // set initial status in order reference table to null,
+        // so it can be updated within the webhook
+        $createdOrderForReference = clone $createdOrder;
+        $createdOrderForReference->setStatus(null);
+        $this->updateOrderReference($shopReference, $createdOrderForReference);
 
         return $createdOrder;
     }
@@ -75,11 +78,7 @@ class OrderService extends BaseService
     }
 
     /**
-     * Creates shipment for complete order on mollie API based on provided shop reference
-     *
-     * @param string $shopReference Unique identifier of a shop order
-     *
-     * @param Tracking|null $tracking
+     * @param string|int $shopReference
      *
      * @throws HttpAuthenticationException
      * @throws HttpCommunicationException
@@ -87,16 +86,11 @@ class OrderService extends BaseService
      * @throws ReferenceNotFoundException
      * @throws UnprocessableEntityRequestException
      */
-    public function shipOrder($shopReference, $tracking = null)
+    public function getShipments($shopReference)
     {
         $orderReference = $this->getValidOrderReference($shopReference);
 
-        $shipment = Shipment::fromArray(array('orderId' => $orderReference->getMollieReference()));
-        if ($tracking) {
-            $shipment->setTracking($tracking);
-        }
-
-        $this->getProxy()->createShipment($shipment);
+        $this->getProxy()->getShipments($orderReference->getMollieReference());
     }
 
     /**
@@ -184,16 +178,8 @@ class OrderService extends BaseService
     {
         /** @var OrderReferenceService $orderReferenceService */
         $orderReferenceService = ServiceRegister::getService(OrderReferenceService::CLASS_NAME);
-        $orderReference = $orderReferenceService->getByShopReference($shopReference);
-        if (
-            $orderReference &&
-            $orderReference->getMollieReference() &&
-            $orderReference->getApiMethod() === PaymentMethodConfig::API_METHOD_ORDERS
-        ) {
-            return $orderReference;
-        }
 
-        throw new ReferenceNotFoundException("Valid order reference not found for shop reference: {$shopReference}");
+        return $orderReferenceService->getValidOrderReference($shopReference, PaymentMethodConfig::API_METHOD_ORDERS);
     }
 
     /**

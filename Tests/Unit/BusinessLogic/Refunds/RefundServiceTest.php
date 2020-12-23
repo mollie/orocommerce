@@ -8,8 +8,8 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\Or
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Payment;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Refunds\Refund;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\Exceptions\UnprocessableEntityRequestException;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\OrgToken\ProxyDataProvider;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\Proxy;
-use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\ProxyTransformer;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\OrderReference\Exceptions\ReferenceNotFoundException;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\OrderReference\Model\OrderReference;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\OrderReference\OrderReferenceService;
@@ -45,7 +45,7 @@ class RefundServiceTest extends BaseTestWithServices
      */
     public $httpClient;
     /**
-     * @var ProxyTransformer
+     * @var ProxyDataProvider
      */
     public $proxyTransformer;
     /**
@@ -66,7 +66,7 @@ class RefundServiceTest extends BaseTestWithServices
         RepositoryRegistry::registerRepository(OrderReference::CLASS_NAME, MemoryRepository::getClassName());
 
         $this->httpClient = new TestHttpClient();
-        $this->proxyTransformer = new ProxyTransformer();
+        $this->proxyTransformer = new ProxyDataProvider();
         TestServiceRegister::registerService(
             HttpClient::CLASS_NAME,
             function () use ($me) {

@@ -3,8 +3,8 @@
 namespace Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Logger;
 
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Configuration;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\OrgToken\ProxyDataProvider;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\Proxy;
-use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\ProxyTransformer;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http\Exceptions\HttpAuthenticationException;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http\Exceptions\HttpCommunicationException;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http\HttpClient;
@@ -33,8 +33,8 @@ class DefaultLogger implements DefaultLoggerAdapter
         $config = ServiceRegister::getService(Configuration::CLASS_NAME);
         /** @var HttpClient $client */
         $client = ServiceRegister::getService(HttpClient::CLASS_NAME);
-        /** @var ProxyTransformer $transformer */
-        $transformer = ServiceRegister::getService(ProxyTransformer::CLASS_NAME);
+        /** @var ProxyDataProvider $transformer */
+        $transformer = ServiceRegister::getService(ProxyDataProvider::CLASS_NAME);
         $proxy = new Proxy($config, $client, $transformer);
 
         $proxy->createLog($data);

@@ -2,6 +2,7 @@
 
 namespace Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Integration\Event;
 
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\OrderLine;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\Tracking;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Utility\Events\Event;
 
@@ -25,17 +26,23 @@ class IntegrationOrderShippedEvent extends Event
      * @var Tracking|null
      */
     private $tracking;
+    /**
+     * @var OrderLine[]
+     */
+    private $lineItems;
 
     /**
      * IntegrationOrderShippedEvent constructor.
      *
      * @param string $shopOrderReference Unique identifier of a shop order
      * @param Tracking|null $tracking
+     * @param array $items
      */
-    public function __construct($shopOrderReference, $tracking = null)
+    public function __construct($shopOrderReference, $tracking = null, $items = array())
     {
         $this->shopOrderReference = $shopOrderReference;
         $this->tracking = $tracking;
+        $this->lineItems = $items;
     }
 
     /**
@@ -52,5 +59,13 @@ class IntegrationOrderShippedEvent extends Event
     public function getTracking()
     {
         return $this->tracking;
+    }
+
+    /**
+     * @return OrderLine[]
+     */
+    public function getLineItems()
+    {
+        return $this->lineItems;
     }
 }

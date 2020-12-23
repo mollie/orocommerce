@@ -3,8 +3,8 @@
 namespace Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic;
 
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\CheckoutLink\CheckoutLinkService;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\OrgToken\ProxyDataProvider;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\Proxy;
-use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\ProxyTransformer;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Integration\Event\IntegrationOrderBillingAddressChangedEvent;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Integration\Event\IntegrationOrderCanceledEvent;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Integration\Event\IntegrationOrderClosedEvent;
@@ -35,6 +35,7 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Payments\WebHookHa
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Refunds\RefundService;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Refunds\WebHookHandler\OrderLineRefundWebHookHandler;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Refunds\WebHookHandler\OrderRefundWebHookHandler;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Shipments\ShipmentService;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\WebHook\OrderChangedWebHookEvent;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\WebHook\PaymentChangedWebHookEvent;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\WebHook\WebHookContext;
@@ -65,17 +66,17 @@ class BootstrapComponent extends \Mollie\Bundle\PaymentBundle\IntegrationCore\In
                 $config = ServiceRegister::getService(Configuration::CLASS_NAME);
                 /** @var HttpClient $client */
                 $client = ServiceRegister::getService(HttpClient::CLASS_NAME);
-                /** @var ProxyTransformer $transformer */
-                $transformer = ServiceRegister::getService(ProxyTransformer::CLASS_NAME);
+                /** @var ProxyDataProvider $transformer */
+                $transformer = ServiceRegister::getService(ProxyDataProvider::CLASS_NAME);
 
                 return new Proxy($config, new LoggingHttpClient($client), $transformer);
             }
         );
 
         ServiceRegister::registerService(
-            ProxyTransformer::CLASS_NAME,
+            ProxyDataProvider::CLASS_NAME,
             function () {
-                return new ProxyTransformer();
+                return new ProxyDataProvider();
             }
         );
 
@@ -104,6 +105,13 @@ class BootstrapComponent extends \Mollie\Bundle\PaymentBundle\IntegrationCore\In
             OrderService::CLASS_NAME,
             function () {
                 return OrderService::getInstance();
+            }
+        );
+
+        ServiceRegister::registerService(
+            ShipmentService::CLASS_NAME,
+            function () {
+                return ShipmentService::getInstance();
             }
         );
 

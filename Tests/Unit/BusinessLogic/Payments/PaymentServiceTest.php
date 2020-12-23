@@ -4,8 +4,8 @@ namespace Mollie\Bundle\PaymentBundle\Tests\Unit\BusinessLogic\Payments;
 
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Payment;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\Exceptions\UnprocessableEntityRequestException;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\OrgToken\ProxyDataProvider;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\Proxy;
-use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\ProxyTransformer;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\OrderReference\Model\OrderReference;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\OrderReference\OrderReferenceService;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\ORM\Interfaces\RepositoryInterface;
@@ -33,7 +33,7 @@ class PaymentServiceTest extends BaseTestWithServices
      */
     public $httpClient;
     /**
-     * @var ProxyTransformer
+     * @var ProxyDataProvider
      */
     public $proxyTransformer;
     /**
@@ -54,7 +54,7 @@ class PaymentServiceTest extends BaseTestWithServices
         RepositoryRegistry::registerRepository(OrderReference::CLASS_NAME, MemoryRepository::getClassName());
 
         $this->httpClient = new TestHttpClient();
-        $this->proxyTransformer = new ProxyTransformer();
+        $this->proxyTransformer = new ProxyDataProvider();
         TestServiceRegister::registerService(
             HttpClient::CLASS_NAME,
             function () use ($me) {
@@ -168,6 +168,7 @@ class PaymentServiceTest extends BaseTestWithServices
         $this->assertEquals($shopReference, $savedOrderReferences[0]->getShopReference());
         $this->assertEquals($createdPayment->getId(), $savedOrderReferences[0]->getMollieReference());
         $this->assertEquals(PaymentMethodConfig::API_METHOD_PAYMENT, $savedOrderReferences[0]->getApiMethod());
+        $createdPayment->setStatus(null);
         $this->assertEquals($createdPayment->toArray(), $savedOrderReferences[0]->getPayload());
     }
 
@@ -209,6 +210,7 @@ class PaymentServiceTest extends BaseTestWithServices
         $this->assertEquals($shopReference, $savedOrderReferences[0]->getShopReference());
         $this->assertEquals($createdPayment->getId(), $savedOrderReferences[0]->getMollieReference());
         $this->assertEquals(PaymentMethodConfig::API_METHOD_PAYMENT, $savedOrderReferences[0]->getApiMethod());
+        $createdPayment->setStatus(null);
         $this->assertEquals($createdPayment->toArray(), $savedOrderReferences[0]->getPayload());
     }
 
