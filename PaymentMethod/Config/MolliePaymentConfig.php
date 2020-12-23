@@ -20,6 +20,9 @@ class MolliePaymentConfig extends AbstractParameterBagPaymentConfig implements M
     const PROFILE_ID = 'profile_id';
     const CHANNEL_ID = 'channel_id';
     const SURCHARGE_AMOUNT = 'surcharge_amount';
+    const ISSUER_LIST_STYLE = 'issuer_list_style';
+    const USE_MOLLIE_COMPONENTS = 'use_mollie_components';
+    const ISSUERS = 'issuers';
 
     /**
      * {@inheritdoc}
@@ -91,5 +94,26 @@ class MolliePaymentConfig extends AbstractParameterBagPaymentConfig implements M
     public function getSurchargeAmount()
     {
         return (float)$this->get(self::SURCHARGE_AMOUNT);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function useMollieComponents()
+    {
+        return (bool)$this->get(self::USE_MOLLIE_COMPONENTS);
+    }
+
+    /**
+     * {@inheritdoc }
+     */
+    public function getIssuerListStyle()
+    {
+        return (string)$this->get(self::ISSUER_LIST_STYLE);
+    }
+
+    public function getIssuers()
+    {
+        return (array)$this->get(self::ISSUERS);
     }
 }

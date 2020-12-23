@@ -122,6 +122,19 @@ class PaymentMethodSettings
      */
     private $surcharge;
 
+    /**
+     * @var boolean
+     */
+    private $mollieComponents;
+
+    /**
+     * @var string
+     */
+    private $issuerListStyle;
+
+    /**
+     * PaymentMethodSettings constructor.
+     */
     public function __construct()
     {
         $this->names = new ArrayCollection();
@@ -358,5 +371,37 @@ class PaymentMethodSettings
     public function setSurcharge($surcharge)
     {
         $this->surcharge = $surcharge;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMollieComponents()
+    {
+        return $this->mollieComponents;
+    }
+
+    /**
+     * @param bool $mollieComponents
+     */
+    public function setMollieComponents($mollieComponents)
+    {
+        $this->mollieComponents = $mollieComponents;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIssuerListStyle()
+    {
+        return $this->issuerListStyle;
+    }
+
+    /**
+     * @param string $issuerListStyle
+     */
+    public function setIssuerListStyle($issuerListStyle)
+    {
+        $this->issuerListStyle = $issuerListStyle;
     }
 }

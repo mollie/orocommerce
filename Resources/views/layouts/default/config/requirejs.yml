@@ -2,3 +2,6 @@ config:
     paths:
         'molliepayment/js/app/components/mollie-applepay': 'bundles/molliepayment/js/app/components/mollie-applepay.js'
         'molliepayment/js/app/components/mollie-payment-method-component': 'bundles/molliepayment/js/app/components/mollie-payment-method-component.js'
+        'molliepayment/js/app/components/mollie-issuer': 'bundles/molliepayment/js/app/components/mollie-issuer.js'
+        'molliepayment/js/app/components/mollie-order-submit': 'bundles/molliepayment/js/app/components/mollie-order-submit.js'
+        'molliepayment/js/app/components/mollie-credit-card': 'bundles/molliepayment/js/app/components/mollie-credit-card.js'

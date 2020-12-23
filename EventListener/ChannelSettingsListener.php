@@ -229,6 +229,8 @@ class ChannelSettingsListener
 
             $paymentMethodConfig->setSurcharge($paymentMethodSetting->getSurcharge());
             $paymentMethodConfig->setApiMethod($paymentMethodSetting->getMethod());
+            $paymentMethodConfig->setUseMollieComponents($paymentMethodSetting->getMollieComponents());
+            $paymentMethodConfig->setIssuerListStyle($paymentMethodSetting->getIssuerListStyle());
             $paymentMethodConfig->setImage(
                 !empty($paymentMethodSetting->getImagePath()) ? $paymentMethodSetting->getImagePath() : null
             );

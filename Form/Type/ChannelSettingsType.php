@@ -48,7 +48,7 @@ class ChannelSettingsType extends AbstractType
             ])
             ->add(
                 'authToken',
-                TextType::class,
+                MolliePasswordType::class,
                 [
                     'label' => 'mollie.payment.config.authorization.auth_token.label',
                     'required' => true,

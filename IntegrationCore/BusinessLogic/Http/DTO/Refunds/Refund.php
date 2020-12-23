@@ -334,4 +334,17 @@ class Refund extends BaseDto
     {
         $this->links = $links;
     }
+
+    /**
+     * @return array
+     */
+    public function getRefundLinesMap()
+    {
+        $map = array();
+        foreach ($this->getLines() as $line) {
+            $map[$line->getId()] = $line;
+        }
+
+        return $map;
+    }
 }

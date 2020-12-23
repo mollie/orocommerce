@@ -23,7 +23,7 @@ class TestHttpClient extends HttpClient
     private $history;
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function request($method, $url, $headers = array(), $body = '')
     {
@@ -31,7 +31,7 @@ class TestHttpClient extends HttpClient
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function requestAsync($method, $url, $headers = array(), $body = '')
     {

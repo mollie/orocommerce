@@ -4,6 +4,7 @@ namespace Mollie\Bundle\PaymentBundle\PaymentMethod\View;
 
 use Mollie\Bundle\PaymentBundle\PaymentMethod\Config\MolliePaymentConfigInterface;
 use Oro\Bundle\PaymentBundle\Context\PaymentContextInterface;
+use Oro\Bundle\PaymentBundle\Method\Provider\PaymentMethodProvider;
 use Oro\Bundle\PaymentBundle\Method\View\PaymentMethodViewInterface;
 
 /**
@@ -17,13 +18,21 @@ class MolliePaymentView implements PaymentMethodViewInterface
      * @var MolliePaymentConfigInterface
      */
     protected $config;
+    /**
+     * @var PaymentMethodProvider
+     */
+    protected $paymentMethodProvider;
 
     /**
+     * MolliePaymentView constructor.
+     *
      * @param MolliePaymentConfigInterface $config
+     * @param PaymentMethodProvider $provider
      */
-    public function __construct(MolliePaymentConfigInterface $config)
+    public function __construct(MolliePaymentConfigInterface $config, PaymentMethodProvider $provider)
     {
         $this->config = $config;
+        $this->paymentMethodProvider = $provider;
     }
 
     /**
@@ -36,6 +45,13 @@ class MolliePaymentView implements PaymentMethodViewInterface
             'icon' => $this->config->getIcon(),
             'surchargeAmount' => $this->config->getSurchargeAmount(),
             'currency' => $context->getCurrency(),
+            'useMollieComponents' => $this->config->useMollieComponents() && !$this->isMultipleCreditCard($context),
+            'issuerListStyle' => $this->config->getIssuerListStyle(),
+            'issuers' => $this->config->getIssuers(),
+            'paymentMethod' => $this->config->getPaymentMethodIdentifier(),
+            'isTestMode' => $this->config->isTestModeEnabled(),
+            'profileId' => $this->config->getProfileId(),
+            'lang' => '',
         ];
     }
 
@@ -75,5 +91,23 @@ class MolliePaymentView implements PaymentMethodViewInterface
     public function getPaymentMethodIdentifier()
     {
         return $this->config->getPaymentMethodIdentifier();
+    }
+
+    /**
+     * @param PaymentContextInterface $context
+     *
+     * @return bool
+     */
+    private function isMultipleCreditCard(PaymentContextInterface $context)
+    {
+        $applicablePaymentMethods = $this->paymentMethodProvider->getApplicablePaymentMethods($context);
+        $numberOfMollieCreditCards = 0;
+        foreach ($applicablePaymentMethods as $key => $config) {
+            if (preg_match('/^mollie.*creditcard$/', $key)) {
+                $numberOfMollieCreditCards++;
+            }
+        }
+
+        return $numberOfMollieCreditCards > 1;
     }
 }

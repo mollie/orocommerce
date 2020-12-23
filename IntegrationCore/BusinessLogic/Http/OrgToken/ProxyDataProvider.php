@@ -1,22 +1,41 @@
 <?php
 
-namespace Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http;
+namespace Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\OrgToken;
 
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Configuration;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Address;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\Order;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\OrderLine;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\Shipment;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Payment;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Refunds\Refund;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\Proxy;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\PaymentMethods;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Exceptions\InvalidConfigurationException;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ServiceRegister;
 
 /**
- * Class ProxyTransformer
+ * Class ProxyDataProvider
  *
  * @package Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http
  */
-class ProxyTransformer
+class ProxyDataProvider
 {
     const CLASS_NAME = __CLASS__;
+
+    /**
+     * Regular expression for simple phone validation (must contain + at the beginning and all digits)
+     */
+    const PHONE_REGEX = "/^\+\d+$/";
+
+    protected static $profileIdRequiredEndpoints = array(
+        'methods'
+    );
+
+    /**
+     * @var Configuration
+     */
+    protected $configService;
 
     public function transformPayment(Payment $payment)
     {
@@ -48,6 +67,8 @@ class ProxyTransformer
             );
         }
 
+        $result = array_merge($result, $this->getCommonPaymentParameters($payment));
+
         return $result;
     }
 
@@ -73,12 +94,10 @@ class ProxyTransformer
             'profileId' => $order->getProfileId(),
             'amount' => $order->getAmount()->toArray(),
             'orderNumber' => $order->getOrderNumber(),
-            'billingAddress' => $order->getBillingAddress()->toArray(),
+            'billingAddress' => $this->transformAddress($order->getBillingAddress()),
             'redirectUrl' => $order->getRedirectUrl(),
             'webhookUrl' => $order->getWebhookUrl(),
-            'payment' => array(
-                'webhookUrl' => $order->getWebhookUrl(),
-            ),
+
             'locale' => $order->getLocale(),
             'method' => $method,
             'metadata' => $order->getMetadata(),
@@ -86,12 +105,19 @@ class ProxyTransformer
         );
 
         if ($shippingAddress = $order->getShippingAddress()) {
-            $orderData['shippingAddress'] = $shippingAddress->toArray();
+            $orderData['shippingAddress'] = $this->transformAddress($shippingAddress);
         }
 
         if ($consumerDateOfBirth = $order->getConsumerDateOfBirth()) {
             $orderData['consumerDateOfBirth'] = $consumerDateOfBirth->format(Order::MOLLIE_DATE_FORMAT);
         }
+
+        if ($order->getPayment()) {
+            $orderData['payment'] = $this->getCommonPaymentParameters($order->getPayment());
+        }
+
+        // ensure that webhookUrl is same as on the order object
+        $orderData['payment']['webhookUrl'] = $order->getWebhookUrl();
 
         return $orderData;
     }
@@ -106,11 +132,11 @@ class ProxyTransformer
     {
         $result = array();
         if ($order->getBillingAddress() !== null) {
-            $result['billingAddress'] = $order->getBillingAddress()->toArray();
+            $result['billingAddress'] = $this->transformAddress($order->getBillingAddress());
         }
 
         if ($order->getShippingAddress() !== null) {
-            $result['shippingAddress'] = $order->getShippingAddress()->toArray();
+            $result['shippingAddress'] = $this->transformAddress($order->getShippingAddress());
         }
 
         return $result;
@@ -237,6 +263,21 @@ class ProxyTransformer
         );
     }
 
+    public function transformAddress(Address $address)
+    {
+        $addressData = $address->toArray();
+
+        // Remove all common phone number delimiters and make sure phone has + at the beginning and no 0
+        $addressData['phone'] = str_replace(array('+', ' ', '-', '/'), '', $addressData['phone']);
+        $addressData['phone'] = ltrim($addressData['phone'], '0');
+        $addressData['phone'] = '+' . $addressData['phone'];
+        if (!preg_match(static::PHONE_REGEX, $addressData['phone'])) {
+            unset($addressData['phone']);
+        }
+
+        return $addressData;
+    }
+
     /**
      * Calculates additional discount or surcharge based on total amounts set on order lines and total amount set o order
      *
@@ -300,5 +341,121 @@ class ProxyTransformer
         }
 
         return $result;
+    }
+
+    /**
+     * @param string $url
+     * @param string $endpoint
+     * @param string $method
+     *
+     * @throws InvalidConfigurationException
+     */
+    public function adjustUrl(&$url, $endpoint, $method)
+    {
+        if (strtoupper($method) === Proxy::HTTP_METHOD_GET) {
+            if ($this->attachTestModeParameter($endpoint)) {
+                $this->addQueryParameters($url, array('testmode' => 'true'));
+            }
+
+            if ($this->isProfileIdRequired($endpoint)) {
+                $profile = $this->getConfigService()->getWebsiteProfile();
+                if (!$profile) {
+                    throw new InvalidConfigurationException('Profile not found in configuration!');
+                }
+
+                $this->addQueryParameters($url, array('profileId' => $profile->getId()));
+            }
+        }
+    }
+
+    /**
+     *
+     * @param array $body
+     * @param string $endpoint
+     */
+    public function adjustBody(array &$body, $endpoint)
+    {
+        if ($this->attachTestModeParameter($endpoint)) {
+            $body['testmode'] = true;
+        }
+    }
+
+    /**
+     * Return payment parameters that could be sent on both API-s
+     * @param Payment $payment
+     *
+     * @return array
+     */
+    protected function getCommonPaymentParameters(Payment $payment)
+    {
+        $paymentSpecific = array();
+        if ($payment->getIssuer()) {
+            $paymentSpecific['issuer'] = $payment->getIssuer();
+        }
+
+        if ($payment->getCardToken()) {
+            $paymentSpecific['cardToken'] = $payment->getCardToken();
+        }
+
+        if ($payment->getWebhookUrl()) {
+            $paymentSpecific['webhookUrl'] = $payment->getWebhookUrl();
+        }
+
+        return $paymentSpecific;
+    }
+
+    /**
+     * Checks if test mode is enabled for a provided endpoint
+     *
+     * @param string $endpoint Endpoint resource on remote API.
+     *
+     * @return bool True if test mode is on; false otherwise
+     */
+    protected function attachTestModeParameter($endpoint)
+    {
+        $unsupportedTestModeEndpoints = array('permissions', 'profiles/me');
+        /** @var Configuration $configService */
+        $configService = ServiceRegister::getService(Configuration::CLASS_NAME);
+
+        // Test mode is on if it is configured and requesting endpoint supports test mode
+        return $configService->isTestMode() && !in_array($endpoint, $unsupportedTestModeEndpoints, true);
+    }
+
+    /**
+     * @param string $endpoint
+     *
+     * @return bool
+     */
+    protected function isProfileIdRequired($endpoint)
+    {
+        foreach (static::$profileIdRequiredEndpoints as $requiredEndpoint) {
+            if (strpos($endpoint, $requiredEndpoint) !== false) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param string $url
+     * @param array $queryParams
+     */
+    protected function addQueryParameters(&$url, array $queryParams)
+    {
+        $url .= false === strpos($url, '?') ? '?' : '&';
+        $url .= http_build_query($queryParams);
+    }
+
+    /**
+     * @return Configuration
+     */
+    protected function getConfigService()
+    {
+        if ($this->configService === null) {
+            $this->configService = ServiceRegister::getService(Configuration::CLASS_NAME);
+        }
+
+        return $this->configService;
     }
 }

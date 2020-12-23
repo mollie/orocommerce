@@ -5,6 +5,8 @@ use Mollie\Bundle\PaymentBundle\Entity\PaymentLinkMethod;
 use Mollie\Bundle\PaymentBundle\Entity\Repository\MollieBaseEntityRepository;
 use Mollie\Bundle\PaymentBundle\Entity\Repository\MollieContextAwareEntityRepository;
 use Mollie\Bundle\PaymentBundle\Entity\Repository\MollieNotificationEntityRepository;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Authorization\Interfaces\AuthorizationService;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\OrgToken\ProxyDataProvider;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Integration\Interfaces\OrderLineTransitionService as OrderLineTransitionServiceInterface;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Integration\Interfaces\OrderTransitionService as OrderTransitionServiceInterface;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Notifications\Model\Notification;
@@ -90,6 +92,20 @@ class BootstrapComponent extends \Mollie\Bundle\PaymentBundle\IntegrationCore\Bu
             OrderLineTransitionServiceInterface::CLASS_NAME,
             function () {
                 return self::$container->get(OrderLineTransitionService::class);
+            }
+        );
+
+        ServiceRegister::registerService(
+            AuthorizationService::class,
+            function () {
+                return self::$container->get(AuthorizationService::class);
+            }
+        );
+
+        ServiceRegister::registerService(
+            ProxyDataProvider::class,
+            function () {
+                return self::$container->get(ProxyDataProvider::class);
             }
         );
     }

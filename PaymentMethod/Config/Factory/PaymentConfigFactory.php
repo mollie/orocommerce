@@ -4,6 +4,8 @@ namespace Mollie\Bundle\PaymentBundle\PaymentMethod\Config\Factory;
 
 use Doctrine\Common\Collections\Collection;
 use Mollie\Bundle\PaymentBundle\Entity\PaymentMethodSettings;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\Model\PaymentMethodConfig;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\PaymentMethodController;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration;
 use Mollie\Bundle\PaymentBundle\PaymentMethod\Config\MolliePaymentConfig;
 use Mollie\Bundle\PaymentBundle\PaymentMethod\Config\MolliePaymentConfigInterface;
@@ -28,6 +30,10 @@ class PaymentConfigFactory implements PaymentConfigFactoryInterface
      * @var PaymentConfigIdentifierGenerator
      */
     private $identifierGenerator;
+    /**
+     * @var PaymentMethodController
+     */
+    private $methodController;
 
     /**
      * PaymentConfigFactory constructor.
@@ -35,15 +41,18 @@ class PaymentConfigFactory implements PaymentConfigFactoryInterface
      * @param Configuration $configService
      * @param LocalizationHelper $localizationHelper
      * @param PaymentConfigIdentifierGenerator $identifierGenerator
+     * @param PaymentMethodController $methodController
      */
     public function __construct(
         Configuration $configService,
         LocalizationHelper $localizationHelper,
-        PaymentConfigIdentifierGenerator $identifierGenerator
+        PaymentConfigIdentifierGenerator $identifierGenerator,
+        PaymentMethodController $methodController
     ) {
         $this->configService = $configService;
         $this->localizationHelper = $localizationHelper;
         $this->identifierGenerator = $identifierGenerator;
+        $this->methodController = $methodController;
     }
 
     /**
@@ -70,6 +79,9 @@ class PaymentConfigFactory implements PaymentConfigFactoryInterface
                 MolliePaymentConfig::TEST_MODE => $this->configService->isTestMode(),
             ];
         });
+
+        $useMollieComponents = $mollieMethodConfig->useMollieComponents() && $mollieMethodConfig->getMollieId() === 'creditcard';
+
         $configParams[MolliePaymentConfig::FIELD_LABEL] = $paymentLabel;
         $configParams[MolliePaymentConfig::FIELD_SHORT_LABEL] = $this->getLocalizedValue($paymentMethodSetting->getNames());
         $configParams[MolliePaymentConfig::FIELD_ADMIN_LABEL] = $adminLabel;
@@ -81,6 +93,9 @@ class PaymentConfigFactory implements PaymentConfigFactoryInterface
         $configParams[MolliePaymentConfig::PROFILE_ID] = $mollieMethodConfig->getProfileId();
         $configParams[MolliePaymentConfig::CHANNEL_ID] = $channel->getId();
         $configParams[MolliePaymentConfig::SURCHARGE_AMOUNT] = $mollieMethodConfig->getSurcharge();
+        $configParams[MolliePaymentConfig::ISSUER_LIST_STYLE] = $mollieMethodConfig->getIssuerListStyle();
+        $configParams[MolliePaymentConfig::USE_MOLLIE_COMPONENTS] = $useMollieComponents;
+        $configParams[MolliePaymentConfig::ISSUERS] = $this->getIssuers($mollieMethodConfig, $channel->getId());
 
         return new MolliePaymentConfig($configParams);
     }
@@ -93,5 +108,52 @@ class PaymentConfigFactory implements PaymentConfigFactoryInterface
     private function getLocalizedValue(Collection $values)
     {
         return (string)$this->localizationHelper->getLocalizedValue($values);
+    }
+
+    /**
+     * @param PaymentMethodConfig $paymentMethod
+     * @param int $channelId
+     *
+     * @return array
+     * @throws \Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\Exceptions\UnprocessableEntityRequestException
+     * @throws \Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http\Exceptions\HttpAuthenticationException
+     * @throws \Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http\Exceptions\HttpCommunicationException
+     * @throws \Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http\Exceptions\HttpRequestException
+     */
+    private function getIssuers(PaymentMethodConfig $paymentMethod, $channelId)
+    {
+        $issuers = [];
+        $enabledMethodConfig = $this->getEnableConfiguration($paymentMethod, $channelId);
+        if (!$enabledMethodConfig) {
+            return $issuers;
+        }
+
+        foreach ($enabledMethodConfig->getOriginalAPIConfig()->getIssuers() as $issuer) {
+            $issuers[] = $issuer->toArray();
+        }
+
+        return $issuers;
+    }
+
+    /**
+     * @param PaymentMethodConfig $paymentMethod
+     * @param int $channelId
+     *
+     * @return PaymentMethodConfig|null
+     */
+    private function getEnableConfiguration(PaymentMethodConfig $paymentMethod, $channelId)
+    {
+        return $this->configService->doWithContext($channelId, function () use ($paymentMethod) {
+            if ($paymentMethod->isEnabled() && $paymentMethod->isIssuerListSupported()) {
+                $enabledMethods = $this->methodController->getEnabled($paymentMethod->getProfileId());
+                foreach ($enabledMethods as $enabledMethod) {
+                    if ($enabledMethod->getMollieId() === $paymentMethod->getMollieId()) {
+                        return $enabledMethod;
+                    }
+                }
+            }
+
+            return null;
+        });
     }
 }

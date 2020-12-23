@@ -79,7 +79,8 @@ class RefundService extends BaseService
         /** @var OrderService $orderService */
         $orderService = ServiceRegister::getService(OrderService::CLASS_NAME);
         if ($existingOrder = $orderService->getOrder($shopReference)) {
-            if ($this->isFullRefund($existingOrder, $refund)) {
+            // ensure idempotent Order object
+            if ($this->allItemsRefunding(Order::fromArray($existingOrder->toArray()), $refund->getRefundLinesMap())) {
                 $refund->setLines(array());
             }
 
@@ -132,57 +133,45 @@ class RefundService extends BaseService
      * Check if refund all remaining items
      *
      * @param Order $existingOrder
-     * @param Refund $refund
+     * @param OrderLine[] $refundLinesMap
      *
      * @return bool
+     * @throws RefundNotAllowedException
      */
-    private function isFullRefund(Order $existingOrder, Refund $refund)
+    private function allItemsRefunding(Order $existingOrder, array $refundLinesMap)
     {
-        $refundLinesMap = $this->createRefundLinesMap($refund->getLines());
+        $allItemsRefunded = true;
         foreach ($existingOrder->getLines() as $existingLine) {
-            if (!array_key_exists($existingLine->getId(), $refundLinesMap)) {
-                if ($this->skipItem($existingLine, $refundLinesMap)) {
-                    continue;
-                }
-
-                return false;
+            if ($existingLine->getType() === 'discount') {
+                continue;
             }
 
-            /** @var OrderLine $refundLine */
-            $refundLine = $refundLinesMap[$existingLine->getId()];
-            if ($existingLine->getRefundableQuantity() !== $refundLine->getQuantity()) {
+            if (array_key_exists($existingLine->getId(), $refundLinesMap)) {
+                $this->recalculateRefundableQuantity($refundLinesMap[$existingLine->getId()], $existingLine);
+            }
+
+            if ($existingLine->getRefundableQuantity() > 0) {
                 return false;
             }
         }
 
-        return true;
+        return $allItemsRefunded;
     }
 
     /**
-     * @param OrderLine $orderLine
-     * @param array $refundLinesMap
+     * @param OrderLine $refundLine
+     * @param OrderLine $existingLine
      *
-     * @return bool
+     * @throws RefundNotAllowedException
      */
-    private function skipItem(OrderLine $orderLine, array $refundLinesMap)
+    private function recalculateRefundableQuantity(OrderLine $refundLine, OrderLine $existingLine)
     {
-        return ($orderLine->getType() === 'discount') ||
-            (!array_key_exists($orderLine->getId(), $refundLinesMap) && $orderLine->getRefundableQuantity() === 0);
-    }
-
-    /**
-     * @param OrderLine[] $refundLines
-     *
-     * @return array
-     */
-    private function createRefundLinesMap(array $refundLines)
-    {
-        $map = array();
-        foreach ($refundLines as $refundLine) {
-            $map[$refundLine->getId()] = $refundLine;
+        $recalculatedQty = $existingLine->getRefundableQuantity() - $refundLine->getQuantity();
+        if ($recalculatedQty < 0) {
+            throw new RefundNotAllowedException('Refund item quantity is bigger than ordered');
         }
 
-        return $map;
+        $existingLine->setRefundableQuantity($recalculatedQty);
     }
 
     /**

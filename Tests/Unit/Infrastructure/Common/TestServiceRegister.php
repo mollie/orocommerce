@@ -14,7 +14,7 @@ class TestServiceRegister extends ServiceRegister
     /**
      * TestServiceRegister constructor.
      *
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function __construct(array $services = array())
     {

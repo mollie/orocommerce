@@ -2,6 +2,7 @@
 
 namespace Mollie\Bundle\PaymentBundle\Tests\Unit\BusinessLogic\Integration\EventHandler;
 
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\OrderLine;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\Shipment;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\Tracking;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Integration\Event\IntegrationOrderShippedEvent;
@@ -46,10 +47,16 @@ class IntegrationOrderShippedEventHandlerTest extends IntegrationOrderEventHandl
     /**
      * @throws \Exception
      */
-    public function testOrderShippingWithTracking()
+    public function testFullOrderShippingWithTrackingAndLines()
     {
+        $lines = $this->getLines();
+
+        foreach ($lines as $line) {
+            $line->setQuantity($line->getShippableQuantity());
+        }
+
         $tracking = Tracking::fromArray(array('carrier' => 'PostNL', 'code' => '3SKABA000000000'));
-        $event = new IntegrationOrderShippedEvent($this->orderShopReference, $tracking);
+        $event = new IntegrationOrderShippedEvent($this->orderShopReference, $tracking, $lines);
         $this->httpClient->setMockResponses(array($this->getMockApiShipmentResponse()));
 
         $this->handler->handle($event);
@@ -58,8 +65,37 @@ class IntegrationOrderShippedEventHandlerTest extends IntegrationOrderEventHandl
         $this->assertCount(1, $apiRequestHistory);
 
         $requestBody = json_decode($apiRequestHistory[0]['body'], true);
-        $this->assertEquals(array(), $requestBody['lines']);
+        $this->assertEmpty($requestBody['lines']);
         $this->assertEquals($tracking->toArray(), $requestBody['tracking']);
+    }
+
+    public function testPartialShipping()
+    {
+        $event = new IntegrationOrderShippedEvent($this->orderShopReference, null, $this->getLines());
+        $this->httpClient->setMockResponses(array($this->getMockApiShipmentResponse()));
+
+        $this->handler->handle($event);
+
+        $apiRequestHistory = $this->httpClient->getHistory();
+        $this->assertCount(1, $apiRequestHistory);
+
+        $requestBody = json_decode($apiRequestHistory[0]['body'], true);
+        $this->assertNotEmpty($requestBody['lines']);
+    }
+
+    public function testShippingWithInvalidQuantity()
+    {
+        $lines = $this->getLines();
+
+        foreach ($lines as $line) {
+            $line->setQuantity(6);
+        }
+
+        $event = new IntegrationOrderShippedEvent($this->orderShopReference, null, $lines);
+        $this->httpClient->setMockResponses(array($this->getMockApiShipmentResponse()));
+
+        $this->expectException('Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Shipments\Exceptions\ShipmentNotAllowedException');
+        $this->handler->handle($event);
     }
 
     /**
@@ -106,5 +142,16 @@ class IntegrationOrderShippedEventHandlerTest extends IntegrationOrderEventHandl
     protected function getMockShipmentJson()
     {
         return file_get_contents(__DIR__ . '/../../Common/ApiResponses/shipmentResponse.json');
+    }
+
+    /**
+     * @return OrderLine[]
+     */
+    protected function getLines()
+    {
+        $source = file_get_contents(__DIR__ . '/../../Common/ApiResponses/orderResponse.json');
+        $arraySource = json_decode($source, true);
+
+        return OrderLine::fromArrayBatch($arraySource['lines']);
     }
 }

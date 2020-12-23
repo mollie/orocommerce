@@ -4,8 +4,8 @@ namespace Mollie\Bundle\PaymentBundle\Tests\Unit\BusinessLogic\Integration\Event
 
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\Order;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Payment;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\OrgToken\ProxyDataProvider;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\Proxy;
-use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\ProxyTransformer;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Notifications\DefaultNotificationChannel;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Notifications\Interfaces\DefaultNotificationChannelAdapter;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Notifications\Model\Notification;
@@ -13,6 +13,7 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\OrderReference\Mod
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\OrderReference\OrderReferenceService;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Orders\OrderService;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\Model\PaymentMethodConfig;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Shipments\ShipmentService;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http\HttpClient;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ORM\RepositoryRegistry;
 use Mollie\Bundle\PaymentBundle\Tests\Unit\BusinessLogic\Common\BaseTestWithServices;
@@ -61,7 +62,7 @@ abstract class IntegrationOrderEventHandlerTest extends BaseTestWithServices
         TestServiceRegister::registerService(
             Proxy::CLASS_NAME,
             function () use ($me) {
-                return new Proxy($me->shopConfig, $me->httpClient, new ProxyTransformer());
+                return new Proxy($me->shopConfig, $me->httpClient, new ProxyDataProvider());
             }
         );
         TestServiceRegister::registerService(
@@ -78,6 +79,13 @@ abstract class IntegrationOrderEventHandlerTest extends BaseTestWithServices
             }
         );
 
+        TestServiceRegister::registerService(
+            ShipmentService::CLASS_NAME,
+            function () {
+                return ShipmentService::getInstance();
+            }
+        );
+
         TestServiceRegister::registerService(DefaultNotificationChannelAdapter::CLASS_NAME, function () use ($me) {
             return $me->defaultChannel;
         });
@@ -90,6 +98,7 @@ abstract class IntegrationOrderEventHandlerTest extends BaseTestWithServices
     {
         OrderReferenceService::resetInstance();
         OrderService::resetInstance();
+        ShipmentService::resetInstance();
 
         parent::tearDown();
     }

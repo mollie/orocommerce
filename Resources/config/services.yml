@@ -1,5 +1,5 @@
 parameters:
-  mollie_payment.version: 3.1.3
+  mollie_payment.version: 3.1.4
   mollie_payment.method.identifier_prefix.mollie_payment: 'mollie_payment'
   mollie_payment.uploader.public_image_path: 'bundles/molliepayment/img/uploads'
   mollie_payment.uploader.image_dir: '%kernel.project_dir%/public/%mollie_payment.uploader.public_image_path%'
@@ -52,6 +52,7 @@ services:
       - '@Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration'
       - '@oro_locale.helper.localization'
       - '@mollie_payment.generator.mollie_payment_config_identifier'
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\PaymentMethodController'
 
   mollie_payment.payment_method.config.provider:
     class: Mollie\Bundle\PaymentBundle\PaymentMethod\Config\Provider\MolliePaymentConfigProvider
@@ -78,6 +79,7 @@ services:
     arguments:
       - '@mollie_payment.payment_method.config.provider'
       - '@mollie_payment.factory.method_view.mollie_payment'
+      - '@oro_payment.method.provider.method_provider'
     tags:
       - { name: oro_payment.payment_method_view_provider }
 
@@ -111,6 +113,7 @@ services:
   mollie_payment.mapper.mollie_dto_mapper:
     class: Mollie\Bundle\PaymentBundle\Mapper\MollieDtoMapper
     arguments:
+      - '@request_stack'
       - '@Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration'
       - '@oro_tax.provider.tax_provider_registry'
       - '@oro_payment.provider.surcharge'
@@ -179,14 +182,14 @@ services:
     arguments:
       - '@Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration'
       - "@translator"
-      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\AuthorizationController'
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Authorization\Interfaces\AuthorizationService'
       - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\WebsiteProfileController'
       - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\PaymentMethodController'
 
   mollie_payment.manager.mollie_delete_provider:
     class: Mollie\Bundle\PaymentBundle\Manager\MollieDeleteProvider
     arguments:
-      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\AuthorizationController'
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Authorization\Interfaces\AuthorizationService'
       - '@Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration'
     tags:
       - { name: oro_integration.delete_provider }
@@ -252,9 +255,6 @@ services:
   Mollie\Bundle\PaymentBundle\IntegrationServices\DebugService:
     arguments:
       - '%kernel.logs_dir%'
-    public: true
-
-  Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\AuthorizationController:
     public: true
 
   Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\WebsiteProfileController:
@@ -329,3 +329,11 @@ services:
       public: true
       arguments:
         - '@mollie_payment.manager.admin_link_handler'
+
+  Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Authorization\Interfaces\AuthorizationService:
+    factory: ['Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Authorization\OrgToken\OrgTokenAuthService', 'getInstance']
+    public: true
+
+  Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\OrgToken\ProxyDataProvider:
+    public: true
+

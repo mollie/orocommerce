@@ -5,9 +5,10 @@ namespace Mollie\Bundle\PaymentBundle\Form\EventListener;
 use Mollie\Bundle\PaymentBundle\Entity\ChannelSettings;
 use Mollie\Bundle\PaymentBundle\Entity\PaymentMethodSettings;
 use Mollie\Bundle\PaymentBundle\Form\Type\PaymentMethodSettingsType;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Authorization\Interfaces\AuthorizationService;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Authorization\OrgToken\OrgToken;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\WebsiteProfile;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\Exceptions\UnprocessableEntityRequestException;
-use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\AuthorizationController;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\PaymentMethodController;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\WebsiteProfileController;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration;
@@ -41,9 +42,9 @@ class ChannelSettingsTypeSubscriber implements EventSubscriberInterface
      */
     private $translator;
     /**
-     * @var AuthorizationController
+     * @var AuthorizationService
      */
-    private $authorizationController;
+    private $authorizationService;
     /**
      * @var WebsiteProfileController
      */
@@ -62,20 +63,20 @@ class ChannelSettingsTypeSubscriber implements EventSubscriberInterface
      *
      * @param Configuration $configService
      * @param TranslatorInterface $translator
-     * @param AuthorizationController $authorizationController
+     * @param AuthorizationService $authorizationService
      * @param WebsiteProfileController $websiteProfileController
      * @param PaymentMethodController $paymentMethodController
      */
     public function __construct(
         Configuration $configService,
         TranslatorInterface $translator,
-        AuthorizationController $authorizationController,
+        AuthorizationService $authorizationService,
         WebsiteProfileController $websiteProfileController,
         PaymentMethodController $paymentMethodController
     ) {
         $this->configService = $configService;
         $this->translator = $translator;
-        $this->authorizationController = $authorizationController;
+        $this->authorizationService = $authorizationService;
         $this->websiteProfileController = $websiteProfileController;
         $this->paymentMethodController = $paymentMethodController;
     }
@@ -394,6 +395,8 @@ class ChannelSettingsTypeSubscriber implements EventSubscriberInterface
             $paymentMethodSetting->setEnabled($paymentMethodConfig->isEnabled());
             $paymentMethodSetting->setSurcharge($paymentMethodConfig->getSurcharge());
             $paymentMethodSetting->setMethod($paymentMethodConfig->getApiMethod());
+            $paymentMethodSetting->setMollieComponents($paymentMethodConfig->useMollieComponents());
+            $paymentMethodSetting->setIssuerListStyle($paymentMethodConfig->getIssuerListStyle());
             $paymentMethodSetting->setOriginalImagePath($paymentMethodConfig->getOriginalAPIConfig()->getImage()->getSize2x());
             $paymentMethodSetting->setImagePath(
                 $paymentMethodConfig->hasCustomImage() ? $paymentMethodConfig->getImage() : null
@@ -409,7 +412,7 @@ class ChannelSettingsTypeSubscriber implements EventSubscriberInterface
     protected function isTokenValid($token, $testMode)
     {
         if (!array_key_exists($token, $this->tokenValidationCache)) {
-            $result = $this->authorizationController->validateToken($token, $testMode);
+            $result = $this->authorizationService->validateToken(new OrgToken($token, $testMode));
             $this->tokenValidationCache[$token] = $result;
         }
 
