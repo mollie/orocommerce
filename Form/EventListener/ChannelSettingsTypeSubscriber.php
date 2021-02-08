@@ -391,6 +391,13 @@ class ChannelSettingsTypeSubscriber implements EventSubscriberInterface
                 );
             }
 
+            if ($paymentMethodSetting->getPaymentDescriptions()->isEmpty()) {
+                $paymentMethodSetting->addPaymentDescription(
+                    (new LocalizedFallbackValue())->setString('You will be redirected to payment gateway website to complete your purchase after the order review step.'
+                    )
+                );
+            }
+
             $paymentMethodSetting->setPaymentMethodConfig($paymentMethodConfig);
             $paymentMethodSetting->setEnabled($paymentMethodConfig->isEnabled());
             $paymentMethodSetting->setSurcharge($paymentMethodConfig->getSurcharge());
