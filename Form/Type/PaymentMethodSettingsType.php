@@ -72,6 +72,16 @@ class PaymentMethodSettingsType extends AbstractType
                 ]
             )
             ->add(
+                'paymentDescriptions',
+                LocalizedFallbackValueCollectionType::class,
+                [
+                    'label' => 'mollie.payment.config.payment_methods.payment.description.label',
+                    'tooltip' => 'mollie.payment.config.payment_methods.payment.description.tooltip.label',
+                    'required' => true,
+                    'entry_options' => ['constraints' => [new NotBlank()]],
+                ]
+            )
+            ->add(
                 'image',
                 FileType::class,
                 [
