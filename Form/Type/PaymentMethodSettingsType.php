@@ -47,8 +47,6 @@ class PaymentMethodSettingsType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $tooltip = 'Define payment method description text that will be used during the checkout.';
-
         $builder
             ->add('mollieMethodId', HiddenType::class)
             ->add('mollieMethodDescription', HiddenType::class)
@@ -65,19 +63,20 @@ class PaymentMethodSettingsType extends AbstractType
                 ]
             )
             ->add(
-                'paymentDescriptions',
-                LocalizedFallbackValueCollectionType::class,
-                [
-                    'label' => 'DescriptionCheckOut',
-                    'tooltip' => $tooltip,
-                    'required' => true,
-                    'entry_options' => ['constraints' => [new NotBlank()]],
-                   ])
-            ->add(
                 'descriptions',
                 LocalizedFallbackValueCollectionType::class,
                 [
                     'label' => 'mollie.payment.config.payment_methods.description.label',
+                    'required' => true,
+                    'entry_options' => ['constraints' => [new NotBlank()]],
+                ]
+            )
+            ->add(
+                'paymentDescriptions',
+                LocalizedFallbackValueCollectionType::class,
+                [
+                    'label' => 'mollie.payment.config.payment_methods.payment.description.label',
+                    'tooltip' => 'mollie.payment.config.payment_methods.payment.description.tooltip.label',
                     'required' => true,
                     'entry_options' => ['constraints' => [new NotBlank()]],
                 ]

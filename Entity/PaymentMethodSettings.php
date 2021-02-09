@@ -93,6 +93,7 @@ class PaymentMethodSettings
      */
     protected $paymentDescriptions;
 
+
     /**
      * @var string
      *
@@ -268,6 +269,7 @@ class PaymentMethodSettings
 
         return $this;
     }
+
 
 
     /**
