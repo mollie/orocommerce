@@ -57,8 +57,11 @@ mollie:
         label: 'Payment methods'
         status.active.label: 'Active'
         status.inactive.label: 'Inactive'
-        name.label: 'Name'
-        description.label: 'Description'
+        name.label: 'Code'
+        description.label: 'Name'
+        payment.description.label: 'Description'
+        payment.description.default.value: 'You will be redirected to payment gateway website to complete your purchase after the order review step.'
+        payment.description.tooltip.label: 'Define payment method description text that will be used during the checkout.'
         image:
           label: 'Image'
           mime_type_error: 'Please upload a valid image'

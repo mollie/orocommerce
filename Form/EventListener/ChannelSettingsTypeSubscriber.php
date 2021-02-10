@@ -391,6 +391,13 @@ class ChannelSettingsTypeSubscriber implements EventSubscriberInterface
                 );
             }
 
+            if ($paymentMethodSetting->getPaymentDescriptions()->isEmpty()) {
+                $paymentMethodSetting->addPaymentDescription(
+                    (new LocalizedFallbackValue())->setString('mollie.payment.config.payment_methods.payment.description.default.value'
+                    )
+                );
+            }
+
             $paymentMethodSetting->setPaymentMethodConfig($paymentMethodConfig);
             $paymentMethodSetting->setEnabled($paymentMethodConfig->isEnabled());
             $paymentMethodSetting->setSurcharge($paymentMethodConfig->getSurcharge());

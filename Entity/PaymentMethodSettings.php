@@ -74,6 +74,27 @@ class PaymentMethodSettings
     protected $descriptions;
 
     /**
+     * @var Collection|LocalizedFallbackValue[]
+     *
+     * @ORM\ManyToMany(
+     *      targetEntity="Oro\Bundle\LocaleBundle\Entity\LocalizedFallbackValue",
+     *      cascade={"ALL"},
+     *      orphanRemoval=true
+     * )
+     * @ORM\JoinTable(
+     *      name="mollie_payment_settings_p_des",
+     *      joinColumns={
+     *          @ORM\JoinColumn(name="payment_setting_id", referencedColumnName="id", onDelete="CASCADE")
+     *      },
+     *      inverseJoinColumns={
+     *          @ORM\JoinColumn(name="localized_value_id", referencedColumnName="id", onDelete="CASCADE", unique=true)
+     *      }
+     * )
+     */
+    protected $paymentDescriptions;
+
+
+    /**
      * @var string
      *
      * @ORM\Column(name="mollie_method_id", type="string", length=255, nullable=false)
@@ -139,6 +160,7 @@ class PaymentMethodSettings
     {
         $this->names = new ArrayCollection();
         $this->descriptions = new ArrayCollection();
+        $this->paymentDescriptions = new ArrayCollection();
     }
 
     /**
@@ -208,6 +230,47 @@ class PaymentMethodSettings
 
         return $this;
     }
+
+    /**
+     * @return Collection|LocalizedFallbackValue[]
+     */
+    public function getPaymentDescriptions()
+    {
+        return $this->paymentDescriptions;
+    }
+
+    /**
+     * @param Collection|LocalizedFallbackValue[] $paymentDescriptions
+     */
+    public function setPaymentDescriptions($paymentDescriptions)
+    {
+        $this->paymentDescriptions = $paymentDescriptions;
+    }
+
+    public function addPaymentDescription(LocalizedFallbackValue $description)
+    {
+        if (!$this->paymentDescriptions->contains($description)) {
+            $this->paymentDescriptions->add($description);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param LocalizedFallbackValue $description
+     *
+     * @return $this
+     */
+    public function removePaymentDescription(LocalizedFallbackValue $description)
+    {
+        if ($this->paymentDescriptions->contains($description)) {
+            $this->paymentDescriptions->removeElement($description);
+        }
+
+        return $this;
+    }
+
+
 
     /**
      * @return Collection|LocalizedFallbackValue[]
