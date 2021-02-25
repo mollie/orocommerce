@@ -115,6 +115,24 @@ class ConfigurationService extends Configuration
     }
 
     /**
+     * @inheritDoc
+     * @return string
+     */
+    public function getExtensionVersionCheckUrl()
+    {
+        return '';
+    }
+
+    /**
+     * @inheritDoc
+     * @return string
+     */
+    public function getExtensionDownloadUrl()
+    {
+        return '';
+    }
+
+    /**
      * {@inheritdoc}
      */
     protected function isSystemSpecific($name)

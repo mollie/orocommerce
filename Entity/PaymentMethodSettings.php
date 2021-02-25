@@ -154,6 +154,16 @@ class PaymentMethodSettings
     private $issuerListStyle;
 
     /**
+     * @var int
+     */
+    private $orderExpiryDays;
+
+    /**
+     * @var int
+     */
+    private $paymentExpiryDays;
+
+    /**
      * PaymentMethodSettings constructor.
      */
     public function __construct()
@@ -466,5 +476,37 @@ class PaymentMethodSettings
     public function setIssuerListStyle($issuerListStyle)
     {
         $this->issuerListStyle = $issuerListStyle;
+    }
+
+    /**
+     * @return int
+     */
+    public function getOrderExpiryDays(): int
+    {
+        return $this->orderExpiryDays;
+    }
+
+    /**
+     * @param int $orderExpiryDays
+     */
+    public function setOrderExpiryDays(int $orderExpiryDays)
+    {
+        $this->orderExpiryDays = $orderExpiryDays;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPaymentExpiryDays(): int
+    {
+        return $this->paymentExpiryDays;
+    }
+
+    /**
+     * @param int $paymentExpiryDays
+     */
+    public function setPaymentExpiryDays(int $paymentExpiryDays)
+    {
+        $this->paymentExpiryDays = $paymentExpiryDays;
     }
 }

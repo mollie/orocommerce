@@ -231,6 +231,8 @@ class ChannelSettingsListener
             $paymentMethodConfig->setApiMethod($paymentMethodSetting->getMethod());
             $paymentMethodConfig->setUseMollieComponents($paymentMethodSetting->getMollieComponents());
             $paymentMethodConfig->setIssuerListStyle($paymentMethodSetting->getIssuerListStyle());
+            $paymentMethodConfig->setDaysToOrderExpire($paymentMethodSetting->getOrderExpiryDays());
+            $paymentMethodConfig->setDaysToPaymentExpire($paymentMethodSetting->getPaymentExpiryDays());
             $paymentMethodConfig->setImage(
                 !empty($paymentMethodSetting->getImagePath()) ? $paymentMethodSetting->getImagePath() : null
             );
