@@ -120,7 +120,7 @@ class ConfigurationService extends Configuration
      */
     public function getExtensionVersionCheckUrl()
     {
-        return '';
+        return 'https://github.com/mollie/orocommerce/blob/4.1/composer.json';
     }
 
     /**
@@ -129,7 +129,7 @@ class ConfigurationService extends Configuration
      */
     public function getExtensionDownloadUrl()
     {
-        return '';
+        return 'https://github.com/mollie/orocommerce/releases';
     }
 
     /**
