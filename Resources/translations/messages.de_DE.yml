@@ -84,6 +84,16 @@ mollie:
           label: 'Aufschlag'
           klarna_tooltip: "Geben Sie die zusätzlichen Kosten für eine Klarna-Zahlung mit einem Höchstbetrag von 1,95 € ein. Höhere Beträge werden nicht akzeptiert."
           tooltip: "Geben Sie die zusätzlichen Kosten für eine Zahlung ein."
+        orderExpiryDays:
+          label: 'Days To Expire'
+          tooltip: 'How many days before orders for this method becomes expired? Leave empty to use default expiration (28 days)'
+          klarna_tooltip: 'How many days before orders for this method becomes expired? Leave empty to use default
+          expiration (28 days).
+          <br>Please note: It is not possible to use an expiry date more than 28 days in the
+          future, unless another maximum is agreed between the merchant and Klarna.'
+        paymentExpiryDays:
+          label: 'Days To Expire'
+          tooltip: 'How many days before payment for this method becomes expired? Leave empty to use default expiration (28 days)'
       notifications:
         label: 'Benachrichtigungen'
         warning: 'Warnung'
