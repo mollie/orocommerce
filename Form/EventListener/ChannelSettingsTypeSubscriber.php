@@ -405,6 +405,8 @@ class ChannelSettingsTypeSubscriber implements EventSubscriberInterface
             $paymentMethodSetting->setMethod($paymentMethodConfig->getApiMethod());
             $paymentMethodSetting->setMollieComponents($paymentMethodConfig->useMollieComponents());
             $paymentMethodSetting->setIssuerListStyle($paymentMethodConfig->getIssuerListStyle());
+            $paymentMethodSetting->setOrderExpiryDays($paymentMethodConfig->getDaysToOrderExpire());
+            $paymentMethodSetting->setPaymentExpiryDays($paymentMethodConfig->getDaysToPaymentExpire());
             $paymentMethodSetting->setOriginalImagePath($paymentMethodConfig->getOriginalAPIConfig()->getImage()->getSize2x());
             $paymentMethodSetting->setImagePath(
                 $paymentMethodConfig->hasCustomImage() ? $paymentMethodConfig->getImage() : null
