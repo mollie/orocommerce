@@ -478,7 +478,7 @@ class PaymentMethodSettings
     /**
      * @return int
      */
-    public function getOrderExpiryDays(): int
+    public function getOrderExpiryDays()
     {
         return $this->orderExpiryDays;
     }
@@ -486,7 +486,7 @@ class PaymentMethodSettings
     /**
      * @param int $orderExpiryDays
      */
-    public function setOrderExpiryDays(int $orderExpiryDays)
+    public function setOrderExpiryDays($orderExpiryDays)
     {
         $this->orderExpiryDays = $orderExpiryDays;
     }
@@ -494,7 +494,7 @@ class PaymentMethodSettings
     /**
      * @return int
      */
-    public function getPaymentExpiryDays(): int
+    public function getPaymentExpiryDays()
     {
         return $this->paymentExpiryDays;
     }
@@ -502,7 +502,7 @@ class PaymentMethodSettings
     /**
      * @param int $paymentExpiryDays
      */
-    public function setPaymentExpiryDays(int $paymentExpiryDays)
+    public function setPaymentExpiryDays($paymentExpiryDays)
     {
         $this->paymentExpiryDays = $paymentExpiryDays;
     }
