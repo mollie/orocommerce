@@ -24,6 +24,8 @@ class MolliePaymentConfig extends AbstractParameterBagPaymentConfig implements M
     const USE_MOLLIE_COMPONENTS = 'use_mollie_components';
     const ISSUERS = 'issuers';
     const PAYMENT_DESCRIPTION = 'payment_description';
+    const ORDER_EXPIRY_DAYS = 'order_expiry_days';
+    const PAYMENT_EXPIRY_DAYS = 'payment_expiry_days';
 
     /**
      * {@inheritdoc}
@@ -121,5 +123,15 @@ class MolliePaymentConfig extends AbstractParameterBagPaymentConfig implements M
     public function getPaymentDescription()
     {
         return (string)$this->get(self::PAYMENT_DESCRIPTION);
+    }
+
+    public function getOrderExpiryDays()
+    {
+        return (int)$this->get(self::ORDER_EXPIRY_DAYS);
+    }
+
+    public function getPaymentExpiryDays()
+    {
+        return (int)$this->get(self::PAYMENT_EXPIRY_DAYS);
     }
 }

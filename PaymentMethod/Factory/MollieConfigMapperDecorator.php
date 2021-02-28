@@ -2,6 +2,7 @@
 
 namespace Mollie\Bundle\PaymentBundle\PaymentMethod\Factory;
 
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Payment;
 use Mollie\Bundle\PaymentBundle\Mapper\MollieDtoMapperInterface;
 use Mollie\Bundle\PaymentBundle\PaymentMethod\Config\MolliePaymentConfigInterface;
 use Oro\Bundle\OrderBundle\Entity\OrderAddress;
@@ -45,6 +46,10 @@ class MollieConfigMapperDecorator implements MollieDtoMapperInterface
         if ($orderData) {
             $orderData->setProfileId($this->config->getProfileId());
             $orderData->setMethod([$this->config->getMollieId()]);
+            $expiryDays = $this->config->getOrderExpiryDays();
+            if ($expiryDays > 0) {
+                $orderData->calculateExpiresAt($expiryDays);
+            }
         }
 
         return $orderData;
@@ -66,6 +71,7 @@ class MollieConfigMapperDecorator implements MollieDtoMapperInterface
         $paymentData = $this->dtoMapper->getPaymentData($paymentTransaction);
         $paymentData->setProfileId($this->config->getProfileId());
         $paymentData->setMethod([$this->config->getMollieId()]);
+        $this->setDueDate($paymentData);
 
         return $paymentData;
     }
@@ -76,5 +82,16 @@ class MollieConfigMapperDecorator implements MollieDtoMapperInterface
     public function getAddressData(OrderAddress $address, $email)
     {
         return $this->dtoMapper->getAddressData($address, $email);
+    }
+
+    /**
+     * @param Payment $paymentData
+     */
+    protected function setDueDate(Payment $paymentData)
+    {
+        $paymentExpiryDays = $this->config->getPaymentExpiryDays();
+        if ($paymentExpiryDays > 0 && $this->config->getMollieId() === 'banktransfer') {
+            $paymentData->calculateDueDate($paymentExpiryDays);
+        }
     }
 }
