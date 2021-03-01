@@ -5,6 +5,7 @@ namespace Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\VersionCheck
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\BaseService;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Configuration;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\VersionCheck\Http\VersionCheckProxy;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Logger\Logger;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ServiceRegister;
 
 /**
@@ -38,10 +39,16 @@ abstract class VersionCheckService extends BaseService
      */
     public function checkForNewVersion()
     {
+        Logger::logError('checkinng for new version....');
         /** @var VersionCheckProxy $proxy */
         $proxy = ServiceRegister::getService(VersionCheckProxy::CLASS_NAME);
 
         $latestVersion = $proxy->getLatestPluginVersion($this->getConfigService()->getExtensionVersionCheckUrl());
+        if ($latestVersion === null) {
+            Logger::logError('version is null...');
+        } else {
+            Logger::logError('Latest version:' . $latestVersion);
+        }
         if (version_compare($latestVersion, $this->getConfigService()->getExtensionVersion(), 'gt')) {
             $this->flashMessage($latestVersion);
         }
