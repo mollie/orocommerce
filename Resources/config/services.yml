@@ -1,5 +1,5 @@
 parameters:
-  mollie_payment.version: 4.0.4
+  mollie_payment.version: 4.0.5
   mollie_payment.method.identifier_prefix.mollie_payment: 'mollie_payment'
   mollie_payment.uploader.public_image_path: 'bundles/molliepayment/img/uploads'
   mollie_payment.uploader.image_dir: '%kernel.project_dir%/public/%mollie_payment.uploader.public_image_path%'

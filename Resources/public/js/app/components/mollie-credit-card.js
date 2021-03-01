@@ -6,7 +6,7 @@ define(function(require) {
     var $ = require('jquery');
     var BaseComponent = require('oroui/js/app/components/base/component');
 
-    const scriptjs = require('scriptjs');
+    var Mollie = require('https://js.mollie.com/v1/mollie.js');
 
     const MollieCreditCardComponent = BaseComponent.extend({
         /**
@@ -65,9 +65,7 @@ define(function(require) {
             mediator.on('checkout:payment:before-transit', this.beforeTransit, this);
             mediator.on('checkout-content:initialized', this.contentLoaded, this);
             mediator.on('checkout:payment:method:changed', this.onPaymentMethodChanged, this);
-            scriptjs("https://js.mollie.com/v1/mollie.js", () => {
-                this.contentLoaded();
-            })
+
         },
 
         /**
