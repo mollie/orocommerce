@@ -11,6 +11,7 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\WebsitePr
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\Exceptions\UnprocessableEntityRequestException;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\PaymentMethodController;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\WebsiteProfileController;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\VersionCheck\VersionCheckService;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http\Exceptions\HttpAuthenticationException;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http\Exceptions\HttpCommunicationException;
@@ -23,6 +24,7 @@ use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Form\FormInterface;
 
@@ -59,6 +61,11 @@ class ChannelSettingsTypeSubscriber implements EventSubscriberInterface
     private $tokenValidationCache = [];
 
     /**
+     * @var VersionCheckService
+     */
+    private $versionCheckService;
+
+    /**
      * ChannelSettingsTypeSubscriber constructor.
      *
      * @param Configuration $configService
@@ -72,13 +79,15 @@ class ChannelSettingsTypeSubscriber implements EventSubscriberInterface
         TranslatorInterface $translator,
         AuthorizationService $authorizationService,
         WebsiteProfileController $websiteProfileController,
-        PaymentMethodController $paymentMethodController
+        PaymentMethodController $paymentMethodController,
+        VersionCheckService $versionCheckService
     ) {
         $this->configService = $configService;
         $this->translator = $translator;
         $this->authorizationService = $authorizationService;
         $this->websiteProfileController = $websiteProfileController;
         $this->paymentMethodController = $paymentMethodController;
+        $this->versionCheckService = $versionCheckService;
     }
 
     /**
@@ -186,6 +195,7 @@ class ChannelSettingsTypeSubscriber implements EventSubscriberInterface
      */
     public function onPostSetData(FormEvent $event)
     {
+        $this->versionCheckService->checkForNewVersion();
         $form = $event->getForm();
 
         $form->get('mollieVersion')->setData($this->configService->getExtensionVersion());
