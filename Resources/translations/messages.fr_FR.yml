@@ -94,7 +94,8 @@ mollie:
         paymentExpiryDays:
           label: 'Days To Expire'
           tooltip: 'How many days before payment for this method becomes expired? Leave empty to use default expiration (28 days)'
-
+        versionCheck:
+          message: 'A new module version {versionNumber} is available. Please download the latest version <a href="{downloadUrl}" target="_blank">here</a>.'
       notifications:
         label: 'Notifications'
         warning: 'Attention'

@@ -12,6 +12,7 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Integration\Interf
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Notifications\Model\Notification;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\OrderReference\Model\OrderReference;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\Model\PaymentMethodConfig;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\VersionCheck\VersionCheckService;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\ConfigEntity;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http\CurlHttpClient;
@@ -106,6 +107,13 @@ class BootstrapComponent extends \Mollie\Bundle\PaymentBundle\IntegrationCore\Bu
             ProxyDataProvider::class,
             function () {
                 return self::$container->get(ProxyDataProvider::class);
+            }
+        );
+
+        ServiceRegister::registerService(
+            VersionCheckService::class,
+            function () {
+                return self::$container->get(VersionCheckService::class);
             }
         );
     }
