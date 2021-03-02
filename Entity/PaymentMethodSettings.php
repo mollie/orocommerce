@@ -154,6 +154,16 @@ class PaymentMethodSettings
     private $issuerListStyle;
 
     /**
+     * @var string
+     */
+    private $voucherCategory;
+
+    /**
+     * @var string
+     */
+    private $productAttribute;
+
+    /**
      * PaymentMethodSettings constructor.
      */
     public function __construct()
@@ -467,4 +477,38 @@ class PaymentMethodSettings
     {
         $this->issuerListStyle = $issuerListStyle;
     }
+
+    /**
+     * @return string
+     */
+    public function getVoucherCategory(): string
+    {
+        return $this->voucherCategory;
+    }
+
+    /**
+     * @param string $voucherCategory
+     */
+    public function setVoucherCategory(string $voucherCategory)
+    {
+        $this->voucherCategory = $voucherCategory;
+    }
+
+    /**
+     * @return string
+     */
+    public function getProductAttribute(): string
+    {
+        return $this->productAttribute;
+    }
+
+    /**
+     * @param string $productAttribute
+     */
+    public function setProductAttribute(string $productAttribute)
+    {
+        $this->productAttribute = $productAttribute;
+    }
+
+
 }

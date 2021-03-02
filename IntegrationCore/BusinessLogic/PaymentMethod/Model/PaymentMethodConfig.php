@@ -26,6 +26,14 @@ class PaymentMethodConfig extends Entity
     const ISSUER_DROPDOWN = 'dropdown';
     const ISSUER_LIST = 'list';
 
+    const VOUCHER_CATEGORY_DEFAULT = 'none';
+    const VOUCHER_CATEGORY_GIFT = 'gift';
+    const VOUCHER_CATEGORY_MEAL = 'meal';
+    const VOUCHER_CATEGORY_ECO = 'eco';
+    const VOUCHER_CATEGORY_CUSTOM = 'custom';
+
+    const PRODUCT_ATTRIBUTE_DEFAULT = 'Voucher Category';
+
     /**
      * @var string[]
      */
@@ -53,6 +61,9 @@ class PaymentMethodConfig extends Entity
         PaymentMethods::KBC,
     );
 
+    protected static $mollieVoucherMethod = array(PaymentMethods::Vouchers);
+
+
     /**
      * {@inheritdoc}
      */
@@ -66,7 +77,9 @@ class PaymentMethodConfig extends Entity
         'image',
         'enabled',
         'useMollieComponents',
-        'issuerListStyle'
+        'issuerListStyle',
+        'voucherCategory',
+        'productAttribute',
     );
 
     /**
@@ -110,6 +123,15 @@ class PaymentMethodConfig extends Entity
      * @var string
      */
     protected $issuerListStyle = self::ISSUER_LIST;
+    /**
+     * @var string
+     */
+    protected $voucherCategory;
+    /**
+     * @var string
+     */
+    protected $productAttribute;
+
 
     /**
      * {@inheritdoc}
@@ -177,6 +199,11 @@ class PaymentMethodConfig extends Entity
     public function isIssuerListSupported()
     {
         return in_array($this->getMollieId(), static::$mollieIssuerSupportedMethods, true);
+    }
+
+    public function isMethodVoucher()
+    {
+        return in_array($this->getMollieId(), static::$mollieVoucherMethod, true);
     }
 
     /**
@@ -378,5 +405,45 @@ class PaymentMethodConfig extends Entity
     public function setIssuerListStyle($issuerListStyle)
     {
         $this->issuerListStyle = $issuerListStyle;
+    }
+
+    /**
+     * @return string
+     */
+    public function getVoucherCategory(): string
+    {
+        if ($this->voucherCategory === null) {
+            $this->voucherCategory = self::VOUCHER_CATEGORY_DEFAULT;
+        }
+
+        return $this->voucherCategory;
+    }
+
+    /**
+     * @param string $voucherCategory
+     */
+    public function setVoucherCategory(string $voucherCategory)
+    {
+        $this->voucherCategory = $voucherCategory;
+    }
+
+    /**
+     * @return string
+     */
+    public function getProductAttribute(): string
+    {
+        if ($this->productAttribute === null){
+            $this->productAttribute = self::PRODUCT_ATTRIBUTE_DEFAULT;
+        }
+
+        return $this->productAttribute;
+    }
+
+    /**
+     * @param string $productAttribute
+     */
+    public function setProductAttribute(string $productAttribute)
+    {
+        $this->productAttribute = $productAttribute;
     }
 }

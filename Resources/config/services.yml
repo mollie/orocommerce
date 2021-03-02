@@ -158,6 +158,8 @@ services:
     class: Mollie\Bundle\PaymentBundle\Form\Type\PaymentMethodSettingsType
     arguments:
       - "@translator"
+      - "@oro_entity.entity_alias_resolver"
+      - "@oro_entity_config.attribute.config_model_manager"
     tags:
       - { name: form.type }
 
