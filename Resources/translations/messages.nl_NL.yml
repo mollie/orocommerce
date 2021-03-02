@@ -84,6 +84,18 @@ mollie:
           label: 'Toeslag'
           klarna_tooltip: "Vul de extra kosten voor een Klarna-betaling in, met een maximum van € 1,95. Hogere bedragen worden niet geaccepteerd."
           tooltip: "Vul de extra kosten voor een betaling in."
+        orderExpiryDays:
+          label: 'Days To Expire'
+          tooltip: 'How many days before orders for this method becomes expired? Leave empty to use default expiration (28 days)'
+          klarna_tooltip: 'How many days before orders for this method becomes expired? Leave empty to use default
+          expiration (28 days).
+          <br>Please note: It is not possible to use an expiry date more than 28 days in the
+          future, unless another maximum is agreed between the merchant and Klarna.'
+        paymentExpiryDays:
+          label: 'Days To Expire'
+          tooltip: 'How many days before payment for this method becomes expired? Leave empty to use default expiration (28 days)'
+        versionCheck:
+          message: 'A new module version {versionNumber} is available. Please download the latest version <a href="{downloadUrl}" target="_blank">here</a>.'
       notifications:
         label: 'Meldingen'
         warning: 'Waarschuwing'

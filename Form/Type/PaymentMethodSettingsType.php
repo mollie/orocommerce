@@ -15,6 +15,7 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
@@ -148,24 +149,48 @@ class PaymentMethodSettingsType extends AbstractType
             return;
         }
 
-        $tooltip = 'mollie.payment.config.payment_methods.surcharge.tooltip';
+        $surchargeTooltip = 'mollie.payment.config.payment_methods.surcharge.tooltip';
         if ($paymentMethodConfig->isSurchargeRestricted()) {
-            $tooltip = 'mollie.payment.config.payment_methods.surcharge.klarna_tooltip';
+            $surchargeTooltip = 'mollie.payment.config.payment_methods.surcharge.klarna_tooltip';
         }
+
+        $orderExpiryDaysTooltip = $paymentMethodConfig->isApiMethodRestricted() ?
+            'mollie.payment.config.payment_methods.orderExpiryDays.klarna_tooltip' :
+            'mollie.payment.config.payment_methods.orderExpiryDays.tooltip';
 
         $event->getForm()->add(
             'surcharge',
             NumberType::class,
             [
                 'label' => 'mollie.payment.config.payment_methods.surcharge.label',
-                'tooltip' => $tooltip,
+                'tooltip' => $surchargeTooltip,
                 'required' => false,
                 'attr' => ['autocomplete' => 'off'],
                 'constraints' => [
                     new Type(['type' => 'numeric'])
                 ],
             ]
+        )->add(
+            'orderExpiryDays',
+            IntegerType::class,
+            [
+                'label' => 'mollie.payment.config.payment_methods.orderExpiryDays.label',
+                'tooltip' => $orderExpiryDaysTooltip,
+                'required' => false,
+            ]
         );
+
+        if ($paymentMethodConfig->getOriginalAPIConfig()->getId() === 'banktransfer') {
+            $event->getForm()->add(
+                'paymentExpiryDays',
+                IntegerType::class,
+                [
+                    'label' => 'mollie.payment.config.payment_methods.paymentExpiryDays.label',
+                    'tooltip' => 'mollie.payment.config.payment_methods.paymentExpiryDays.tooltip',
+                    'required' => false,
+                ]
+            );
+        }
 
         if (!$paymentMethodConfig->isApiMethodRestricted()) {
             $paymentMethodApiChoices = [

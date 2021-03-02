@@ -1,5 +1,5 @@
 parameters:
-  mollie_payment.version: 4.1.4
+  mollie_payment.version: 4.1.5
   mollie_payment.method.identifier_prefix.mollie_payment: 'mollie_payment'
   mollie_payment.uploader.public_image_path: 'bundles/molliepayment/img/uploads'
   mollie_payment.uploader.image_dir: '%kernel.project_dir%/public/%mollie_payment.uploader.public_image_path%'
@@ -187,6 +187,7 @@ services:
       - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Authorization\Interfaces\AuthorizationService'
       - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\WebsiteProfileController'
       - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\PaymentMethodController'
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\VersionCheck\VersionCheckService'
 
   mollie_payment.manager.mollie_delete_provider:
     class: Mollie\Bundle\PaymentBundle\Manager\MollieDeleteProvider
@@ -293,6 +294,13 @@ services:
       - '@mollie_payment.platform_version_reader'
       - '@oro_website.manager'
       - '%mollie_payment.version%'
+    public: true
+
+  Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\VersionCheck\VersionCheckService:
+    factory: ['Mollie\Bundle\PaymentBundle\IntegrationServices\VersionCheckService', 'create']
+    arguments:
+      - '@session.flash_bag'
+      - '@translator'
     public: true
 
   Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\CheckoutLink\CheckoutLinkService:

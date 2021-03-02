@@ -36,6 +36,7 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Refunds\RefundServ
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Refunds\WebHookHandler\OrderLineRefundWebHookHandler;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Refunds\WebHookHandler\OrderRefundWebHookHandler;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Shipments\ShipmentService;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\VersionCheck\Http\VersionCheckProxy;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\WebHook\OrderChangedWebHookEvent;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\WebHook\PaymentChangedWebHookEvent;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\WebHook\WebHookContext;
@@ -70,6 +71,21 @@ class BootstrapComponent extends \Mollie\Bundle\PaymentBundle\IntegrationCore\In
                 $transformer = ServiceRegister::getService(ProxyDataProvider::CLASS_NAME);
 
                 return new Proxy($config, new LoggingHttpClient($client), $transformer);
+            }
+        );
+
+
+        ServiceRegister::registerService(
+            VersionCheckProxy::CLASS_NAME,
+            function () {
+                /** @var Configuration $config */
+                $config = ServiceRegister::getService(Configuration::CLASS_NAME);
+                /** @var HttpClient $client */
+                $client = ServiceRegister::getService(HttpClient::CLASS_NAME);
+                /** @var ProxyDataProvider $transformer */
+                $transformer = ServiceRegister::getService(ProxyDataProvider::CLASS_NAME);
+
+                return new VersionCheckProxy($config, new LoggingHttpClient($client), $transformer);
             }
         );
 

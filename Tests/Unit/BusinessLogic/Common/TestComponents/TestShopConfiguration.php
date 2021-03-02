@@ -79,4 +79,22 @@ class TestShopConfiguration extends Configuration
     {
         return 'mollieTest';
     }
+
+    /**
+     * {@inheritdoc}
+     * @return string
+     */
+    public function getExtensionVersionCheckUrl()
+    {
+        return 'https://raw.githubusercontent.com/mollie/gambio/4.1-4.x/GXModules/Mollie/Mollie/composer.json';
+    }
+
+    /**
+     * {@inheritdoc}
+     * @return string
+     */
+    public function getExtensionDownloadUrl()
+    {
+        return 'https://github.com/mollie/gambio';
+    }
 }

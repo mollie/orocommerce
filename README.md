@@ -166,6 +166,8 @@ The payment methods are disabled by default in your account so you firstly need 
  6. **Check if there is any information in the logfile inside shop /var/logs/ folder**
 
 # Release notes
+ - **4.1.5:**
+   - Remove discontinued payment methods from integration configuration form
  - **4.1.4:** 
    - New feature: Implemented integration with [Mollie Components](https://docs.mollie.com/guides/mollie-components/overview)
    - New feature: Added iDeal, Giftcard and KBC/CBC issuer selection in the checkout.
