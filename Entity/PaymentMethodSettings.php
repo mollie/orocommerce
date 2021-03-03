@@ -164,6 +164,16 @@ class PaymentMethodSettings
     private $productAttribute;
 
     /**
+     * @var int
+     */
+    private $orderExpiryDays;
+
+    /**
+     * @var int
+     */
+    private $paymentExpiryDays;
+
+    /**
      * PaymentMethodSettings constructor.
      */
     public function __construct()
@@ -481,7 +491,7 @@ class PaymentMethodSettings
     /**
      * @return string
      */
-    public function getVoucherCategory(): string
+    public function getVoucherCategory()
     {
         return $this->voucherCategory;
     }
@@ -489,7 +499,7 @@ class PaymentMethodSettings
     /**
      * @param string $voucherCategory
      */
-    public function setVoucherCategory(string $voucherCategory)
+    public function setVoucherCategory($voucherCategory)
     {
         $this->voucherCategory = $voucherCategory;
     }
@@ -497,7 +507,7 @@ class PaymentMethodSettings
     /**
      * @return string
      */
-    public function getProductAttribute(): string
+    public function getProductAttribute()
     {
         return $this->productAttribute;
     }
@@ -505,10 +515,40 @@ class PaymentMethodSettings
     /**
      * @param string $productAttribute
      */
-    public function setProductAttribute(string $productAttribute)
+    public function setProductAttribute($productAttribute)
     {
         $this->productAttribute = $productAttribute;
     }
 
+    /**
+     * @return int
+     */
+    public function getOrderExpiryDays()
+    {
+        return $this->orderExpiryDays;
+    }
 
+    /**
+     * @param int $orderExpiryDays
+     */
+    public function setOrderExpiryDays($orderExpiryDays)
+    {
+        $this->orderExpiryDays = $orderExpiryDays;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPaymentExpiryDays()
+    {
+        return $this->paymentExpiryDays;
+    }
+
+    /**
+     * @param int $paymentExpiryDays
+     */
+    public function setPaymentExpiryDays($paymentExpiryDays)
+    {
+        $this->paymentExpiryDays = $paymentExpiryDays;
+    }
 }
