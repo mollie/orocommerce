@@ -13,6 +13,7 @@ use Mollie\Bundle\PaymentBundle\Manager\OroPaymentMethodUtility;
 use Mollie\Bundle\PaymentBundle\Mapper\MollieDtoMapperInterface;
 use Oro\Bundle\ActionBundle\Exception\ForbiddenOperationException;
 use Oro\Bundle\OrderBundle\Entity\OrderLineItem;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 
 /**
@@ -116,6 +117,17 @@ class OrderLineEntityListener
         try {
             $channelId = $this->paymentMethodUtility->getChannelId($orderLineItem->getOrder());
             $this->configService->doWithContext((string)$channelId, function () use ($orderLineItem) {
+	            $orderReference = $this->orderReferenceService->getByShopReference(
+		            $orderLineItem->getOrder()->getIdentifier()
+	            );
+
+	            // If order reference does not exist for the changed order line merchant changed order
+	            // identifier manually in the DB (or via shop API), and we should ignore this order from
+	            // further sync.
+	            if (!$orderReference) {
+		            return;
+	            }
+
                 $lineForUpdate = $this->mollieDtoMapper->getOrderLine($orderLineItem);
                 $lineForUpdate->setId($this->getLineIdFromMollie($orderLineItem));
 
