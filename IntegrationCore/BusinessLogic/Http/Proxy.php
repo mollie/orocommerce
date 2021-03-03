@@ -379,7 +379,7 @@ class Proxy
             $queryParams['testmode'] = 'true';
         }
 
-        $url = static::BASE_URL . static::API_VERSION . '/methods?' . http_build_query($queryParams);
+        $url = static::BASE_URL . static::API_VERSION . 'methods?' . http_build_query($queryParams);
         $response = $this->client->request(
             self::HTTP_METHOD_GET,
             $url,
