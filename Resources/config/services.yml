@@ -185,6 +185,7 @@ services:
       - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Authorization\Interfaces\AuthorizationService'
       - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\WebsiteProfileController'
       - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\PaymentMethodController'
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\VersionCheck\VersionCheckService'
 
   mollie_payment.manager.mollie_delete_provider:
     class: Mollie\Bundle\PaymentBundle\Manager\MollieDeleteProvider
@@ -293,8 +294,19 @@ services:
       - '%mollie_payment.version%'
     public: true
 
+  Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\VersionCheck\VersionCheckService:
+    factory: ['Mollie\Bundle\PaymentBundle\IntegrationServices\VersionCheckService', 'create']
+    arguments:
+      - '@session.flash_bag'
+      - '@translator'
+    public: true
+
   Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\CheckoutLink\CheckoutLinkService:
     factory: ['Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\CheckoutLink\CheckoutLinkService', 'getInstance']
+    public: true
+
+  Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\PaymentMethodService:
+    factory: ['Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\PaymentMethodService', 'getInstance']
     public: true
 
   Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\OrderReference\OrderReferenceService:
@@ -330,6 +342,12 @@ services:
       public: true
       arguments:
         - '@mollie_payment.manager.admin_link_handler'
+
+  Mollie\Bundle\PaymentBundle\Controller\ActivePaymentMethodsController:
+      public: true
+      arguments:
+        - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\PaymentMethodService'
+        - '@Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration'
 
   Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Authorization\Interfaces\AuthorizationService:
     factory: ['Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Authorization\OrgToken\OrgTokenAuthService', 'getInstance']
