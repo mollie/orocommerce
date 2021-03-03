@@ -142,6 +142,21 @@ class PaymentMethodService extends BaseService
     }
 
     /**
+     * Return enabled
+     * @param string $profileId
+     *
+     * @return \Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\PaymentMethod[]
+     * @throws HttpAuthenticationException
+     * @throws HttpCommunicationException
+     * @throws HttpRequestException
+     * @throws UnprocessableEntityRequestException
+     */
+    public function getEnabledMethodsWithTempProfileId($profileId)
+    {
+        return $this->getProxy()->getEnabledPaymentMethodsForProfile($profileId);
+    }
+
+    /**
      * Clears all payment method configurations for a given profile
      *
      * @param string $profileId
@@ -185,5 +200,13 @@ class PaymentMethodService extends BaseService
         }
 
         return $paymentMethodConfigsMap;
+    }
+
+    /**
+     * @return Configuration|object
+     */
+    protected function getConfigService()
+    {
+        return ServiceRegister::getService(Configuration::CLASS_NAME);
     }
 }
