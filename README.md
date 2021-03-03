@@ -166,6 +166,8 @@ The payment methods are disabled by default in your account so you firstly need 
  6. **Check if there is any information in the logfile inside shop /var/logs/ folder**
 
 # Release notes
+ - **4.0.6:**
+  - Optimization: Skip shop order line changes synchronization to Mollie for changed shop order identifier
  - **4.0.5:**
    - Remove discontinued payment methods from integration configuration form
  - **4.0.4:** 
