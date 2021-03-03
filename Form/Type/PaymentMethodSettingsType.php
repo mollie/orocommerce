@@ -4,6 +4,7 @@ namespace Mollie\Bundle\PaymentBundle\Form\Type;
 
 use Mollie\Bundle\PaymentBundle\Entity\PaymentMethodSettings;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\Model\PaymentMethodConfig;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\PaymentMethods;
 use Oro\Bundle\ApiBundle\Form\Type\NumberType;
 use Oro\Bundle\EntityBundle\ORM\EntityAliasResolver;
 use Oro\Bundle\EntityConfigBundle\Config\ConfigModelManager;
@@ -48,10 +49,6 @@ class PaymentMethodSettingsType extends AbstractType
      */
     private $configModelManager;
 
-    /**
-     * @var ProductAttributeType
-     */
-    private $attributeService;
 
     /**
      * PaymentMethodSettingsType constructor.
@@ -60,13 +57,11 @@ class PaymentMethodSettingsType extends AbstractType
      * @param EntityAliasResolver $aliasResolver
      * @param ConfigModelManager $configModelManager
      */
-    public function __construct
-    (
+    public function __construct(
         TranslatorInterface $translator,
         EntityAliasResolver $aliasResolver,
         ConfigModelManager $configModelManager
-    )
-    {
+    ) {
         $this->translator = $translator;
         $this->configModelManager = $configModelManager;
         $this->aliasResolver = $aliasResolver;
@@ -241,13 +236,13 @@ class PaymentMethodSettingsType extends AbstractType
             );
         }
 
-        if ($paymentMethodConfig->isMethodVoucher()) {
+        if ($paymentMethodConfig->getMollieId() === PaymentMethods::Vouchers) {
             $event->getForm()->add(
                 'voucherCategory',
                 ChoiceType::class,
                 [
                     'choices' => [
-                        'mollie.payment.config.payment_methods.category.choice.none' => PaymentMethodConfig::VOUCHER_CATEGORY_DEFAULT,
+                        'mollie.payment.config.payment_methods.category.choice.none' => PaymentMethodConfig::VOUCHER_CATEGORY_NONE,
                         'mollie.payment.config.payment_methods.category.choice.meal' => PaymentMethodConfig::VOUCHER_CATEGORY_MEAL,
                         'mollie.payment.config.payment_methods.category.choice.eco' => PaymentMethodConfig::VOUCHER_CATEGORY_ECO,
                         'mollie.payment.config.payment_methods.category.choice.gift' => PaymentMethodConfig::VOUCHER_CATEGORY_GIFT,
@@ -260,7 +255,7 @@ class PaymentMethodSettingsType extends AbstractType
                 ]
             );
         }
-        if ($paymentMethodConfig->isMethodVoucher()) {
+        if ($paymentMethodConfig->getMollieId() === PaymentMethods::Vouchers) {
             $event->getForm()->add(
                 'productAttribute',
                 ChoiceType::class,
@@ -309,7 +304,8 @@ class PaymentMethodSettingsType extends AbstractType
                 }
 
                 return $labelArray;
-            });
+            }
+        );
 
         $labelArray = [];
         $labelArrayReturn = [];

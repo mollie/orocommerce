@@ -26,14 +26,13 @@ class PaymentMethodConfig extends Entity
     const ISSUER_DROPDOWN = 'dropdown';
     const ISSUER_LIST = 'list';
 
-    const VOUCHER_CATEGORY_DEFAULT = 'none';
+    const VOUCHER_CATEGORY_NONE = 'none';
     const VOUCHER_CATEGORY_GIFT = 'gift';
     const VOUCHER_CATEGORY_MEAL = 'meal';
     const VOUCHER_CATEGORY_ECO = 'eco';
     const VOUCHER_CATEGORY_CUSTOM = 'custom';
 
-    const PRODUCT_ATTRIBUTE_DEFAULT = 'Voucher Category';
-
+    const PRODUCT_ATTRIBUTE_DEFAULT = 'mollie_voucher_category';
     /**
      * @var string[]
      */
@@ -61,9 +60,6 @@ class PaymentMethodConfig extends Entity
         PaymentMethods::KBC,
     );
 
-    protected static $mollieVoucherMethod = array(PaymentMethods::Vouchers);
-
-
     /**
      * {@inheritdoc}
      */
@@ -78,6 +74,9 @@ class PaymentMethodConfig extends Entity
         'enabled',
         'useMollieComponents',
         'issuerListStyle',
+        'daysToOrderExpire',
+        'daysToPaymentExpire',
+        'transactionDescription',
         'voucherCategory',
         'productAttribute',
     );
@@ -124,14 +123,25 @@ class PaymentMethodConfig extends Entity
      */
     protected $issuerListStyle = self::ISSUER_LIST;
     /**
-     * @var string
+     * @var int
      */
-    protected $voucherCategory;
+    protected $daysToOrderExpire;
+    /**
+     * @var int
+     */
+    protected $daysToPaymentExpire;
     /**
      * @var string
      */
-    protected $productAttribute;
-
+    protected $transactionDescription = '{orderNumber}';
+    /**
+     * @var string
+     */
+    protected $voucherCategory = self::VOUCHER_CATEGORY_NONE;
+    /**
+     * @var string
+     */
+    protected $productAttribute = self::PRODUCT_ATTRIBUTE_DEFAULT;
 
     /**
      * {@inheritdoc}
@@ -199,11 +209,6 @@ class PaymentMethodConfig extends Entity
     public function isIssuerListSupported()
     {
         return in_array($this->getMollieId(), static::$mollieIssuerSupportedMethods, true);
-    }
-
-    public function isMethodVoucher()
-    {
-        return in_array($this->getMollieId(), static::$mollieVoucherMethod, true);
     }
 
     /**
@@ -408,21 +413,65 @@ class PaymentMethodConfig extends Entity
     }
 
     /**
+     * @return int
+     */
+    public function getDaysToOrderExpire()
+    {
+        return $this->daysToOrderExpire;
+    }
+
+    /**
+     * @param int $daysToOrderExpire
+     */
+    public function setDaysToOrderExpire($daysToOrderExpire)
+    {
+        $this->daysToOrderExpire = $daysToOrderExpire;
+    }
+
+    /**
+     * @return int
+     */
+    public function getDaysToPaymentExpire()
+    {
+        return $this->daysToPaymentExpire;
+    }
+
+    /**
+     * @param int $daysToPaymentExpire
+     */
+    public function setDaysToPaymentExpire($daysToPaymentExpire)
+    {
+        $this->daysToPaymentExpire = $daysToPaymentExpire;
+    }
+
+    /**
      * @return string
      */
-    public function getVoucherCategory(): string
+    public function getTransactionDescription()
     {
-        if ($this->voucherCategory === null) {
-            $this->voucherCategory = self::VOUCHER_CATEGORY_DEFAULT;
-        }
+        return $this->transactionDescription;
+    }
 
+    /**
+     * @param string $transactionDescription
+     */
+    public function setTransactionDescription($transactionDescription)
+    {
+        $this->transactionDescription = $transactionDescription;
+    }
+
+    /**
+     * @return string
+     */
+    public function getVoucherCategory()
+    {
         return $this->voucherCategory;
     }
 
     /**
      * @param string $voucherCategory
      */
-    public function setVoucherCategory(string $voucherCategory)
+    public function setVoucherCategory($voucherCategory)
     {
         $this->voucherCategory = $voucherCategory;
     }
@@ -430,19 +479,15 @@ class PaymentMethodConfig extends Entity
     /**
      * @return string
      */
-    public function getProductAttribute(): string
+    public function getProductAttribute()
     {
-        if ($this->productAttribute === null){
-            $this->productAttribute = self::PRODUCT_ATTRIBUTE_DEFAULT;
-        }
-
         return $this->productAttribute;
     }
 
     /**
      * @param string $productAttribute
      */
-    public function setProductAttribute(string $productAttribute)
+    public function setProductAttribute($productAttribute)
     {
         $this->productAttribute = $productAttribute;
     }
