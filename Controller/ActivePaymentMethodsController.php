@@ -50,17 +50,19 @@ class ActivePaymentMethodsController extends AbstractController
     public function getActivePaymentMethods($channelId, $profileId)
     {
         try {
+            $success = true;
             $activeMethods = $this->configService->doWithContext($channelId, function () use ($profileId) {
                 return $this->paymentMethodService->getEnabledMethodsWithTempProfileId($profileId);
             });
         } catch (\Exception $exception) {
+            $success = false;
             $activeMethods = [];
             Logger::logError("Failed to fetch enabled payment methods for profile: $profileId: {$exception->getMessage()}");
         }
 
 
         return new JsonResponse([
-            'success' => true,
+            'success' => $success,
             'activeMethods' => PaymentMethod::listPaymentMethodsAsString($activeMethods),
         ]);
     }
