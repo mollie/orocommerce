@@ -56,14 +56,13 @@ define([
                     url: url, type: $form.attr('method'), data: $.param(data),
                     complete: _.bind(this.onPageSubmitComplete, this)
                 });
+            } else {
+                this.getEnabledMethods($(this.websiteChooserSelector).val());
             }
-
-            this.getEnabledMethods($(this.websiteChooserSelector).val());
         },
 
         getEnabledMethods: function(selectedProfile) {
             let url = this.backendUrl.replace('mollieProfileId', selectedProfile);
-            console.log(url);
             $.ajax({
                 url: url,
                 type: 'GET',
@@ -84,6 +83,7 @@ define([
         },
 
         onPageSubmitComplete: function() {
+            this.getEnabledMethods($('select.mollie-website-chooser').val());
             var $mollieSaveMarkerSelector = this.formSaveMarkerSelector;
             mediator.once('page:afterChange', function () {
                 setTimeout(function() {
