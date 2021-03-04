@@ -53,6 +53,7 @@ mollie:
       website_profile:
         label: 'Websiteprofiel'
         id.label: 'Websiteprofiel'
+        enabledMethods: 'Enabled payment methods:'
       payment_methods:
         label: 'Betaalmethodes'
         status.active.label: 'Actief'
