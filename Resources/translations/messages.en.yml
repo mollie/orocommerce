@@ -58,8 +58,28 @@ mollie:
         label: 'Payment methods'
         status.active.label: 'Active'
         status.inactive.label: 'Inactive'
-        name.label: 'Name'
-        description.label: 'Description'
+        name.label: 'Code'
+        description.label: 'Name'
+        payment.description.label: 'Description'
+        payment.description.default.value: 'You will be redirected to payment gateway website to complete your purchase after the order review step.'
+        payment.description.tooltip.label: 'Define payment method description text that will be used during the checkout.'
+        transactionDescription.label: 'Transaction Description'
+        transactionDescription.tooltip: 'The description to be used for payment transaction. These variables are
+        available: {orderNumber}, {storeName}, {customerFirstname}, {customerLastname}, {customerCompany}, and {cartNumber}.'
+        category:
+          label: 'Category'
+          tooltip: 'Vouchers can only be used for eligible products, and therefore you should define the
+                    category parameter for all order lines. Mollie will calculate the eligible amount based on this parameter.'
+          choice.none: 'None'
+          choice.meal: 'Meal'
+          choice.eco: 'Eco'
+          choice.gift: 'Gift'
+          choice.custom: 'Custom attribute'
+        attribute:
+          label: 'Product Attribute'
+          tooltip: 'Use the existing Mollie voucher product attribute or create a
+                    new type of Select or String. The admin value of these product attributes must be meal, eco,
+                    gift, or none.'
         image:
           label: 'Image'
           mime_type_error: 'Please upload a valid image'

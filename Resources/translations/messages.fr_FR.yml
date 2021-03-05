@@ -60,6 +60,9 @@ mollie:
         status.inactive.label: 'Inactif'
         name.label: 'Nom'
         description.label: 'Description'
+        transactionDescription.label: 'Transaction Description'
+        transactionDescription.tooltip: 'The description to be used for payment transaction. These variables are
+        available: {orderNumber}, {storeName}, {customerFirstname}, {customerLastname}, {customerCompany}, and {cartNumber}.'
         image:
           label: 'Image'
           mime_type_error: 'Veuillez charger une image valide'

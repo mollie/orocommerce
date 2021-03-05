@@ -94,6 +94,27 @@ class PaymentMethodSettings
     protected $paymentDescriptions;
 
     /**
+     * @var Collection|LocalizedFallbackValue[]
+     *
+     * @ORM\ManyToMany(
+     *      targetEntity="Oro\Bundle\LocaleBundle\Entity\LocalizedFallbackValue",
+     *      cascade={"ALL"},
+     *      orphanRemoval=true
+     * )
+     * @ORM\JoinTable(
+     *      name="mollie_payment_trans_desc",
+     *      joinColumns={
+     *          @ORM\JoinColumn(name="payment_setting_id", referencedColumnName="id", onDelete="CASCADE")
+     *      },
+     *      inverseJoinColumns={
+     *          @ORM\JoinColumn(name="localized_value_id", referencedColumnName="id", onDelete="CASCADE", unique=true)
+     *      }
+     * )
+     */
+    protected $transactionDescriptions;
+
+
+    /**
      * @var string
      *
      * @ORM\Column(name="mollie_method_id", type="string", length=255, nullable=false)
@@ -170,6 +191,7 @@ class PaymentMethodSettings
         $this->names = new ArrayCollection();
         $this->descriptions = new ArrayCollection();
         $this->paymentDescriptions = new ArrayCollection();
+        $this->transactionDescriptions = new ArrayCollection();
     }
 
     /**
@@ -274,6 +296,42 @@ class PaymentMethodSettings
     {
         if ($this->paymentDescriptions->contains($description)) {
             $this->paymentDescriptions->removeElement($description);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|LocalizedFallbackValue[]
+     */
+    public function getTransactionDescriptions()
+    {
+        return $this->transactionDescriptions;
+    }
+
+    /**
+     * @param LocalizedFallbackValue $transactionDescription
+     *
+     * @return $this
+     */
+    public function addTransactionDescription(LocalizedFallbackValue $transactionDescription)
+    {
+        if (!$this->transactionDescriptions->contains($transactionDescription)) {
+            $this->transactionDescriptions->add($transactionDescription);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param LocalizedFallbackValue $transactionDescription
+     *
+     * @return $this
+     */
+    public function removeTransactionDescription(LocalizedFallbackValue $transactionDescription)
+    {
+        if ($this->transactionDescriptions->contains($transactionDescription)) {
+            $this->transactionDescriptions->removeElement($transactionDescription);
         }
 
         return $this;

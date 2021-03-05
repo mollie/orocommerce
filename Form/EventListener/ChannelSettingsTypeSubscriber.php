@@ -24,7 +24,6 @@ use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
-use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Form\FormInterface;
 
@@ -404,9 +403,13 @@ class ChannelSettingsTypeSubscriber implements EventSubscriberInterface
 
             if ($paymentMethodSetting->getPaymentDescriptions()->isEmpty()) {
                 $paymentMethodSetting->addPaymentDescription(
-                    (new LocalizedFallbackValue())->setString('mollie.payment.config.payment_methods.payment.description.default.value'
-                    )
+                    (new LocalizedFallbackValue())->setString($this->translator->trans('mollie.payment.config.payment_methods.payment.description.default.value'))
                 );
+            }
+
+            if ($paymentMethodSetting->getTransactionDescriptions()->isEmpty()) {
+                $paymentMethodSetting->addTransactionDescription(
+                    (new LocalizedFallbackValue())->setString(PaymentMethodSettingsType::DEFAULT_TRANSACTION_DESCRIPTION));
             }
 
             $paymentMethodSetting->setPaymentMethodConfig($paymentMethodConfig);
