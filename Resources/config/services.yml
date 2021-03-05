@@ -62,6 +62,7 @@ services:
       - '@mollie_payment.factory.payment_config'
       - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\PaymentMethodController'
       - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\WebsiteProfileController'
+      - '@translator'
 
   mollie_payment.payment_method.context_aware.config.provider:
     class: Mollie\Bundle\PaymentBundle\PaymentMethod\Config\Provider\MolliePaymentContextAwareConfigProvider

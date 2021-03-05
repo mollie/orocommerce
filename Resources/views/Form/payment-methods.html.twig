@@ -1,5 +1,6 @@
 {% set options = {
-    view: 'molliepayment/js/app/views/mollie-accordion-view'
+    view: 'molliepayment/js/app/views/mollie-accordion-view',
+    methodSelector: 'select.mollie-method-select',
 } %}
 <div
     class="mollie-accordion"
@@ -45,8 +46,28 @@
 
             </div>
 
+            {% if paymentMethod.method is defined %}
+                {{ form_row(paymentMethod.method) }}
+            {% endif %}
+
+            {% if paymentMethod.surcharge is defined %}
+                {{ form_row(paymentMethod.surcharge) }}
+            {% endif %}
+
+            {% if paymentMethod.transactionDescriptions is defined %}
+                {{ form_row(paymentMethod.transactionDescriptions, { 'attr': {'class': 'mollie-transaction-description'} }) }}
+            {% endif %}
+
+            {% if paymentMethod.orderExpiryDays is defined %}
+                {{ form_row(paymentMethod.orderExpiryDays, { 'attr': {'class': 'mollie-order-expiry-days'} }) }}
+            {% endif %}
+
+            {% if paymentMethod.paymentExpiryDays is defined %}
+                {{ form_row(paymentMethod.paymentExpiryDays, { 'attr': {'class': 'mollie-payment-expiry-days'} }) }}
+            {% endif %}
 
             {{ form_rest(paymentMethod) }}
+
         </div>
     {% endfor %}
 </div>
