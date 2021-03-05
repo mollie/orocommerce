@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Mollie\Bundle\PaymentBundle\Migrations\Schema\v1_3;
+namespace Mollie\Bundle\PaymentBundle\Migrations\Schema\v1_1;
 
 
 use Doctrine\DBAL\Schema\Schema;
@@ -35,6 +35,10 @@ class MollieProductAttribute implements Migration, ExtendExtensionAwareInterface
     {
         if ($schema->hasTable(self::PRODUCT_TABLE_NAME)) {
             $table = $schema->getTable(self::PRODUCT_TABLE_NAME);
+            if ($table->hasColumn('voucher_category_id')) {
+                return;
+            }
+
             $this->extendExtension->addEnumField(
                 $schema,
                 $table,

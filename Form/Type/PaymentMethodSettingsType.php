@@ -32,6 +32,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class PaymentMethodSettingsType extends AbstractType
 {
     const BLOCK_PREFIX = 'mollie_payment_method_setting_type';
+    const DEFAULT_TRANSACTION_DESCRIPTION = '{orderNumber}';
+
     const ALIAS = 'product';
 
     /**
@@ -201,9 +203,24 @@ class PaymentMethodSettingsType extends AbstractType
                     'tooltip' => 'mollie.payment.config.payment_methods.method.tooltip',
                     'required' => true,
                     'placeholder' => false,
+                    'attr' => [
+                        'class' => 'mollie-method-select',
+                        'data-method-wrapper' => $paymentMethodConfig->getMollieId(),
+                    ],
                 ]
             );
         }
+
+        $event->getForm()->add(
+            'transactionDescriptions',
+            LocalizedFallbackValueCollectionType::class,
+            [
+                'label' => 'mollie.payment.config.payment_methods.transactionDescription.label',
+                'tooltip' => 'mollie.payment.config.payment_methods.transactionDescription.tooltip',
+                'required' => true,
+                'entry_options' => ['constraints' => [new NotBlank()]],
+            ]
+        );
 
         if ($paymentMethodConfig->isMollieComponentsSupported()) {
             $event->getForm()->add(

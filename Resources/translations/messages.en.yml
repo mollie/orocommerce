@@ -63,6 +63,9 @@ mollie:
         payment.description.label: 'Description'
         payment.description.default.value: 'You will be redirected to payment gateway website to complete your purchase after the order review step.'
         payment.description.tooltip.label: 'Define payment method description text that will be used during the checkout.'
+        transactionDescription.label: 'Transaction Description'
+        transactionDescription.tooltip: 'The description to be used for payment transaction. These variables are
+        available: {orderNumber}, {storeName}, {customerFirstname}, {customerLastname}, {customerCompany}, and {cartNumber}.'
         category:
           label: 'Category'
           tooltip: 'Vouchers can only be used for eligible products, and therefore you should define the
