@@ -72,7 +72,7 @@ services:
       - '@mollie_payment.factory.payment_config'
       - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\PaymentMethodController'
       - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\WebsiteProfileController'
-
+      - '@translator'
 
   mollie_payment.payment_method_view_provider.mollie_payment:
     class: Mollie\Bundle\PaymentBundle\PaymentMethod\View\Provider\MolliePaymentViewProvider
@@ -122,6 +122,7 @@ services:
       - '@oro_entity.doctrine_helper'
       - '@router'
       - '@oro_locale.helper.localization'
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\PaymentTransactionDescriptionService'
       - '%mollie_payment.webhooks_url_replacement%'
     public: true
 
@@ -299,6 +300,12 @@ services:
     arguments:
       - '@session.flash_bag'
       - '@translator'
+    public: true
+
+  Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\PaymentTransactionDescriptionService:
+    factory: ['Mollie\Bundle\PaymentBundle\IntegrationServices\TransactionDescriptionService', 'create']
+    arguments:
+      - '@mollie_payment.payment_method.config.provider'
     public: true
 
   Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\CheckoutLink\CheckoutLinkService:
