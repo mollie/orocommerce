@@ -78,6 +78,11 @@ interface MolliePaymentConfigInterface extends PaymentConfigInterface
     public function getPaymentDescription();
 
     /**
+     * @return string
+     */
+    public function getTransactionDescription();
+
+    /**
      * @return int
      */
     public function getOrderExpiryDays();

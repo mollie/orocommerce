@@ -65,6 +65,7 @@ class PaymentConfigFactory implements PaymentConfigFactoryInterface
         $mollieMethodConfig = $paymentMethodSetting->getPaymentMethodConfig();
 
         $paymentDescription = $this->getLocalizedValue($paymentMethodSetting->getPaymentDescriptions());
+        $transactionDescription = $this->getLocalizedValue($paymentMethodSetting->getTransactionDescriptions());
 
         $paymentLabel = $this->getLocalizedValue($paymentMethodSetting->getDescriptions());
         $adminLabel = "{$channel->getName()} - {$paymentLabel}";
@@ -86,6 +87,7 @@ class PaymentConfigFactory implements PaymentConfigFactoryInterface
 
         $configParams[MolliePaymentConfig::FIELD_LABEL] = $paymentLabel;
         $configParams[MolliePaymentConfig::PAYMENT_DESCRIPTION] = $paymentDescription;
+        $configParams[MolliePaymentConfig::TRANSACTION_DESCRIPTION] = $transactionDescription;
         $configParams[MolliePaymentConfig::FIELD_SHORT_LABEL] = $this->getLocalizedValue($paymentMethodSetting->getNames());
         $configParams[MolliePaymentConfig::FIELD_ADMIN_LABEL] = $adminLabel;
         $configParams[MolliePaymentConfig::FIELD_PAYMENT_METHOD_IDENTIFIER] = $paymentIdentifier;
