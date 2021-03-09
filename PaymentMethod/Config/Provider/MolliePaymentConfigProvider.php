@@ -18,7 +18,7 @@ use Mollie\Bundle\PaymentBundle\PaymentMethod\Config\Factory\PaymentConfigFactor
 use Mollie\Bundle\PaymentBundle\PaymentMethod\Config\MolliePaymentConfigInterface;
 use Oro\Bundle\LocaleBundle\Entity\LocalizedFallbackValue;
 use Oro\Bundle\PaymentBundle\Method\Config\PaymentConfigInterface;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Class MolliePaymentConfigProvider
