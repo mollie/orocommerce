@@ -159,7 +159,9 @@ services:
   mollie_payment.form.type.payment_method_settings:
     class: Mollie\Bundle\PaymentBundle\Form\Type\PaymentMethodSettingsType
     arguments:
-      - "@translator"
+      - '@translator'
+      - '@mollie_payment.manager.product_attributes_provider'
+
     tags:
       - { name: form.type }
 
@@ -246,6 +248,14 @@ services:
       - '@oro_payment.provider.payment_transaction'
       - '@oro_payment.payment_method.composite_provider'
       - '@router'
+
+  mollie_payment.manager.product_attributes_provider:
+    class: Mollie\Bundle\PaymentBundle\Manager\ProductAttributesProvider
+    public: true
+    arguments:
+      - '@translator'
+      - '@oro_entity.entity_alias_resolver'
+      - '@oro_entity_config.attribute.config_model_manager'
 
   mollie_payment.condition.refund_form_valid:
     class: Mollie\Bundle\PaymentBundle\Condition\RefundFormValid

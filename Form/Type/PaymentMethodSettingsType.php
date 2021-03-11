@@ -4,6 +4,8 @@ namespace Mollie\Bundle\PaymentBundle\Form\Type;
 
 use Mollie\Bundle\PaymentBundle\Entity\PaymentMethodSettings;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\Model\PaymentMethodConfig;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\PaymentMethods;
+use Mollie\Bundle\PaymentBundle\Manager\ProductAttributesProvider;
 use Oro\Bundle\ApiBundle\Form\Type\NumberType;
 use Oro\Bundle\LocaleBundle\Form\Type\LocalizedFallbackValueCollectionType;
 use Symfony\Component\Form\AbstractType;
@@ -35,13 +37,23 @@ class PaymentMethodSettingsType extends AbstractType
     private $translator;
 
     /**
+     * @var ProductAttributesProvider
+     */
+    private $productAttributesProvider;
+
+
+    /**
      * PaymentMethodSettingsType constructor.
      *
      * @param TranslatorInterface $translator
+     * @param ProductAttributesProvider $productAttributesProvider
      */
-    public function __construct(TranslatorInterface $translator)
-    {
+    public function __construct(
+        TranslatorInterface $translator,
+        ProductAttributesProvider $productAttributesProvider
+    ) {
         $this->translator = $translator;
+        $this->productAttributesProvider = $productAttributesProvider;
     }
 
     /**
@@ -181,19 +193,18 @@ class PaymentMethodSettingsType extends AbstractType
                         'data-method-wrapper' => $paymentMethodConfig->getMollieId(),
                     ],
                 ]
+            )->add(
+                'transactionDescriptions',
+                LocalizedFallbackValueCollectionType::class,
+                [
+                    'label' => 'mollie.payment.config.payment_methods.transactionDescription.label',
+                    'tooltip' => 'mollie.payment.config.payment_methods.transactionDescription.tooltip',
+                    'required' => true,
+                    'entry_options' => ['constraints' => [new NotBlank()]],
+                ]
             );
         }
 
-        $event->getForm()->add(
-            'transactionDescriptions',
-            LocalizedFallbackValueCollectionType::class,
-            [
-                'label' => 'mollie.payment.config.payment_methods.transactionDescription.label',
-                'tooltip' => 'mollie.payment.config.payment_methods.transactionDescription.tooltip',
-                'required' => true,
-                'entry_options' => ['constraints' => [new NotBlank()]],
-            ]
-        );
 
         if ($paymentMethodConfig->isMollieComponentsSupported()) {
             $event->getForm()->add(
@@ -222,6 +233,39 @@ class PaymentMethodSettingsType extends AbstractType
                     'tooltip' => 'mollie.payment.config.payment_methods.issuer_list.tooltip',
                     'required' => true,
                     'placeholder' => false,
+                ]
+            );
+        }
+
+        if ($paymentMethodConfig->getMollieId() === PaymentMethods::Vouchers) {
+            $event->getForm()->add(
+                'voucherCategory',
+                ChoiceType::class,
+                [
+                    'choices' => [
+                        'mollie.payment.config.payment_methods.category.choice.none' => PaymentMethodConfig::VOUCHER_CATEGORY_NONE,
+                        'mollie.payment.config.payment_methods.category.choice.meal' => PaymentMethodConfig::VOUCHER_CATEGORY_MEAL,
+                        'mollie.payment.config.payment_methods.category.choice.eco' => PaymentMethodConfig::VOUCHER_CATEGORY_ECO,
+                        'mollie.payment.config.payment_methods.category.choice.gift' => PaymentMethodConfig::VOUCHER_CATEGORY_GIFT,
+                        'mollie.payment.config.payment_methods.category.choice.custom' => PaymentMethodConfig::VOUCHER_CATEGORY_CUSTOM,
+                    ],
+                    'label' => 'mollie.payment.config.payment_methods.category.label',
+                    'required' => true,
+                    'placeholder' => false,
+                    'tooltip' => 'mollie.payment.config.payment_methods.category.tooltip',
+                ]
+            );
+        }
+        if ($paymentMethodConfig->getMollieId() === PaymentMethods::Vouchers) {
+            $event->getForm()->add(
+                'productAttribute',
+                ChoiceType::class,
+                [
+                    'choices' => $this->productAttributesProvider->getProductAttributes(),
+                    'label' => 'mollie.payment.config.payment_methods.attribute.label',
+                    'required' => true,
+                    'placeholder' => false,
+                    'tooltip' => 'mollie.payment.config.payment_methods.attribute.tooltip',
                 ]
             );
         }
