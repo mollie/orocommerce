@@ -163,3 +163,6 @@ mollie:
         order_line_cancel_info.description: 'Bestellposition im Molli-Portal storniert.'
         order_line_refund_info.title: 'Mollie-Bestellposition geändert'
         order_line_refund_info.description: 'Bestellposition im Mollie-Portal erstattet.'
+    extend:
+      entity:
+        voucher_category.label: 'Mollie Voucher Category'

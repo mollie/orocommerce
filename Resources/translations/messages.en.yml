@@ -180,3 +180,6 @@ mollie:
         order_line_cancel_info.description: 'Order line is canceled in Mollie portal.'
         order_line_refund_info.title: 'Mollie order line changed'
         order_line_refund_info.description: 'Order line is refunded in Mollie portal.'
+    extend:
+      entity:
+        voucher_category.label: 'Mollie Voucher Category'

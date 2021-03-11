@@ -163,3 +163,6 @@ mollie:
         order_line_cancel_info.description: 'Orderregel is geannuleerd in het Mollie-portaal.'
         order_line_refund_info.title: 'De orderregel van Mollie is gewijzigd'
         order_line_refund_info.description: 'Orderregel wordt terugbetaald in het Mollie-portaal..'
+    extend:
+      entity:
+        voucher_category.label: 'Mollie Voucher Category'
