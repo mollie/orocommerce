@@ -281,7 +281,8 @@ class MolliePaymentConfigProvider implements MolliePaymentConfigProviderInterfac
 
             if ($paymentMethodSetting->getTransactionDescriptions()->isEmpty()) {
                 $paymentMethodSetting->addTransactionDescription(
-                    (new LocalizedFallbackValue())->setString(PaymentMethodSettingsType::DEFAULT_TRANSACTION_DESCRIPTION));
+                    (new LocalizedFallbackValue())->setString(PaymentMethodSettingsType::DEFAULT_TRANSACTION_DESCRIPTION)
+                );
             }
 
             $paymentMethodSetting->setPaymentMethodConfig($paymentMethodConfig);

@@ -3,7 +3,6 @@
 
 namespace Mollie\Bundle\PaymentBundle\Migrations\Schema\v1_1;
 
-
 use Doctrine\DBAL\Schema\Schema;
 use Oro\Bundle\EntityExtendBundle\EntityConfig\ExtendScope;
 use Oro\Bundle\EntityExtendBundle\Migration\Extension\ExtendExtension;
@@ -13,7 +12,6 @@ use Oro\Bundle\MigrationBundle\Migration\QueryBag;
 
 class MollieProductAttribute implements Migration, ExtendExtensionAwareInterface
 {
-
     const PRODUCT_TABLE_NAME = 'oro_product';
     const VOUCHER_CATEGORY_FIELD_NAME = 'mollie_voucher_category';
     const VOUCHER_CATEGORY_FIELD_CODE = 'mollie_voucher';
