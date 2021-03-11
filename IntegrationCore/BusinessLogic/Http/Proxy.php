@@ -374,7 +374,13 @@ class Proxy
      */
     public function getEnabledPaymentMethodsForProfile($profileId)
     {
-        $queryParams = array('profileId' => $profileId);
+        $queryParams = array(
+            'profileId' => $profileId,
+            'include' => 'issuers',
+            'includeWallets' => 'applepay',
+            'resource' => 'orders',
+        );
+
         if ($this->configService->isTestMode()) {
             $queryParams['testmode'] = 'true';
         }

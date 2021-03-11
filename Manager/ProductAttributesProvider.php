@@ -1,0 +1,122 @@
+<?php
+
+namespace Mollie\Bundle\PaymentBundle\Manager;
+
+use Mollie\Bundle\PaymentBundle\Migrations\Schema\v1_1\MollieProductAttribute;
+use Oro\Bundle\EntityBundle\ORM\EntityAliasResolver;
+use Oro\Bundle\EntityConfigBundle\Config\ConfigModelManager;
+use Oro\Bundle\EntityConfigBundle\Entity\EntityConfigModel;
+use Oro\Bundle\EntityConfigBundle\Entity\FieldConfigModel;
+use Symfony\Contracts\Translation\TranslatorInterface;
+
+/**
+ * Class ProductAttributesProvider
+ *
+ * @package Mollie\Bundle\PaymentBundle\Manager
+ */
+class ProductAttributesProvider
+{
+
+    const ALIAS = 'product';
+
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
+    /**
+     * @var EntityAliasResolver
+     */
+    private $aliasResolver;
+    /**
+     * @var ConfigModelManager
+     */
+    private $configModelManager;
+
+    /**
+     * ProductAttributesProvider constructor.
+     *
+     * @param TranslatorInterface $translator
+     * @param EntityAliasResolver $aliasResolver
+     * @param ConfigModelManager $configModelManager
+     */
+    public function __construct(
+        TranslatorInterface $translator,
+        EntityAliasResolver $aliasResolver,
+        ConfigModelManager $configModelManager
+    ) {
+        $this->translator = $translator;
+        $this->aliasResolver = $aliasResolver;
+        $this->configModelManager = $configModelManager;
+    }
+
+
+    /**
+     * Returns product attribute options
+     *
+     * @return array
+     */
+    public function getProductAttributes()
+    {
+        $fields = $this->filterFields();
+
+        $result = [];
+        foreach ($fields as $field) {
+            $label = $field->toArray('entity')['label'];
+            $key = $field->getFieldName();
+            $result[$key] = $this->translator->trans($label);
+        }
+
+        $this->setMollieVoucherAsDefault($result);
+
+        return array_flip($result);
+    }
+
+    /**
+     * Sets mollie voucher category as default choice
+     *
+     * @param array $options
+     */
+    private function setMollieVoucherAsDefault(array &$options)
+    {
+        $key = MollieProductAttribute::VOUCHER_CATEGORY_FIELD_NAME;
+        if (array_key_exists($key, $options)) {
+            $tmp = [$key => $options[$key]];
+            unset($options[$key]);
+            $options = array_merge($tmp, $options);
+        }
+    }
+
+    /**
+     * Returns fields of string and enum type
+     *
+     * @return \Doctrine\Common\Collections\ArrayCollection
+     */
+    private function filterFields()
+    {
+        $entityConfigModel = $this->getEntityProduct();
+        $labelArray = [];
+
+        return $entityConfigModel->getFields(
+            static function (FieldConfigModel $configModel) use ($labelArray) {
+                $isAttribute = $configModel->toArray('attribute')['is_attribute'];
+                $isEnumOrString = in_array($configModel->getType(), ['string', 'enum'], true);
+
+                if ($isAttribute && $isEnumOrString) {
+                    $labelArray[] = $configModel->toArray('entity')['label'];
+                }
+
+                return $labelArray;
+            }
+        );
+    }
+
+    /**
+     * @return false|EntityConfigModel|null
+     */
+    private function getEntityProduct()
+    {
+        $entityClass = $this->aliasResolver->getClassByAlias(self::ALIAS);
+
+        return $this->configModelManager->findEntityModel($entityClass);
+    }
+}

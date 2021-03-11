@@ -105,16 +105,16 @@ class OrderLineEntityListener
         try {
             $channelId = $this->paymentMethodUtility->getChannelId($orderLineItem->getOrder());
             $this->configService->doWithContext((string)$channelId, function () use ($orderLineItem) {
-	            $orderReference = $this->orderReferenceService->getByShopReference(
-		            $orderLineItem->getOrder()->getIdentifier()
-	            );
+                $orderReference = $this->orderReferenceService->getByShopReference(
+                    $orderLineItem->getOrder()->getIdentifier()
+                );
 
-	            // If order reference does not exist for the changed order line merchant changed order
-	            // identifier manually in the DB (or via shop API), and we should ignore this order from
-	            // further sync.
-	            if (!$orderReference) {
-		            return;
-	            }
+                // If order reference does not exist for the changed order line merchant changed order
+                // identifier manually in the DB (or via shop API), and we should ignore this order from
+                // further sync.
+                if (!$orderReference) {
+                    return;
+                }
 
                 $lineForUpdate = $this->mollieDtoMapper->getOrderLine($orderLineItem);
                 $lineForUpdate->setId($this->getLineIdFromMollie($orderLineItem));
