@@ -163,3 +163,6 @@ mollie:
         order_line_cancel_info.description: 'La ligne de commande est annulée sur le portail Mollie..'
         order_line_refund_info.title: 'La ligne de commande Mollie a changé'
         order_line_refund_info.description: 'La ligne de commande est remboursée sur le portail Mollie.'
+    extend:
+      entity:
+        voucher_category.label: 'Mollie Voucher Category'
