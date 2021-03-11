@@ -39,6 +39,7 @@ class PaymentMethodConfig extends Entity
     protected static $adiMethodRestrictions = array(
         PaymentMethods::KlarnaPayLater => self::API_METHOD_ORDERS,
         PaymentMethods::KlarnaSliceIt => self::API_METHOD_ORDERS,
+        PaymentMethods::Vouchers => self::API_METHOD_ORDERS
     );
 
     /**
