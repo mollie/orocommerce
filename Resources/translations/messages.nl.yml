@@ -10,6 +10,7 @@ mollie:
     capture:
       message: 'Het is niet mogelijk om de betaling handmatig te capturen. Dit wordt automatisch gedaan door Mollie.'
     refund:
+      voucher.message: 'This order is (partially) paid using a voucher. You can refund a maximum of %amount% %currency%'
       label: 'Terugbetaling'
       identifier: 'Identifier'
       refundedQuantity: 'Terugbetaalde hoeveelheid'
@@ -63,6 +64,19 @@ mollie:
         transactionDescription.label: 'Transaction Description'
         transactionDescription.tooltip: 'The description to be used for payment transaction. These variables are
         available: {orderNumber}, {storeName}, {customerFirstname}, {customerLastname}, {customerCompany}, and {cartNumber}.'
+        category:
+          label: 'Category'
+          tooltip: 'Vouchers can only be used for eligible products, and therefore you should define the
+                            category parameter for all order lines. Mollie will calculate the eligible amount based on this parameter.'
+          choice.none: 'None'
+          choice.meal: 'Meal'
+          choice.eco: 'Eco'
+          choice.gift: 'Gift'
+          attribute:
+            label: 'Product Attribute'
+            tooltip: 'Use the existing Mollie voucher product attribute or create a
+                            new type of Select or String. The admin value of these product attributes must be meal, eco,
+                            gift, or none.'
         image:
           label: 'Afbeelding'
           mime_type_error: 'Upload een geldige afbeelding'

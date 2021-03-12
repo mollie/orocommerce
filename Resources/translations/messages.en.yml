@@ -10,6 +10,7 @@ mollie:
     capture:
       message: 'It is not possible to manually capture payment. Payment will be captured automatically by mollie.'
     refund:
+      voucher.message: 'This order is (partially) paid using a voucher. You can refund a maximum of %amount% %currency%'
       label: 'Refund'
       identifier: 'Identifier'
       refundedQuantity: 'Refunded quantity'
@@ -74,7 +75,6 @@ mollie:
           choice.meal: 'Meal'
           choice.eco: 'Eco'
           choice.gift: 'Gift'
-          choice.custom: 'Custom attribute'
         attribute:
           label: 'Product Attribute'
           tooltip: 'Use the existing Mollie voucher product attribute or create a

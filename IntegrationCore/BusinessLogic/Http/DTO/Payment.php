@@ -2,6 +2,7 @@
 
 namespace Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO;
 
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\Details;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\Order;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Refunds\Refund;
 
@@ -80,6 +81,11 @@ class Payment extends BaseDto
     );
 
     /**
+     * @var Details
+     */
+    protected $details;
+
+    /**
      * @var string
      */
     protected $cardToken;
@@ -137,6 +143,10 @@ class Payment extends BaseDto
             $result->embedded['refunds'] = Refund::fromArrayBatch(static::getValue($raw['_embedded'], 'refunds', array()));
         }
 
+        if (!empty($raw['details'])) {
+            $result->details = Details::fromArray($raw['details']);
+        }
+
         return $result;
     }
 
@@ -177,6 +187,7 @@ class Payment extends BaseDto
             'issuer' => $this->issuer,
             'dueDate' => $this->dueDate ? $this->dueDate->format(Order::MOLLIE_DATE_FORMAT) : null,
             'expiresAt' => $this->expiresAt ? $this->expiresAt->format(DATE_ATOM) : null,
+            'details' => $this->details ? $this->details->toArray() : null,
             '_embedded' => $embedded,
             '_links' => $links,
         );
@@ -528,5 +539,21 @@ class Payment extends BaseDto
     public function setExpiresAt($expiresAt)
     {
         $this->expiresAt = $expiresAt;
+    }
+
+    /**
+     * @return Details
+     */
+    public function getDetails()
+    {
+        return $this->details;
+    }
+
+    /**
+     * @param Details $details
+     */
+    public function setDetails($details)
+    {
+        $this->details = $details;
     }
 }
