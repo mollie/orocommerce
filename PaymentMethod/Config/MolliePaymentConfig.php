@@ -27,6 +27,8 @@ class MolliePaymentConfig extends AbstractParameterBagPaymentConfig implements M
     const TRANSACTION_DESCRIPTION = 'transaction_description';
     const ORDER_EXPIRY_DAYS = 'order_expiry_days';
     const PAYMENT_EXPIRY_DAYS = 'payment_expiry_days';
+    const VOUCHER_CATEGORY = 'voucher_category';
+    const PRODUCT_ATTRIBUTE = 'product_attribute';
 
     /**
      * {@inheritdoc}
@@ -116,28 +118,59 @@ class MolliePaymentConfig extends AbstractParameterBagPaymentConfig implements M
         return (string)$this->get(self::ISSUER_LIST_STYLE);
     }
 
+    /**
+     * {@inheritdoc }
+     */
     public function getIssuers()
     {
         return (array)$this->get(self::ISSUERS);
     }
 
+    /**
+     * {@inheritdoc }
+     */
     public function getPaymentDescription()
     {
         return (string)$this->get(self::PAYMENT_DESCRIPTION);
     }
 
+    /**
+     * {@inheritdoc }
+     */
     public function getTransactionDescription()
     {
         return (string)$this->get(self::TRANSACTION_DESCRIPTION);
     }
 
+    /**
+     * {@inheritdoc }
+     */
     public function getOrderExpiryDays()
     {
         return (int)$this->get(self::ORDER_EXPIRY_DAYS);
     }
 
+    /**
+     * {@inheritdoc }
+     */
     public function getPaymentExpiryDays()
     {
         return (int)$this->get(self::PAYMENT_EXPIRY_DAYS);
+    }
+
+    /**
+     * {@inheritdoc }
+     */
+    public function getVoucherCategory()
+    {
+        return (string)$this->get(self::VOUCHER_CATEGORY);
+    }
+
+    /**
+     * {@inheritdoc }
+     */
+    public function getProductAttribute()
+    {
+        return (string)$this->get(self::PRODUCT_ATTRIBUTE);
     }
 }

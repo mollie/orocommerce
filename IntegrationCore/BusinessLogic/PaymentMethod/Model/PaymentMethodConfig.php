@@ -33,6 +33,8 @@ class PaymentMethodConfig extends Entity
     const VOUCHER_CATEGORY_CUSTOM = 'custom';
 
     const PRODUCT_ATTRIBUTE_DEFAULT = 'mollie_voucher_category';
+
+    const DEFAULT_TRANSACTION_DESCRIPTION = '{orderNumber}';
     /**
      * @var string[]
      */
@@ -134,7 +136,7 @@ class PaymentMethodConfig extends Entity
     /**
      * @var string
      */
-    protected $transactionDescription = '{orderNumber}';
+    protected $transactionDescription = self::DEFAULT_TRANSACTION_DESCRIPTION;
     /**
      * @var string
      */
@@ -450,7 +452,7 @@ class PaymentMethodConfig extends Entity
      */
     public function getTransactionDescription()
     {
-        return $this->transactionDescription;
+        return $this->transactionDescription ?: static::DEFAULT_TRANSACTION_DESCRIPTION;
     }
 
     /**
@@ -466,7 +468,7 @@ class PaymentMethodConfig extends Entity
      */
     public function getVoucherCategory()
     {
-        return $this->voucherCategory;
+        return $this->voucherCategory ?: static::VOUCHER_CATEGORY_NONE;
     }
 
     /**
@@ -482,7 +484,7 @@ class PaymentMethodConfig extends Entity
      */
     public function getProductAttribute()
     {
-        return $this->productAttribute;
+        return $this->productAttribute ?: static::PRODUCT_ATTRIBUTE_DEFAULT;
     }
 
     /**
