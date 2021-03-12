@@ -91,4 +91,14 @@ interface MolliePaymentConfigInterface extends PaymentConfigInterface
      * @return int
      */
     public function getPaymentExpiryDays();
+
+    /**
+     * @return string
+     */
+    public function getVoucherCategory();
+
+    /**
+     * @return string
+     */
+    public function getProductAttribute();
 }

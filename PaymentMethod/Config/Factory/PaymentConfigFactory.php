@@ -103,6 +103,8 @@ class PaymentConfigFactory implements PaymentConfigFactoryInterface
         $configParams[MolliePaymentConfig::ISSUERS] = $this->getIssuers($mollieMethodConfig, $channel->getId());
         $configParams[MolliePaymentConfig::ORDER_EXPIRY_DAYS] = $mollieMethodConfig->getDaysToOrderExpire();
         $configParams[MolliePaymentConfig::PAYMENT_EXPIRY_DAYS] = $mollieMethodConfig->getDaysToPaymentExpire();
+        $configParams[MolliePaymentConfig::VOUCHER_CATEGORY] = $mollieMethodConfig->getVoucherCategory();
+        $configParams[MolliePaymentConfig::PRODUCT_ATTRIBUTE] = $mollieMethodConfig->getProductAttribute();
 
         return new MolliePaymentConfig($configParams);
     }

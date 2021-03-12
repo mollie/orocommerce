@@ -16,7 +16,6 @@ use Symfony\Component\Translation\TranslatorInterface;
  */
 class ProductAttributesProvider
 {
-
     const ALIAS = 'product';
 
     /**

@@ -3,8 +3,11 @@
 namespace Mollie\Bundle\PaymentBundle\PaymentMethod\Factory;
 
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Payment;
+use Mollie\Bundle\PaymentBundle\Manager\ProductAttributeResolver;
 use Mollie\Bundle\PaymentBundle\Mapper\MollieDtoMapperInterface;
 use Mollie\Bundle\PaymentBundle\PaymentMethod\Config\MolliePaymentConfigInterface;
+use Oro\Bundle\EntityBundle\ORM\DoctrineHelper;
+use Oro\Bundle\OrderBundle\Entity\Order;
 use Oro\Bundle\OrderBundle\Entity\OrderAddress;
 use Oro\Bundle\OrderBundle\Entity\OrderLineItem;
 use Oro\Bundle\PaymentBundle\Entity\PaymentTransaction;
@@ -24,17 +27,26 @@ class MollieConfigMapperDecorator implements MollieDtoMapperInterface
      * @var MolliePaymentConfigInterface $config
      */
     protected $config;
+    /**
+     * @var DoctrineHelper
+     */
+    protected $doctrineHelper;
 
     /**
      * MollieConfigMapperDecorator constructor.
      *
      * @param MollieDtoMapperInterface $dtoMapper
      * @param MolliePaymentConfigInterface $config
+     * @param DoctrineHelper $doctrineHelper
      */
-    public function __construct(MollieDtoMapperInterface $dtoMapper, MolliePaymentConfigInterface $config)
-    {
+    public function __construct(
+        MollieDtoMapperInterface $dtoMapper,
+        MolliePaymentConfigInterface $config,
+        DoctrineHelper $doctrineHelper
+    ) {
         $this->dtoMapper = $dtoMapper;
         $this->config = $config;
+        $this->doctrineHelper = $doctrineHelper;
     }
 
     /**
@@ -52,6 +64,14 @@ class MollieConfigMapperDecorator implements MollieDtoMapperInterface
             }
         }
 
+        $mollieLines = [];
+        $lines = $this->getOrderEntity($paymentTransaction)->getLineItems();
+        foreach ($lines as $line) {
+            $mollieLines[] = $this->getOrderLine($line);
+        }
+
+        $orderData->setLines($mollieLines);
+
         return $orderData;
     }
 
@@ -60,7 +80,15 @@ class MollieConfigMapperDecorator implements MollieDtoMapperInterface
      */
     public function getOrderLine(OrderLineItem $orderLineItem)
     {
-        return $this->dtoMapper->getOrderLine($orderLineItem);
+        $mollieLine = $this->dtoMapper->getOrderLine($orderLineItem);
+        $product = $orderLineItem->getProduct();
+        $attributeProvider = new ProductAttributeResolver($product, $this->config->getVoucherCategory(), $this->config->getProductAttribute());
+        $category = $attributeProvider->getPropertyValue();
+        if (in_array($category, ['meal', 'eco', 'gift'])) {
+            $mollieLine->setCategory($category);
+        }
+
+        return $mollieLine;
     }
 
     /**
@@ -93,5 +121,24 @@ class MollieConfigMapperDecorator implements MollieDtoMapperInterface
         if ($paymentExpiryDays > 0 && $this->config->getMollieId() === 'banktransfer') {
             $paymentData->calculateDueDate($paymentExpiryDays);
         }
+    }
+
+    /**
+     * @param PaymentTransaction $paymentTransaction
+     * @return Order|null
+     */
+    protected function getOrderEntity(PaymentTransaction $paymentTransaction)
+    {
+        if ($paymentTransaction->getEntityClass() !== Order::class) {
+            return null;
+        }
+
+        /** @var Order $order */
+        $order = $this->doctrineHelper->getEntityReference(
+            $paymentTransaction->getEntityClass(),
+            $paymentTransaction->getEntityIdentifier()
+        );
+
+        return $order;
     }
 }
