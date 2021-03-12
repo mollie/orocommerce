@@ -3,7 +3,7 @@ parameters:
   mollie_payment.method.identifier_prefix.mollie_payment: 'mollie_payment'
   mollie_payment.uploader.public_image_path: 'bundles/molliepayment/img/uploads'
   mollie_payment.uploader.image_dir: '%kernel.project_dir%/public/%mollie_payment.uploader.public_image_path%'
-  mollie_payment.webhooks_url_replacement: ''
+  mollie_payment.webhooks_url_replacement: 'https://f7fbde7efa9b.ngrok.io'
 
 services:
   mollie_payment.entity_generator_extension.order:
@@ -108,6 +108,7 @@ services:
       - '@oro_locale.helper.localization'
       - '@mollie_payment.mapper.mollie_dto_mapper'
       - '@mollie_payment.manager.mollie_payment_link_provider'
+      - '@oro_entity.doctrine_helper'
       - '%mollie_payment.webhooks_url_replacement%'
     public: false
 
