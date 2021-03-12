@@ -248,7 +248,6 @@ class PaymentMethodSettingsType extends AbstractType
                         'mollie.payment.config.payment_methods.category.choice.meal' => PaymentMethodConfig::VOUCHER_CATEGORY_MEAL,
                         'mollie.payment.config.payment_methods.category.choice.eco' => PaymentMethodConfig::VOUCHER_CATEGORY_ECO,
                         'mollie.payment.config.payment_methods.category.choice.gift' => PaymentMethodConfig::VOUCHER_CATEGORY_GIFT,
-                        'mollie.payment.config.payment_methods.category.choice.custom' => PaymentMethodConfig::VOUCHER_CATEGORY_CUSTOM,
                     ],
                     'label' => 'mollie.payment.config.payment_methods.category.label',
                     'required' => true,
