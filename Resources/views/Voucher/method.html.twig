@@ -1,0 +1,18 @@
+
+<div class="attribute-item">
+    <label class="attribute-item__term">{{ 'oro.payment.methods.label'|trans }}</label>
+    <div class="attribute-item__description">
+        <div class="control-label">
+
+            {%- if data.voucherLabel -%}
+                {{ data.voucherLabel }}
+            {%- elseif data.methods is not empty and data.methods is iterable -%}
+                {% for paymentMethod in data.methods %}
+                    {{ get_payment_method_admin_label(paymentMethod) }}{% if not loop.last %},{% endif %}
+                {% endfor %}
+            {%- else -%}
+                {{ 'oro.ui.empty'|trans }}
+            {%- endif -%}
+        </div>
+    </div>
+</div>
