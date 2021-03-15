@@ -215,6 +215,8 @@ services:
     arguments:
       - '@oro_payment.provider.payment_transaction'
       - '@mollie_payment.payment_method.context_aware.config.provider'
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\OrderReference\OrderReferenceService'
+      - '@oro_locale.twig.locale'
     public: true
 
   mollie_payment.manager.mollie_payment_link_provider:
