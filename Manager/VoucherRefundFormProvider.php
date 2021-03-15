@@ -3,13 +3,13 @@
 
 namespace Mollie\Bundle\PaymentBundle\Manager;
 
-
 use Mollie\Bundle\PaymentBundle\Form\Entity\MollieRefund;
 use Mollie\Bundle\PaymentBundle\Form\Entity\MollieRefundPayment;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\Order;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Payment;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\OrderReference\Model\OrderReference;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\Model\PaymentMethodConfig;
+use Mollie\Bundle\PaymentBundle\PaymentMethod\Config\MolliePaymentConfigInterface;
 use Oro\Bundle\LocaleBundle\Twig\LocaleExtension;
 
 class VoucherRefundFormProvider
@@ -33,6 +33,33 @@ class VoucherRefundFormProvider
     {
         $this->orderReference = $order;
         $this->localeExtension = $localeExtension;
+    }
+
+    /**
+     * @param MolliePaymentConfigInterface[] $configs
+     * @param int $channelId
+     *
+     * @return string|null
+     */
+    public function formatLabelWithReminder(array $configs, $channelId)
+    {
+        if ($this->isVoucher()) {
+            $order = Order::fromArray($this->orderReference->getPayload());
+            $reminder = $this->getReminderDetail();
+            if ($reminder && $reminder->getRemainderMethod()) {
+
+                $voucherLabel = $this->getLabel($configs, $channelId, 'voucher');
+                $reminderLabel = $this->getLabel($configs, $channelId, $reminder->getRemainderMethod());
+                $voucherCurrencySymbol = $this->localeExtension->getCurrencySymbolByCurrency($order->getAmount()->getCurrency());
+                $reminderCurrencySymbol = $this->localeExtension->getCurrencySymbolByCurrency($reminder->getReminderAmount()->getCurrency());
+                return "Mollie: $voucherLabel (" .
+                    $voucherCurrencySymbol . ' ' . $reminder->calculateVoucherAmount() . '), ' .
+                    $reminderLabel . ' ('. $reminderCurrencySymbol . ' ' .
+                    $reminder->getReminderAmount()->getAmountValue() . ')';
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -96,7 +123,26 @@ class VoucherRefundFormProvider
     }
 
     /**
-     * @return \Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\Details|null
+     * @param MolliePaymentConfigInterface[] $configs
+     * @param int $channelId
+     * @param string $mollieId
+     *
+     * @return mixed
+     */
+    private function getLabel($configs, $channelId, $mollieId)
+    {
+        $key = "mollie_payment_{$channelId}_$mollieId";
+        if (array_key_exists($key, $configs)) {
+            $config = $configs[$key];
+
+            return $config->getLabel();
+        }
+
+        return $mollieId;
+    }
+
+    /**
+     * @return \Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Details|null
      */
     private function getReminderDetail()
     {

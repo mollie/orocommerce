@@ -2,7 +2,6 @@
 
 namespace Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO;
 
-use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\Details;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\Order;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Refunds\Refund;
 
