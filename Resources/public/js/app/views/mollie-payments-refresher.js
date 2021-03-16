@@ -20,6 +20,9 @@ define([
 
             $(this.websiteChooserSelector).change(_.bind(this.onWebsiteChange, this));
 
+            // show enabled methods on load
+            this.getEnabledMethods($(this.websiteChooserSelector).val());
+
             return paymentsRefresherView.__super__.initialize.call(this, options);
         },
 
