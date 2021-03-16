@@ -159,6 +159,7 @@ class PaymentMethodSettingsType extends AbstractType
                 'label' => 'mollie.payment.config.payment_methods.orderExpiryDays.label',
                 'tooltip' => $orderExpiryDaysTooltip,
                 'required' => false,
+                'attr' => ['min' => 1, 'max' => 100],
             ]
         );
 
@@ -170,6 +171,7 @@ class PaymentMethodSettingsType extends AbstractType
                     'label' => 'mollie.payment.config.payment_methods.paymentExpiryDays.label',
                     'tooltip' => 'mollie.payment.config.payment_methods.paymentExpiryDays.tooltip',
                     'required' => false,
+                    'attr' => ['min' => 1, 'max' => 100],
                 ]
             );
         }
