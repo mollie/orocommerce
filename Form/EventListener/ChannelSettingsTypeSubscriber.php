@@ -329,7 +329,15 @@ class ChannelSettingsTypeSubscriber implements EventSubscriberInterface
         }
 
         $form->get('websiteProfile')->setData($channelSettings->getWebsiteProfile());
-        $form->get('paymentMethodSettings')->setData($channelSettings->getPaymentMethodSettings());
+
+        $paymentMethodSettings = $channelSettings->getPaymentMethodSettings();
+        if ($this->isDirtyExpiryFields($paymentMethodSettings)) {
+            $form->addError(new FormError($this->translator->trans('mollie.payment.config.payment_methods.expiryDays.error')));
+
+            return;
+        }
+
+        $form->get('paymentMethodSettings')->setData($paymentMethodSettings);
 
         $event->setData($data);
     }
@@ -350,6 +358,12 @@ class ChannelSettingsTypeSubscriber implements EventSubscriberInterface
             $form->get('authToken')->addError(
                 new FormError($this->translator->trans('mollie.payment.config.authorization.verification.fail.message'))
             );
+
+            return;
+        }
+
+        if ($this->isDirtyExpiryFields($channelSettings->getPaymentMethodSettings())) {
+            $form->addError(new FormError($this->translator->trans('mollie.payment.config.payment_methods.expiryDays.error')));
         }
     }
 
@@ -527,5 +541,40 @@ class ChannelSettingsTypeSubscriber implements EventSubscriberInterface
                 'allow_add' => true,
             ]);
         }
+    }
+
+    /**
+     * Check if expiry fields are valid
+     *
+     * @param array $methodSettings
+     *
+     * @return bool
+     */
+    protected function isDirtyExpiryFields($methodSettings)
+    {
+        foreach ($methodSettings as $setting) {
+            $isValid = $this->isExpiryValid($setting->getOrderExpiryDays()) &&
+                $this->isExpiryValid($setting->getPaymentExpiryDays());
+
+            if (!$isValid) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param int|null $expiryDays
+     *
+     * @return bool
+     */
+    protected function isExpiryValid($expiryDays)
+    {
+        if ($expiryDays === null) {
+            return true;
+        }
+
+        return is_int($expiryDays) && ($expiryDays > 1 && $expiryDays < 100);
     }
 }
