@@ -6,6 +6,11 @@ namespace Mollie\Bundle\PaymentBundle\Manager;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\Model\PaymentMethodConfig;
 use Oro\Bundle\ProductBundle\Entity\Product;
 
+/**
+ * Class ProductAttributeResolver
+ *
+ * @package Mollie\Bundle\PaymentBundle\Manager
+ */
 class ProductAttributeResolver
 {
     /**
@@ -45,13 +50,28 @@ class ProductAttributeResolver
         $methodName = $this->getPropertyGetterName();
         if ($methodName) {
             $category = $this->product->{$methodName}();
-            if ($category) {
-                return $category->getId();
+            $categoryValue = $this->getCategoryValue($category);
+            if (in_array($categoryValue, ['meal', 'eco', 'gift'], true)) {
+                return $categoryValue;
             }
         }
 
         return $this->fallbackAttribute !== PaymentMethodConfig::VOUCHER_CATEGORY_NONE ?
             $this->fallbackAttribute : null;
+    }
+
+    /**
+     * @param string|object $category
+     *
+     * @return string|null
+     */
+    protected function getCategoryValue($category)
+    {
+        if (is_object($category) && method_exists($category, 'getId')) {
+            return $category->getId();
+        }
+
+        return is_string($category) ? $category : null;
     }
 
     /**
