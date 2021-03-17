@@ -21,6 +21,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class OrderLineEntityListener
 {
+
+    public static $MOLLIE_MAPPED_ATTRIBUTES = ['freeFormProduct', 'quantity', 'priceType'];
     /**
      * @var MollieDtoMapperInterface
      */
@@ -162,6 +164,10 @@ class OrderLineEntityListener
     private function isOrderLineChanged(PreUpdateEventArgs $args)
     {
         $changeSetKeys = array_keys($args->getEntityChangeSet());
+        if (!$this->isChangeForMollie($changeSetKeys)) {
+            return false;
+        }
+
         foreach ($changeSetKeys as $key) {
             if ($args->getOldValue($key) != $args->getNewValue($key)) {
                 return true;
@@ -169,5 +175,19 @@ class OrderLineEntityListener
         }
 
         return false;
+    }
+
+    /**
+     * Check if changed attribute is of interest for mollie
+     *
+     * @param array $changeSetKeys
+     *
+     * @return bool
+     */
+    private function isChangeForMollie($changeSetKeys)
+    {
+        $intersect = array_intersect($changeSetKeys, static::$MOLLIE_MAPPED_ATTRIBUTES);
+
+        return !empty($intersect);
     }
 }
