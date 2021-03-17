@@ -20,8 +20,9 @@ use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Image;
 use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\Type;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Component\Validator\Constraints\Range;
+
 
 /**
  * Form type for Mollie integration payment methods settings
@@ -149,9 +150,7 @@ class PaymentMethodSettingsType extends AbstractType
                 'tooltip' => $surchargeTooltip,
                 'required' => false,
                 'attr' => ['autocomplete' => 'off'],
-                'constraints' => [
-                    new Type(['type' => 'numeric'])
-                ],
+                'constraints' => [new Range(['min' => 0])],
             ]
         )->add(
             'orderExpiryDays',
@@ -160,7 +159,7 @@ class PaymentMethodSettingsType extends AbstractType
                 'label' => 'mollie.payment.config.payment_methods.orderExpiryDays.label',
                 'tooltip' => $orderExpiryDaysTooltip,
                 'required' => false,
-                'attr' => ['min' => 1, 'max' => 100],
+                'constraints' => [new Range(['min' => 1, 'max' => 100])],
             ]
         );
 
@@ -172,7 +171,7 @@ class PaymentMethodSettingsType extends AbstractType
                     'label' => 'mollie.payment.config.payment_methods.paymentExpiryDays.label',
                     'tooltip' => 'mollie.payment.config.payment_methods.paymentExpiryDays.tooltip',
                     'required' => false,
-                    'attr' => ['min' => 1, 'max' => 100],
+                    'constraints' => [new Range(['min' => 1, 'max' => 100])],
                 ]
             );
         }
