@@ -334,7 +334,7 @@ class MollieDtoMapper implements MollieDtoMapperInterface
      *
      * @return array
      */
-    protected function getSurcharges(OroOrder $order)
+    public function getSurcharges(OroOrder $order)
     {
         $orderLinesData = [];
         $surcharge = $this->surchargeProvider->getSurcharges($order);

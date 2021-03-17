@@ -2,6 +2,7 @@
 
 namespace Mollie\Bundle\PaymentBundle\PaymentMethod\Factory;
 
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\OrderLine;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Payment;
 use Mollie\Bundle\PaymentBundle\Manager\ProductAttributeResolver;
 use Mollie\Bundle\PaymentBundle\Mapper\MollieDtoMapperInterface;
@@ -65,12 +66,15 @@ class MollieConfigMapperDecorator implements MollieDtoMapperInterface
         }
 
         $mollieLines = [];
-        $lines = $this->getOrderEntity($paymentTransaction)->getLineItems();
-        foreach ($lines as $line) {
-            $mollieLines[] = $this->getOrderLine($line);
-        }
+        $order = $this->getOrderEntity($paymentTransaction);
+        if ($order) {
+            $lines = $order->getLineItems();
+            foreach ($lines as $line) {
+                $mollieLines[] = $this->getOrderLine($line);
+            }
 
-        $orderData->setLines($mollieLines);
+            $orderData->setLines(array_merge($mollieLines, $this->getSurcharges($order)));
+        }
 
         return $orderData;
     }
@@ -111,6 +115,17 @@ class MollieConfigMapperDecorator implements MollieDtoMapperInterface
     {
         return $this->dtoMapper->getAddressData($address, $email);
     }
+
+    /**
+     * @param Order $order
+     *
+     * @return OrderLine[]
+     */
+    public function getSurcharges(Order $order)
+    {
+        return $this->dtoMapper->getSurcharges($order);
+    }
+
 
     /**
      * @param Payment $paymentData
