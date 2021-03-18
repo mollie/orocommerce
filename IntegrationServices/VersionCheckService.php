@@ -48,7 +48,7 @@ class VersionCheckService extends BaseService
         $messageKey = 'mollie.payment.config.payment_methods.versionCheck.message';
         $params = [
             '{versionNumber}' => $latestVersion,
-            '{downloadUrl}' => $this->getConfigService()->getExtensionDownloadUrl(),
+            '{downloadUrl}' => $this->getConfigService()->getExtensionDownloadUrl($latestVersion),
         ];
 
         $message = $this->translationService->trans($messageKey, $params);
