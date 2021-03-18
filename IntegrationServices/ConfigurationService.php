@@ -14,7 +14,7 @@ class ConfigurationService extends Configuration
 {
 
     const VERSION_CHECK_URL = 'https://raw.githubusercontent.com/mollie/orocommerce/4.0/composer.json';
-    const PLUGIN_DOWNLOAD_URL = 'https://github.com/mollie/orocommerce/releases/tag/4.0.5';
+    const PLUGIN_DOWNLOAD_URL = 'https://github.com/mollie/orocommerce/releases';
 
     /**
      * Singleton instance of this class.
@@ -131,9 +131,9 @@ class ConfigurationService extends Configuration
      * @inheritDoc
      * @return string
      */
-    public function getExtensionDownloadUrl()
+    public function getExtensionDownloadUrl($latestVersion = null)
     {
-        return static::PLUGIN_DOWNLOAD_URL;
+        return $latestVersion ? static::PLUGIN_DOWNLOAD_URL . "/tag/$latestVersion" : static::PLUGIN_DOWNLOAD_URL;
     }
 
     /**
