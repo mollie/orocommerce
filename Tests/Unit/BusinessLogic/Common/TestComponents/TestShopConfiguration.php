@@ -6,6 +6,7 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Configuration;
 
 class TestShopConfiguration extends Configuration
 {
+    public static $CURRENT_INTEGRATION_VERSION = '1.0.0';
     /**
      * Singleton instance of this class.
      *
@@ -57,7 +58,7 @@ class TestShopConfiguration extends Configuration
      */
     public function getExtensionVersion()
     {
-        return 'mollie.test.v-1.0.0';
+        return static::$CURRENT_INTEGRATION_VERSION;
     }
 
     /**
@@ -93,7 +94,7 @@ class TestShopConfiguration extends Configuration
      * {@inheritdoc}
      * @return string
      */
-    public function getExtensionDownloadUrl()
+    public function getExtensionDownloadUrl($latestVersion = null)
     {
         return 'https://github.com/mollie/gambio';
     }
