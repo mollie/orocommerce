@@ -114,7 +114,10 @@ class ProductAttributesProvider
      */
     private function isVoucherAttribute(FieldConfigModel $configModel)
     {
-        return !$configModel->toArray('extend')['is_deleted'] &&
+        $extend = $configModel->toArray('extend');
+        $isDeleted = $extend['is_deleted'] || $extend['state'] === 'Deleted';
+
+        return !$isDeleted &&
             $configModel->toArray('attribute')['is_attribute'] &&
             in_array($configModel->getType(), ['string', 'enum'], true);
     }
