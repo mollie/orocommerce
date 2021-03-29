@@ -66,6 +66,7 @@ class ProductAttributesProvider
         }
 
         $this->setMollieVoucherAsDefault($result);
+        $this->appendKeyToDuplicatedLabels($result);
 
         return array_flip($result);
     }
@@ -96,17 +97,69 @@ class ProductAttributesProvider
         $labelArray = [];
 
         return $entityConfigModel->getFields(
-            static function (FieldConfigModel $configModel) use ($labelArray) {
-                $isAttribute = $configModel->toArray('attribute')['is_attribute'];
-                $isEnumOrString = in_array($configModel->getType(), ['string', 'enum'], true);
-
-                if ($isAttribute && $isEnumOrString) {
+            function (FieldConfigModel $configModel) use ($labelArray) {
+                if ($this->isVoucherAttribute($configModel)) {
                     $labelArray[] = $configModel->toArray('entity')['label'];
                 }
 
                 return $labelArray;
             }
         );
+    }
+
+    /**
+     * @param FieldConfigModel $configModel
+     *
+     * @return bool
+     */
+    private function isVoucherAttribute(FieldConfigModel $configModel)
+    {
+        return !$configModel->toArray('extend')['is_deleted'] &&
+            $configModel->toArray('attribute')['is_attribute'] &&
+            in_array($configModel->getType(), ['string', 'enum'], true);
+    }
+
+    /**
+     * Appends attribute key if there are labels with duplicated values
+     *
+     * @param array $result
+     */
+    private function appendKeyToDuplicatedLabels(&$result)
+    {
+        $duplicatedLabels = $this->getDuplicatedLabels($result);
+        foreach ($result as $key => $value) {
+            if (in_array($value, $duplicatedLabels, true)) {
+                $result[$key] = $value . " ($key)";
+            }
+        }
+    }
+
+    /**
+     * @param array $attributes
+     *
+     * @return array
+     */
+    private function getDuplicatedLabels($attributes)
+    {
+        // create count map (label as key, and count as value)
+        $countMap = [];
+        foreach ($attributes as $attributeLabel) {
+            if (!array_key_exists($attributeLabel, $countMap)){
+                $countMap[$attributeLabel] = 0;
+            }
+
+            $countMap[$attributeLabel]++;
+        }
+
+        // return all labels which occurs more than one time
+        $duplicated = [];
+        foreach ($countMap as $label => $count) {
+            if ($count > 1) {
+                $duplicated[] = $label;
+            }
+        }
+
+        return $duplicated;
     }
 
     /**
