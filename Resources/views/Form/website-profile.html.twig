@@ -2,7 +2,9 @@
     view: 'molliepayment/js/app/views/mollie-payments-refresher',
     websiteChooserSelector: "#" ~ form.websiteProfile.vars.id,
     websiteProfileChangeMarkerName: form.websiteProfileChangeMarker.vars.full_name,
+    backendUrl: path('mollie_active_payment_methods', {'channelId': form.parent.vars.value.id|default(0),'profileId':'mollieProfileId'}),
     formSaveMarkerSelector: '[name="' ~ form.mollieSaveMarker.vars.full_name ~ '"]'
+
 } %}
 <div
     data-page-component-module="oroui/js/app/components/view-component"
@@ -10,4 +12,16 @@
 >
     {{ form_row(form.websiteProfile, { 'attr': {'class': 'mollie-website-chooser'} }) }}
     {{ form_row(form.websiteProfileChangeMarker) }}
+</div>
+
+<div class="mollie-enabled-methods-wrapper mollie-hidden">
+    <div class="control-group mollie-website-chooser control-group-choice">
+        <div class="controls">
+            <span>
+                <i class="fa-cog hide-text" ></i>
+                <b>{{ 'mollie.payment.config.website_profile.enabledMethods'|trans }}</b>
+            </span>
+            <span class="mollie-enabled-methods"></span>
+        </div>
+    </div>
 </div>

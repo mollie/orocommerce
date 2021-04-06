@@ -2,6 +2,7 @@
 
 namespace Mollie\Bundle\PaymentBundle\Tests\Unit\BusinessLogic\Payments;
 
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\Order;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Payment;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\Exceptions\UnprocessableEntityRequestException;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\OrgToken\ProxyDataProvider;
@@ -113,6 +114,10 @@ class PaymentServiceTest extends BaseTestWithServices
             'redirectUrl' => 'https://webshop.example.org/order/12345/',
             'webhookUrl' => 'https://webshop.example.org/payments/webhook/',
         ));
+
+        $daysToExpire = 10;
+        $payment->calculateDueDate($daysToExpire);
+
         $this->httpClient->setMockResponses(array($this->getMockPaymentCreate()));
 
         $createdPayment = $this->paymentService->createPayment($shopReference, $payment);
@@ -127,6 +132,12 @@ class PaymentServiceTest extends BaseTestWithServices
         $this->assertContains('/payments', $apiRequestHistory[0]['url']);
         $this->assertArrayNotHasKey('shippingAddress', $requestBodyArray);
         $this->assertEquals(json_encode($expectedBody), $apiRequestHistory[0]['body']);
+
+        $body = json_decode($apiRequestHistory[0]['body'], true);
+        $this->assertArrayHasKey('dueDate', $body);
+        $dueDate = new \DateTime();
+        $dueDate->add(new \DateInterval("P{$daysToExpire}D"));
+        $this->assertEquals($dueDate->format(Order::MOLLIE_DATE_FORMAT), $body['dueDate']);
         $this->assertNotNull($createdPayment);
         $this->assertEquals('https://www.mollie.com/payscreen/select-method/7UhSN1zuXS', $createdPayment->getLink('checkout')->getHref());
     }

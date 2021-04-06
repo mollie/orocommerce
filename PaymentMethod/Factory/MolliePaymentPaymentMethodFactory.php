@@ -15,6 +15,7 @@ use Mollie\Bundle\PaymentBundle\PaymentMethod\MolliePayment;
 use Mollie\Bundle\PaymentBundle\PaymentMethod\MolliePaymentApiPaymentCreator;
 use Mollie\Bundle\PaymentBundle\PaymentMethod\MolliePaymentCreatorInterface;
 use Mollie\Bundle\PaymentBundle\PaymentMethod\MolliePaymentLinkPaymentCreator;
+use Oro\Bundle\EntityBundle\ORM\DoctrineHelper;
 use Oro\Bundle\LocaleBundle\Helper\LocalizationHelper;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -62,6 +63,10 @@ class MolliePaymentPaymentMethodFactory implements MolliePaymentPaymentMethodFac
      * @var OrderService
      */
     private $orderService;
+    /**
+     * @var DoctrineHelper
+     */
+    private $doctrineHelper;
 
     /**
      * MolliePaymentPaymentMethodFactory constructor.
@@ -74,6 +79,7 @@ class MolliePaymentPaymentMethodFactory implements MolliePaymentPaymentMethodFac
      * @param LocalizationHelper $localizationHelper
      * @param MollieDtoMapperInterface $mollieDtoMapper
      * @param PaymentLinkConfigProviderInterface $paymentLinkConfigProvider
+     * @param DoctrineHelper $doctrineHelper
      * @param string $webhooksUrlReplacement
      */
     public function __construct(
@@ -85,6 +91,7 @@ class MolliePaymentPaymentMethodFactory implements MolliePaymentPaymentMethodFac
         LocalizationHelper $localizationHelper,
         MollieDtoMapperInterface $mollieDtoMapper,
         PaymentLinkConfigProviderInterface $paymentLinkConfigProvider,
+        DoctrineHelper $doctrineHelper,
         $webhooksUrlReplacement = ''
     ) {
         $this->configService = $configService;
@@ -95,6 +102,7 @@ class MolliePaymentPaymentMethodFactory implements MolliePaymentPaymentMethodFac
         $this->localizationHelper = $localizationHelper;
         $this->mollieDtoMapper = $mollieDtoMapper;
         $this->paymentLinkConfigProvider = $paymentLinkConfigProvider;
+        $this->doctrineHelper = $doctrineHelper;
         $this->webhooksUrlReplacement = $webhooksUrlReplacement;
     }
 
@@ -124,7 +132,8 @@ class MolliePaymentPaymentMethodFactory implements MolliePaymentPaymentMethodFac
             $mapper = new MolliePaymentLinkMapperDecorator(
                 $this->mollieDtoMapper,
                 $config,
-                $this->paymentLinkConfigProvider
+                $this->paymentLinkConfigProvider,
+                $this->doctrineHelper
             );
             return new MolliePaymentLinkPaymentCreator(
                 new MolliePaymentApiPaymentCreator($mapper, $this->paymentService),
@@ -133,7 +142,7 @@ class MolliePaymentPaymentMethodFactory implements MolliePaymentPaymentMethodFac
             );
         }
 
-        $mapper = new MollieConfigMapperDecorator($this->mollieDtoMapper, $config);
+        $mapper = new MollieConfigMapperDecorator($this->mollieDtoMapper, $config, $this->doctrineHelper);
 
         if ($config->getApiMethod() === PaymentMethodConfig::API_METHOD_ORDERS) {
             return new MollieOrdersApiPaymentCreator($mapper, $this->orderService);

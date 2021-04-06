@@ -47,3 +47,11 @@
 .mollie-notifications {
   position: relative;
 }
+
+.form-horizontal {
+  .mollie-payment-method {
+    .mollie-hide-row {
+      display: none;
+    }
+  }
+}

@@ -34,6 +34,7 @@ class MollieRefundType extends AbstractType
             ->add('selectedTab', HiddenType::class)
             ->add('totalRefunded', HiddenType::class)
             ->add('isOrderRefundable', HiddenType::class)
+            ->add('isVoucher', HiddenType::class)
             ->add('totalValue', HiddenType::class)
             ->add('currency', TextType::class, [
                 'required' => false,

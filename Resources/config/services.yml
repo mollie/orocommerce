@@ -1,5 +1,5 @@
 parameters:
-  mollie_payment.version: 4.1.6
+  mollie_payment.version: 4.1.7
   mollie_payment.method.identifier_prefix.mollie_payment: 'mollie_payment'
   mollie_payment.uploader.public_image_path: 'bundles/molliepayment/img/uploads'
   mollie_payment.uploader.image_dir: '%kernel.project_dir%/public/%mollie_payment.uploader.public_image_path%'
@@ -62,6 +62,7 @@ services:
       - '@mollie_payment.factory.payment_config'
       - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\PaymentMethodController'
       - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\WebsiteProfileController'
+      - '@translator'
 
   mollie_payment.payment_method.context_aware.config.provider:
     class: Mollie\Bundle\PaymentBundle\PaymentMethod\Config\Provider\MolliePaymentContextAwareConfigProvider
@@ -71,7 +72,7 @@ services:
       - '@mollie_payment.factory.payment_config'
       - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\PaymentMethodController'
       - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\WebsiteProfileController'
-
+      - '@translator'
 
   mollie_payment.payment_method_view_provider.mollie_payment:
     class: Mollie\Bundle\PaymentBundle\PaymentMethod\View\Provider\MolliePaymentViewProvider
@@ -107,6 +108,7 @@ services:
       - '@oro_locale.helper.localization'
       - '@mollie_payment.mapper.mollie_dto_mapper'
       - '@mollie_payment.manager.mollie_payment_link_provider'
+      - '@oro_entity.doctrine_helper'
       - '%mollie_payment.webhooks_url_replacement%'
     public: false
 
@@ -121,6 +123,7 @@ services:
       - '@oro_entity.doctrine_helper'
       - '@router'
       - '@oro_locale.helper.localization'
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\PaymentTransactionDescriptionService'
       - '%mollie_payment.webhooks_url_replacement%'
     public: true
 
@@ -157,7 +160,9 @@ services:
   mollie_payment.form.type.payment_method_settings:
     class: Mollie\Bundle\PaymentBundle\Form\Type\PaymentMethodSettingsType
     arguments:
-      - "@translator"
+      - '@translator'
+      - '@mollie_payment.manager.product_attributes_provider'
+
     tags:
       - { name: form.type }
 
@@ -185,6 +190,7 @@ services:
       - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Authorization\Interfaces\AuthorizationService'
       - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\WebsiteProfileController'
       - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\PaymentMethodController'
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\VersionCheck\VersionCheckService'
 
   mollie_payment.manager.mollie_delete_provider:
     class: Mollie\Bundle\PaymentBundle\Manager\MollieDeleteProvider
@@ -210,6 +216,8 @@ services:
     arguments:
       - '@oro_payment.provider.payment_transaction'
       - '@mollie_payment.payment_method.context_aware.config.provider'
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\OrderReference\OrderReferenceService'
+      - '@oro_locale.twig.locale'
     public: true
 
   mollie_payment.manager.mollie_payment_link_provider:
@@ -244,6 +252,14 @@ services:
       - '@oro_payment.provider.payment_transaction'
       - '@oro_payment.payment_method.composite_provider'
       - '@router'
+
+  mollie_payment.manager.product_attributes_provider:
+    class: Mollie\Bundle\PaymentBundle\Manager\ProductAttributesProvider
+    public: true
+    arguments:
+      - '@translator'
+      - '@oro_entity.entity_alias_resolver'
+      - '@oro_entity_config.attribute.config_model_manager'
 
   mollie_payment.condition.refund_form_valid:
     class: Mollie\Bundle\PaymentBundle\Condition\RefundFormValid
@@ -293,8 +309,25 @@ services:
       - '%mollie_payment.version%'
     public: true
 
+  Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\VersionCheck\VersionCheckService:
+    factory: ['Mollie\Bundle\PaymentBundle\IntegrationServices\VersionCheckService', 'create']
+    arguments:
+      - '@session.flash_bag'
+      - '@translator'
+    public: true
+
+  Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\PaymentTransactionDescriptionService:
+    factory: ['Mollie\Bundle\PaymentBundle\IntegrationServices\TransactionDescriptionService', 'create']
+    arguments:
+      - '@mollie_payment.payment_method.config.provider'
+    public: true
+
   Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\CheckoutLink\CheckoutLinkService:
     factory: ['Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\CheckoutLink\CheckoutLinkService', 'getInstance']
+    public: true
+
+  Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\PaymentMethodService:
+    factory: ['Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\PaymentMethodService', 'getInstance']
     public: true
 
   Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\OrderReference\OrderReferenceService:
@@ -330,6 +363,12 @@ services:
       public: true
       arguments:
         - '@mollie_payment.manager.admin_link_handler'
+
+  Mollie\Bundle\PaymentBundle\Controller\ActivePaymentMethodsController:
+      public: true
+      arguments:
+        - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\PaymentMethodService'
+        - '@Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration'
 
   Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Authorization\Interfaces\AuthorizationService:
     factory: ['Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Authorization\OrgToken\OrgTokenAuthService', 'getInstance']

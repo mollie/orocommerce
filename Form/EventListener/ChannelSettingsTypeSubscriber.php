@@ -11,6 +11,7 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\WebsitePr
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\Exceptions\UnprocessableEntityRequestException;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\PaymentMethodController;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\WebsiteProfileController;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\VersionCheck\VersionCheckService;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http\Exceptions\HttpAuthenticationException;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http\Exceptions\HttpCommunicationException;
@@ -59,6 +60,11 @@ class ChannelSettingsTypeSubscriber implements EventSubscriberInterface
     private $tokenValidationCache = [];
 
     /**
+     * @var VersionCheckService
+     */
+    private $versionCheckService;
+
+    /**
      * ChannelSettingsTypeSubscriber constructor.
      *
      * @param Configuration $configService
@@ -66,19 +72,22 @@ class ChannelSettingsTypeSubscriber implements EventSubscriberInterface
      * @param AuthorizationService $authorizationService
      * @param WebsiteProfileController $websiteProfileController
      * @param PaymentMethodController $paymentMethodController
+     * @param VersionCheckService $versionCheckService
      */
     public function __construct(
         Configuration $configService,
         TranslatorInterface $translator,
         AuthorizationService $authorizationService,
         WebsiteProfileController $websiteProfileController,
-        PaymentMethodController $paymentMethodController
+        PaymentMethodController $paymentMethodController,
+        VersionCheckService $versionCheckService
     ) {
         $this->configService = $configService;
         $this->translator = $translator;
         $this->authorizationService = $authorizationService;
         $this->websiteProfileController = $websiteProfileController;
         $this->paymentMethodController = $paymentMethodController;
+        $this->versionCheckService = $versionCheckService;
     }
 
     /**
@@ -186,6 +195,7 @@ class ChannelSettingsTypeSubscriber implements EventSubscriberInterface
      */
     public function onPostSetData(FormEvent $event)
     {
+        $this->versionCheckService->checkForNewVersion();
         $form = $event->getForm();
 
         $form->get('mollieVersion')->setData($this->configService->getExtensionVersion());
@@ -365,8 +375,7 @@ class ChannelSettingsTypeSubscriber implements EventSubscriberInterface
         $paymentMethodConfigs = $this->paymentMethodController->getAll($channelSettings->getWebsiteProfile()->getId());
         foreach ($paymentMethodConfigs as $paymentMethodConfig) {
             $paymentMethodSetting = null;
-	        $paymentMethodConfigMollieIds[] = $paymentMethodConfig->getMollieId();
-	        if (array_key_exists($paymentMethodConfig->getMollieId(), $paymentMethodSettingsMap)) {
+            if (array_key_exists($paymentMethodConfig->getMollieId(), $paymentMethodSettingsMap)) {
                 $paymentMethodSetting = $paymentMethodSettingsMap[$paymentMethodConfig->getMollieId()];
             }
 
@@ -392,24 +401,33 @@ class ChannelSettingsTypeSubscriber implements EventSubscriberInterface
                 );
             }
 
+            if ($paymentMethodSetting->getPaymentDescriptions()->isEmpty()) {
+                $paymentMethodSetting->addPaymentDescription(
+                    (new LocalizedFallbackValue())->setString($this->translator->trans('mollie.payment.config.payment_methods.payment.description.default.value'))
+                );
+            }
+
+            if ($paymentMethodSetting->getTransactionDescriptions()->isEmpty()) {
+                $paymentMethodSetting->addTransactionDescription(
+                    (new LocalizedFallbackValue())->setString(PaymentMethodSettingsType::DEFAULT_TRANSACTION_DESCRIPTION)
+                );
+            }
+
             $paymentMethodSetting->setPaymentMethodConfig($paymentMethodConfig);
             $paymentMethodSetting->setEnabled($paymentMethodConfig->isEnabled());
             $paymentMethodSetting->setSurcharge($paymentMethodConfig->getSurcharge());
             $paymentMethodSetting->setMethod($paymentMethodConfig->getApiMethod());
             $paymentMethodSetting->setMollieComponents($paymentMethodConfig->useMollieComponents());
             $paymentMethodSetting->setIssuerListStyle($paymentMethodConfig->getIssuerListStyle());
+            $paymentMethodSetting->setVoucherCategory($paymentMethodConfig->getVoucherCategory());
+            $paymentMethodSetting->setProductAttribute($paymentMethodConfig->getProductAttribute());
+            $paymentMethodSetting->setOrderExpiryDays($paymentMethodConfig->getDaysToOrderExpire());
+            $paymentMethodSetting->setPaymentExpiryDays($paymentMethodConfig->getDaysToPaymentExpire());
             $paymentMethodSetting->setOriginalImagePath($paymentMethodConfig->getOriginalAPIConfig()->getImage()->getSize2x());
             $paymentMethodSetting->setImagePath(
                 $paymentMethodConfig->hasCustomImage() ? $paymentMethodConfig->getImage() : null
             );
         }
-
-	    // Remove any saved method setting that is now missing in the Mollie API
-	    foreach ($paymentMethodSettingsMap as $mollieMethodId => $paymentMethodSetting) {
-		    if (!in_array($mollieMethodId, $paymentMethodConfigMollieIds)) {
-			    $channelSettings->removePaymentMethodSetting($paymentMethodSetting);
-		    }
-	    }
     }
 
     /**

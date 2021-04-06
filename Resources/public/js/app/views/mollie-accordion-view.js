@@ -2,6 +2,7 @@ define(function (require) {
     'use strict';
 
     const BaseView = require('oroui/js/app/views/base/view');
+    const $ = require('jquery');
 
     const accordionView = BaseView.extend({
         autoRender: true,
@@ -11,11 +12,49 @@ define(function (require) {
             'click .mollie-remove-image': 'onRemoveImageClick',
         },
 
+        apiMethodChooserSelector: 'select.mollie-method-select',
+
         /**
          * Renders a tabs view
          */
         initialize: function (options) {
+            this.setInitialFields();
+            this.addListeners();
+
             return accordionView.__super__.initialize.call(this, options);
+        },
+
+        setInitialFields: function () {
+            var self = this;
+            $(this.apiMethodChooserSelector).each(function () {
+                self.displayFieldsBasedOnMethod($(this).val(),$(this).attr('data-method-wrapper'));
+            });
+        },
+
+        addListeners: function () {
+            $(this.apiMethodChooserSelector).change(this.handleApiMethodChange.bind(this));
+        },
+
+        handleApiMethodChange: function (event) {
+            let target = $(event.target);
+
+            this.displayFieldsBasedOnMethod(target.val(), target.attr('data-method-wrapper'));
+
+        },
+
+        displayFieldsBasedOnMethod: function (apiMethod, identifier) {
+            let wrapper = $('.mollie-payment-method[data-payment-method-id="'+ identifier +'"]');
+            if (wrapper.length === 0) {
+                return;
+            }
+
+            if (apiMethod === 'payment_api') {
+                wrapper.find('.mollie-transaction-description, .mollie-payment-expiry-days').removeClass('mollie-hide-row');
+                wrapper.find('.mollie-order-expiry-days').addClass('mollie-hide-row');
+            } else {
+                wrapper.find('.mollie-transaction-description, .mollie-payment-expiry-days').addClass('mollie-hide-row');
+                wrapper.find('.mollie-order-expiry-days').removeClass('mollie-hide-row');
+            }
         },
 
         /**

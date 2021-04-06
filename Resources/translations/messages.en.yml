@@ -10,6 +10,7 @@ mollie:
     capture:
       message: 'It is not possible to manually capture payment. Payment will be captured automatically by mollie.'
     refund:
+      voucher.message: 'This order is (partially) paid using a voucher. You can refund a maximum of %amount% %currency%'
       label: 'Refund'
       identifier: 'Identifier'
       refundedQuantity: 'Refunded quantity'
@@ -53,12 +54,32 @@ mollie:
       website_profile:
         label: 'Website profile'
         id.label: 'Website profile'
+        enabledMethods: 'Enabled payment methods:'
       payment_methods:
         label: 'Payment methods'
         status.active.label: 'Active'
         status.inactive.label: 'Inactive'
-        name.label: 'Name'
-        description.label: 'Description'
+        name.label: 'Code'
+        description.label: 'Name'
+        payment.description.label: 'Description'
+        payment.description.default.value: 'You will be redirected to payment gateway website to complete your purchase after the order review step.'
+        payment.description.tooltip.label: 'Define payment method description text that will be used during the checkout.'
+        transactionDescription.label: 'Transaction Description'
+        transactionDescription.tooltip: 'The description to be used for payment transaction. These variables are
+        available: {orderNumber}, {storeName}, {customerFirstname}, {customerLastname}, {customerCompany}, and {cartNumber}.'
+        category:
+          label: 'Category'
+          tooltip: 'Vouchers can only be used for eligible products, and therefore you should define the
+                    category parameter for all order lines. Mollie will calculate the eligible amount based on this parameter.'
+          choice.none: 'None'
+          choice.meal: 'Meal'
+          choice.eco: 'Eco'
+          choice.gift: 'Gift'
+        attribute:
+          label: 'Product Attribute'
+          tooltip: 'Use the existing Mollie voucher product attribute or create a
+                    new type of Select or String. The admin value of these product attributes must be meal, eco,
+                    gift, or none.'
         image:
           label: 'Image'
           mime_type_error: 'Please upload a valid image'
@@ -84,6 +105,19 @@ mollie:
           label: 'Surcharge'
           klarna_tooltip: "Enter the extra costs for a Klarna payment with a maximum of € 1.95. The greater amounts won't be accepted."
           tooltip: "Enter the extra costs for a payment."
+        orderExpiryDays:
+          label: 'Days To Expire'
+          tooltip: 'How many days before orders for this method becomes expired? Leave empty to use default expiration (28 days)'
+          klarna_tooltip: 'How many days before orders for this method becomes expired? Leave empty to use default
+          expiration (28 days).
+          <br>Please note: It is not possible to use an expiry date more than 28 days in the
+          future, unless another maximum is agreed between the merchant and Klarna.'
+        paymentExpiryDays:
+          label: 'Days To Expire'
+          tooltip: 'How many days before payment for this method becomes expired? Leave empty to use default expiration (28 days)'
+        expiryDays.error: 'Expiry days must be value between 1 and 100'
+        versionCheck:
+          message: 'A new module version {versionNumber} is available. Please download the latest version <a href="{downloadUrl}" target="_blank">here</a>.'
       notifications:
         label: 'Notifications'
         warning: 'Warning'
@@ -147,3 +181,6 @@ mollie:
         order_line_cancel_info.description: 'Order line is canceled in Mollie portal.'
         order_line_refund_info.title: 'Mollie order line changed'
         order_line_refund_info.description: 'Order line is refunded in Mollie portal.'
+    extend:
+      entity:
+        voucher_category.label: 'Mollie Voucher Category'
