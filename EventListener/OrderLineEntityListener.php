@@ -21,6 +21,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class OrderLineEntityListener
 {
+
+    public static $MOLLIE_MAPPED_ATTRIBUTES = ['freeFormProduct', 'quantity', 'priceType'];
     /**
      * @var MollieDtoMapperInterface
      */
@@ -105,16 +107,16 @@ class OrderLineEntityListener
         try {
             $channelId = $this->paymentMethodUtility->getChannelId($orderLineItem->getOrder());
             $this->configService->doWithContext((string)$channelId, function () use ($orderLineItem) {
-	            $orderReference = $this->orderReferenceService->getByShopReference(
-		            $orderLineItem->getOrder()->getIdentifier()
-	            );
+                $orderReference = $this->orderReferenceService->getByShopReference(
+                    $orderLineItem->getOrder()->getIdentifier()
+                );
 
-	            // If order reference does not exist for the changed order line merchant changed order
-	            // identifier manually in the DB (or via shop API), and we should ignore this order from
-	            // further sync.
-	            if (!$orderReference) {
-		            return;
-	            }
+                // If order reference does not exist for the changed order line merchant changed order
+                // identifier manually in the DB (or via shop API), and we should ignore this order from
+                // further sync.
+                if (!$orderReference) {
+                    return;
+                }
 
                 $lineForUpdate = $this->mollieDtoMapper->getOrderLine($orderLineItem);
                 $lineForUpdate->setId($this->getLineIdFromMollie($orderLineItem));
@@ -162,6 +164,10 @@ class OrderLineEntityListener
     private function isOrderLineChanged(PreUpdateEventArgs $args)
     {
         $changeSetKeys = array_keys($args->getEntityChangeSet());
+        if (!$this->isChangeForMollie($changeSetKeys)) {
+            return false;
+        }
+
         foreach ($changeSetKeys as $key) {
             if ($args->getOldValue($key) != $args->getNewValue($key)) {
                 return true;
@@ -169,5 +175,19 @@ class OrderLineEntityListener
         }
 
         return false;
+    }
+
+    /**
+     * Check if changed attribute is of interest for mollie
+     *
+     * @param array $changeSetKeys
+     *
+     * @return bool
+     */
+    private function isChangeForMollie($changeSetKeys)
+    {
+        $intersect = array_intersect($changeSetKeys, static::$MOLLIE_MAPPED_ATTRIBUTES);
+
+        return !empty($intersect);
     }
 }
