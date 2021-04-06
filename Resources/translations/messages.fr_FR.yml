@@ -10,6 +10,7 @@ mollie:
     capture:
       message: "Il n'est pas possible de saisir manuellement le paiement. Le paiement sera saisi automatiquement par Mollie."
     refund:
+      voucher.message: 'This order is (partially) paid using a voucher. You can refund a maximum of %amount% %currency%'
       label: 'Rembourser'
       identifier: 'Identifier'
       refundedQuantity: 'Quantité remboursée'
@@ -53,12 +54,29 @@ mollie:
       website_profile:
         label: 'Profil du site web'
         id.label: 'Profil du site web'
+        enabledMethods: 'Enabled payment methods:'
       payment_methods:
         label: 'Moyens de paiement'
         status.active.label: 'Actif'
         status.inactive.label: 'Inactif'
         name.label: 'Nom'
         description.label: 'Description'
+        transactionDescription.label: 'Transaction Description'
+        transactionDescription.tooltip: 'The description to be used for payment transaction. These variables are
+        available: {orderNumber}, {storeName}, {customerFirstname}, {customerLastname}, {customerCompany}, and {cartNumber}.'
+        category:
+          label: 'Category'
+          tooltip: 'Vouchers can only be used for eligible products, and therefore you should define the
+                            category parameter for all order lines. Mollie will calculate the eligible amount based on this parameter.'
+          choice.none: 'None'
+          choice.meal: 'Meal'
+          choice.eco: 'Eco'
+          choice.gift: 'Gift'
+          attribute:
+            label: 'Product Attribute'
+            tooltip: 'Use the existing Mollie voucher product attribute or create a
+                            new type of Select or String. The admin value of these product attributes must be meal, eco,
+                            gift, or none.'
         image:
           label: 'Image'
           mime_type_error: 'Veuillez charger une image valide'
@@ -84,6 +102,19 @@ mollie:
           label: 'Supplément'
           klarna_tooltip: "Entrez le coût additionnel pour un paiement Klarna, avec un maximum de 1,95 €. Les montants supérieurs ne seront pas acceptés."
           tooltip: "Entrez le coût additionnel pour un paiement."
+        orderExpiryDays:
+          label: 'Days To Expire'
+          tooltip: 'How many days before orders for this method becomes expired? Leave empty to use default expiration (28 days)'
+          klarna_tooltip: 'How many days before orders for this method becomes expired? Leave empty to use default
+          expiration (28 days).
+          <br>Please note: It is not possible to use an expiry date more than 28 days in the
+          future, unless another maximum is agreed between the merchant and Klarna.'
+        paymentExpiryDays:
+          label: 'Days To Expire'
+          tooltip: 'How many days before payment for this method becomes expired? Leave empty to use default expiration (28 days)'
+        expiryDays.error: 'Expiry days must be value between 1 and 100'
+        versionCheck:
+          message: 'A new module version {versionNumber} is available. Please download the latest version <a href="{downloadUrl}" target="_blank">here</a>.'
       notifications:
         label: 'Notifications'
         warning: 'Attention'
@@ -147,3 +178,6 @@ mollie:
         order_line_cancel_info.description: 'La ligne de commande est annulée sur le portail Mollie..'
         order_line_refund_info.title: 'La ligne de commande Mollie a changé'
         order_line_refund_info.description: 'La ligne de commande est remboursée sur le portail Mollie.'
+    extend:
+      entity:
+        voucher_category.label: 'Mollie Voucher Category'

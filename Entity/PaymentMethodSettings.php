@@ -74,6 +74,48 @@ class PaymentMethodSettings
     protected $descriptions;
 
     /**
+     * @var Collection|LocalizedFallbackValue[]
+     *
+     * @ORM\ManyToMany(
+     *      targetEntity="Oro\Bundle\LocaleBundle\Entity\LocalizedFallbackValue",
+     *      cascade={"ALL"},
+     *      orphanRemoval=true
+     * )
+     * @ORM\JoinTable(
+     *      name="mollie_payment_settings_p_des",
+     *      joinColumns={
+     *          @ORM\JoinColumn(name="payment_setting_id", referencedColumnName="id", onDelete="CASCADE")
+     *      },
+     *      inverseJoinColumns={
+     *          @ORM\JoinColumn(name="localized_value_id", referencedColumnName="id", onDelete="CASCADE", unique=true)
+     *      }
+     * )
+     */
+    protected $paymentDescriptions;
+
+
+    /**
+     * @var Collection|LocalizedFallbackValue[]
+     *
+     * @ORM\ManyToMany(
+     *      targetEntity="Oro\Bundle\LocaleBundle\Entity\LocalizedFallbackValue",
+     *      cascade={"ALL"},
+     *      orphanRemoval=true
+     * )
+     * @ORM\JoinTable(
+     *      name="mollie_payment_trans_desc",
+     *      joinColumns={
+     *          @ORM\JoinColumn(name="payment_setting_id", referencedColumnName="id", onDelete="CASCADE")
+     *      },
+     *      inverseJoinColumns={
+     *          @ORM\JoinColumn(name="localized_value_id", referencedColumnName="id", onDelete="CASCADE", unique=true)
+     *      }
+     * )
+     */
+    protected $transactionDescriptions;
+
+
+    /**
      * @var string
      *
      * @ORM\Column(name="mollie_method_id", type="string", length=255, nullable=false)
@@ -133,12 +175,34 @@ class PaymentMethodSettings
     private $issuerListStyle;
 
     /**
+     * @var int
+     */
+    private $orderExpiryDays;
+
+    /**
+     * @var int
+     */
+    private $paymentExpiryDays;
+
+    /**
+     * @var string
+     */
+    private $voucherCategory;
+
+    /**
+     * @var string
+     */
+    private $productAttribute;
+
+    /**
      * PaymentMethodSettings constructor.
      */
     public function __construct()
     {
         $this->names = new ArrayCollection();
         $this->descriptions = new ArrayCollection();
+        $this->paymentDescriptions = new ArrayCollection();
+        $this->transactionDescriptions = new ArrayCollection();
     }
 
     /**
@@ -204,6 +268,83 @@ class PaymentMethodSettings
     {
         if ($this->names->contains($name)) {
             $this->names->removeElement($name);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|LocalizedFallbackValue[]
+     */
+    public function getPaymentDescriptions()
+    {
+        return $this->paymentDescriptions;
+    }
+
+    /**
+     * @param Collection|LocalizedFallbackValue[] $paymentDescriptions
+     */
+    public function setPaymentDescriptions($paymentDescriptions)
+    {
+        $this->paymentDescriptions = $paymentDescriptions;
+    }
+
+    public function addPaymentDescription(LocalizedFallbackValue $description)
+    {
+        if (!$this->paymentDescriptions->contains($description)) {
+            $this->paymentDescriptions->add($description);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param LocalizedFallbackValue $description
+     *
+     * @return $this
+     */
+    public function removePaymentDescription(LocalizedFallbackValue $description)
+    {
+        if ($this->paymentDescriptions->contains($description)) {
+            $this->paymentDescriptions->removeElement($description);
+        }
+
+        return $this;
+    }
+
+
+
+    /**
+     * @return Collection|LocalizedFallbackValue[]
+     */
+    public function getTransactionDescriptions()
+    {
+        return $this->transactionDescriptions;
+    }
+
+    /**
+     * @param LocalizedFallbackValue $transactionDescription
+     *
+     * @return $this
+     */
+    public function addTransactionDescription(LocalizedFallbackValue $transactionDescription)
+    {
+        if (!$this->transactionDescriptions->contains($transactionDescription)) {
+            $this->transactionDescriptions->add($transactionDescription);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param LocalizedFallbackValue $transactionDescription
+     *
+     * @return $this
+     */
+    public function removeTransactionDescription(LocalizedFallbackValue $transactionDescription)
+    {
+        if ($this->transactionDescriptions->contains($transactionDescription)) {
+            $this->transactionDescriptions->removeElement($transactionDescription);
         }
 
         return $this;
@@ -403,5 +544,69 @@ class PaymentMethodSettings
     public function setIssuerListStyle($issuerListStyle)
     {
         $this->issuerListStyle = $issuerListStyle;
+    }
+
+    /**
+     * @return int
+     */
+    public function getOrderExpiryDays()
+    {
+        return $this->orderExpiryDays;
+    }
+
+    /**
+     * @param int $orderExpiryDays
+     */
+    public function setOrderExpiryDays($orderExpiryDays)
+    {
+        $this->orderExpiryDays = $orderExpiryDays;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPaymentExpiryDays()
+    {
+        return $this->paymentExpiryDays;
+    }
+
+    /**
+     * @param int $paymentExpiryDays
+     */
+    public function setPaymentExpiryDays($paymentExpiryDays)
+    {
+        $this->paymentExpiryDays = $paymentExpiryDays;
+    }
+
+    /**
+     * @return string
+     */
+    public function getVoucherCategory()
+    {
+        return $this->voucherCategory;
+    }
+
+    /**
+     * @param string $voucherCategory
+     */
+    public function setVoucherCategory($voucherCategory)
+    {
+        $this->voucherCategory = $voucherCategory;
+    }
+
+    /**
+     * @return string
+     */
+    public function getProductAttribute()
+    {
+        return $this->productAttribute;
+    }
+
+    /**
+     * @param string $productAttribute
+     */
+    public function setProductAttribute($productAttribute)
+    {
+        $this->productAttribute = $productAttribute;
     }
 }

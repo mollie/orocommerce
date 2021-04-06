@@ -105,8 +105,15 @@ class MollieRefundProvider
      */
     public function getMollieRefund($order)
     {
-        $isOrdersApiUsed = $this->orderReferenceService->getApiMethod($order->getIdentifier()) ===
-            PaymentMethodConfig::API_METHOD_ORDERS;
+        $orderReference = $this->orderReferenceService->getByShopReference($order->getIdentifier());
+        $isOrdersApiUsed = $orderReference ? $orderReference->getApiMethod() ===
+            PaymentMethodConfig::API_METHOD_ORDERS : false;
+
+        $voucherRefundProvider = new VoucherRefundFormProvider($orderReference, $this->localeExtension);
+        if ($voucherRefundProvider->isVoucher()) {
+            return $voucherRefundProvider->buildRefundForm();
+        }
+
         $refund = new MollieRefund();
         $refund->setIsOrderApiUsed($isOrdersApiUsed);
 
@@ -193,11 +200,15 @@ class MollieRefundProvider
             $isMollieSelected = $this->paymentMethodUtility->hasMolliePaymentConfig($order);
             $orderReference = $this->orderReferenceService->getByShopReference($order->getIdentifier());
 
-            return $isMollieSelected && ($orderReference !== null);
+            return $isMollieSelected
+                && ($orderReference !== null)
+                && !(new VoucherRefundFormProvider($orderReference, $this->localeExtension))
+                    ->isVoucherWithoutReminderMethod();
         }
 
         return false;
     }
+
     /**
      * Set refund lines on refund form
      *

@@ -51,13 +51,15 @@ class MockPaymentMethodService extends PaymentMethodService
         $profileId,
         $billingCountry = null,
         $amount = null,
-        $apiMethod = PaymentMethodConfig::API_METHOD_ORDERS
+        $apiMethod = PaymentMethodConfig::API_METHOD_ORDERS,
+        $orderLineCategories = array()
     ) {
         $this->callHistory['getEnabledPaymentMethodConfigurations'][] = array(
             'profileId' => $profileId,
             'billingCountry' => $billingCountry,
             'amount' => $amount,
             'apiMethod' => $apiMethod,
+            'orderLineCategories' => $orderLineCategories,
         );
 
         return $this->paymentMethodConfigs;

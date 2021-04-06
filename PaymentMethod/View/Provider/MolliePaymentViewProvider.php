@@ -57,7 +57,6 @@ class MolliePaymentViewProvider extends AbstractPaymentMethodViewProvider
      */
     protected function addPaymentView(MolliePaymentConfigInterface $config)
     {
-
         $this->addView(
             $config->getPaymentMethodIdentifier(),
             $this->factory->create($config, $this->paymentMethodProvider)
