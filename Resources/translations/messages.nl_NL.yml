@@ -10,6 +10,7 @@ mollie:
     capture:
       message: 'Het is niet mogelijk om de betaling handmatig te capturen. Dit wordt automatisch gedaan door Mollie.'
     refund:
+      voucher.message: 'This order is (partially) paid using a voucher. You can refund a maximum of %amount% %currency%'
       label: 'Terugbetaling'
       identifier: 'Identifier'
       refundedQuantity: 'Terugbetaalde hoeveelheid'
@@ -53,12 +54,29 @@ mollie:
       website_profile:
         label: 'Websiteprofiel'
         id.label: 'Websiteprofiel'
+        enabledMethods: 'Enabled payment methods:'
       payment_methods:
         label: 'Betaalmethodes'
         status.active.label: 'Actief'
         status.inactive.label: 'Inactief'
         name.label: 'Naam'
         description.label: 'Beschrijving'
+        transactionDescription.label: 'Transaction Description'
+        transactionDescription.tooltip: 'The description to be used for payment transaction. These variables are
+        available: {orderNumber}, {storeName}, {customerFirstname}, {customerLastname}, {customerCompany}, and {cartNumber}.'
+        category:
+          label: 'Category'
+          tooltip: 'Vouchers can only be used for eligible products, and therefore you should define the
+                            category parameter for all order lines. Mollie will calculate the eligible amount based on this parameter.'
+          choice.none: 'None'
+          choice.meal: 'Meal'
+          choice.eco: 'Eco'
+          choice.gift: 'Gift'
+          attribute:
+            label: 'Product Attribute'
+            tooltip: 'Use the existing Mollie voucher product attribute or create a
+                            new type of Select or String. The admin value of these product attributes must be meal, eco,
+                            gift, or none.'
         image:
           label: 'Afbeelding'
           mime_type_error: 'Upload een geldige afbeelding'
@@ -84,6 +102,19 @@ mollie:
           label: 'Toeslag'
           klarna_tooltip: "Vul de extra kosten voor een Klarna-betaling in, met een maximum van € 1,95. Hogere bedragen worden niet geaccepteerd."
           tooltip: "Vul de extra kosten voor een betaling in."
+        orderExpiryDays:
+          label: 'Days To Expire'
+          tooltip: 'How many days before orders for this method becomes expired? Leave empty to use default expiration (28 days)'
+          klarna_tooltip: 'How many days before orders for this method becomes expired? Leave empty to use default
+          expiration (28 days).
+          <br>Please note: It is not possible to use an expiry date more than 28 days in the
+          future, unless another maximum is agreed between the merchant and Klarna.'
+        paymentExpiryDays:
+          label: 'Days To Expire'
+          tooltip: 'How many days before payment for this method becomes expired? Leave empty to use default expiration (28 days)'
+        expiryDays.error: 'Expiry days must be value between 1 and 100'
+        versionCheck:
+          message: 'A new module version {versionNumber} is available. Please download the latest version <a href="{downloadUrl}" target="_blank">here</a>.'
       notifications:
         label: 'Meldingen'
         warning: 'Waarschuwing'
@@ -147,3 +178,6 @@ mollie:
         order_line_cancel_info.description: 'Orderregel is geannuleerd in het Mollie-portaal.'
         order_line_refund_info.title: 'De orderregel van Mollie is gewijzigd'
         order_line_refund_info.description: 'Orderregel wordt terugbetaald in het Mollie-portaal..'
+    extend:
+      entity:
+        voucher_category.label: 'Mollie Voucher Category'

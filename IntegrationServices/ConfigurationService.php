@@ -12,6 +12,10 @@ use Oro\Bundle\WebsiteBundle\Manager\WebsiteManager;
  */
 class ConfigurationService extends Configuration
 {
+
+    const VERSION_CHECK_URL = 'https://raw.githubusercontent.com/mollie/orocommerce/3.1/composer.json';
+    const PLUGIN_DOWNLOAD_URL = 'https://github.com/mollie/orocommerce/releases';
+
     /**
      * Singleton instance of this class.
      *
@@ -112,6 +116,24 @@ class ConfigurationService extends Configuration
     public function getExtensionName()
     {
         return 'MollieOroCommerce';
+    }
+
+    /**
+     * @inheritDoc
+     * @return string
+     */
+    public function getExtensionVersionCheckUrl()
+    {
+        return static::VERSION_CHECK_URL;
+    }
+
+    /**
+     * @inheritDoc
+     * @return string
+     */
+    public function getExtensionDownloadUrl($latestVersion = null)
+    {
+        return $latestVersion ? static::PLUGIN_DOWNLOAD_URL . "/tag/$latestVersion" : static::PLUGIN_DOWNLOAD_URL;
     }
 
     /**

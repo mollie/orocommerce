@@ -5,7 +5,7 @@ namespace Mollie\Bundle\PaymentBundle\Form\Type;
 use Mollie\Bundle\PaymentBundle\Entity\ChannelSettings;
 use Mollie\Bundle\PaymentBundle\Form\EventListener\ChannelSettingsTypeSubscriber;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -60,10 +60,15 @@ class ChannelSettingsType extends AbstractType
             )
             ->add(
                 'testMode',
-                CheckboxType::class,
+                ChoiceType::class,
                 [
-                    'label' => 'mollie.payment.config.authorization.test_mode.label',
+                    'choices' => [
+                        'Live Mode' => false,
+                        'Test Mode' => true,
+                    ],
+                    'label' => 'Environment',
                     'required' => false,
+                    'placeholder' => false,
                 ]
             );
 

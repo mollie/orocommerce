@@ -7,6 +7,7 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\BaseDto;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\Order;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\OrderLine;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Payment;
+use Oro\Bundle\OrderBundle\Entity\Order as OroOrder;
 use Oro\Bundle\OrderBundle\Entity\OrderAddress;
 use Oro\Bundle\OrderBundle\Entity\OrderLineItem;
 use Oro\Bundle\PaymentBundle\Entity\PaymentTransaction;
@@ -49,4 +50,11 @@ interface MollieDtoMapperInterface
      * @return Address
      */
     public function getAddressData(OrderAddress $address, $email);
+
+    /**
+     * @param OroOrder $order
+     *
+     * @return OrderLine[]
+     */
+    public function getSurcharges(OroOrder $order);
 }

@@ -151,13 +151,16 @@ class PaymentMethodServiceTest extends BaseTestWithServices
         $billingCountry = 'DE';
         $amountValue = '123.45';
         $amountCurrency = 'USD';
+        $categories = array('meal', 'eco');
         $this->httpClient->setMockResponses(array($this->getMockEnabledPaymentMethods()));
         $this->preparePaymentMethodConfigs($profileId);
 
         $result = $this->paymentMethodService->getEnabledPaymentMethodConfigurations(
             $profileId,
             $billingCountry,
-            Amount::fromArray(array('value' => $amountValue, 'currency' => $amountCurrency))
+            Amount::fromArray(array('value' => $amountValue, 'currency' => $amountCurrency)),
+            PaymentMethodConfig::API_METHOD_ORDERS,
+            $categories
         );
 
         $apiRequestHistory = $this->httpClient->getHistory();
@@ -170,6 +173,7 @@ class PaymentMethodServiceTest extends BaseTestWithServices
         $this->assertContains("billingCountry={$billingCountry}", $apiRequestHistory[0]['url']);
         $this->assertContains(urlencode('amount[value]')."={$amountValue}", $apiRequestHistory[0]['url']);
         $this->assertContains(urlencode('amount[currency]')."={$amountCurrency}", $apiRequestHistory[0]['url']);
+        $this->assertContains('orderLineCategories=' . urlencode(implode(',', $categories)), $apiRequestHistory[0]['url']);
 
         $this->assertCount(4, $result);
     }

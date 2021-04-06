@@ -6,6 +6,7 @@ use Doctrine\Common\Persistence\ManagerRegistry;
 use Mollie\Bundle\PaymentBundle\Entity\ChannelSettings;
 use Mollie\Bundle\PaymentBundle\Entity\PaymentMethodSettings;
 use Mollie\Bundle\PaymentBundle\Entity\Repository\ChannelSettingsRepository;
+use Mollie\Bundle\PaymentBundle\Form\Type\PaymentMethodSettingsType;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Image;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\Model\PaymentMethodConfig;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\PaymentMethodController;
@@ -17,6 +18,7 @@ use Mollie\Bundle\PaymentBundle\PaymentMethod\Config\Factory\PaymentConfigFactor
 use Mollie\Bundle\PaymentBundle\PaymentMethod\Config\MolliePaymentConfigInterface;
 use Oro\Bundle\LocaleBundle\Entity\LocalizedFallbackValue;
 use Oro\Bundle\PaymentBundle\Method\Config\PaymentConfigInterface;
+use Symfony\Component\Translation\TranslatorInterface;
 
 /**
  * Class MolliePaymentConfigProvider
@@ -48,6 +50,10 @@ class MolliePaymentConfigProvider implements MolliePaymentConfigProviderInterfac
      * @var WebsiteProfileController
      */
     protected $websiteProfileController;
+    /**
+     * @var TranslatorInterface
+     */
+    protected $translator;
 
     /**
      * @var MolliePaymentConfigInterface[]
@@ -62,19 +68,22 @@ class MolliePaymentConfigProvider implements MolliePaymentConfigProviderInterfac
      * @param PaymentConfigFactoryInterface $configFactory
      * @param PaymentMethodController $paymentMethodController
      * @param WebsiteProfileController $websiteProfileController
+     * @param TranslatorInterface $translator
      */
     public function __construct(
         Configuration $configService,
         ManagerRegistry $doctrine,
         PaymentConfigFactoryInterface $configFactory,
         PaymentMethodController $paymentMethodController,
-        WebsiteProfileController $websiteProfileController
+        WebsiteProfileController $websiteProfileController,
+        TranslatorInterface $translator
     ) {
         $this->configService = $configService;
         $this->doctrine = $doctrine;
         $this->configFactory = $configFactory;
         $this->paymentMethodController = $paymentMethodController;
         $this->websiteProfileController = $websiteProfileController;
+        $this->translator = $translator;
     }
 
     /**
@@ -259,6 +268,20 @@ class MolliePaymentConfigProvider implements MolliePaymentConfigProviderInterfac
                     (new LocalizedFallbackValue())->setString(
                         $paymentMethodConfig->getOriginalAPIConfig()->getDescription()
                     )
+                );
+            }
+
+            if ($paymentMethodSetting->getPaymentDescriptions()->isEmpty()) {
+                $paymentMethodSetting->addPaymentDescription(
+                    (new LocalizedFallbackValue())->setString(
+                        $this->translator->trans('mollie.payment.config.payment_methods.payment.description.default.value')
+                    )
+                );
+            }
+
+            if ($paymentMethodSetting->getTransactionDescriptions()->isEmpty()) {
+                $paymentMethodSetting->addTransactionDescription(
+                    (new LocalizedFallbackValue())->setString(PaymentMethodSettingsType::DEFAULT_TRANSACTION_DESCRIPTION)
                 );
             }
 

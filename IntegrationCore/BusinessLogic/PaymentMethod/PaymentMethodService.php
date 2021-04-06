@@ -3,9 +3,9 @@
 namespace Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod;
 
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\BaseService;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Configuration;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Amount;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\Exceptions\UnprocessableEntityRequestException;
-use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\Proxy;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\Model\PaymentMethodConfig;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http\Exceptions\HttpAuthenticationException;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http\Exceptions\HttpCommunicationException;
@@ -46,12 +46,10 @@ class PaymentMethodService extends BaseService
      */
     public function getAllPaymentMethodConfigurations($profileId)
     {
-        /** @var Proxy $proxy */
-        $proxy = ServiceRegister::getService(Proxy::CLASS_NAME);
         $paymentMethodConfigs = array();
 
-        $allPaymentMethods = $proxy->getAllPaymentMethods();
-        $enabledPaymentMethods = $proxy->getEnabledPaymentMethodsMap();
+        $allPaymentMethods = $this->getProxy()->getAllPaymentMethods();
+        $enabledPaymentMethods = $this->getProxy()->getEnabledPaymentMethodsMap();
         $savedPaymentMethodConfigs = $this->getPaymentMethodConfigurationsMap($profileId);
 
         foreach ($allPaymentMethods as $paymentMethod) {
@@ -77,6 +75,7 @@ class PaymentMethodService extends BaseService
      * @param string|null $billingCountry The billing country of your customer in ISO 3166-1 alpha-2 format.
      * @param Amount|null $amount
      * @param string $apiMethod Api method to use for availability checking. Default is orders api
+     * @param array $orderLineCategories
      *
      * @return PaymentMethodConfig[] Payment method configurations for every enabled Mollie payment method
      *
@@ -89,13 +88,17 @@ class PaymentMethodService extends BaseService
         $profileId,
         $billingCountry = null,
         $amount = null,
-        $apiMethod = PaymentMethodConfig::API_METHOD_ORDERS
+        $apiMethod = PaymentMethodConfig::API_METHOD_ORDERS,
+        $orderLineCategories = array()
     ) {
-        /** @var Proxy $proxy */
-        $proxy = ServiceRegister::getService(Proxy::CLASS_NAME);
         $paymentMethodConfigs = array();
 
-        $enabledPaymentMethods = $proxy->getEnabledPaymentMethodsMap($billingCountry, $amount, $apiMethod);
+        $enabledPaymentMethods = $this->getProxy()->getEnabledPaymentMethodsMap(
+            $billingCountry,
+            $amount,
+            $apiMethod,
+            $orderLineCategories
+        );
         $savedPaymentMethodConfigs = $this->getPaymentMethodConfigurationsMap($profileId);
 
         foreach ($enabledPaymentMethods as $paymentMethod) {
@@ -112,6 +115,45 @@ class PaymentMethodService extends BaseService
         }
 
         return $paymentMethodConfigs;
+    }
+
+    /**
+     * Returns enabled payment methods for the passed API key
+     *
+     * @param string $apiKey temporary API key
+     *
+     * @return \Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\PaymentMethod[]
+     * @throws HttpAuthenticationException
+     * @throws HttpCommunicationException
+     * @throws HttpRequestException
+     * @throws UnprocessableEntityRequestException
+     */
+    public function getEnabledPaymentMethodsWithTempAPIKey($apiKey)
+    {
+        /** @var Configuration $configService */
+        $configService = ServiceRegister::getService(Configuration::CLASS_NAME);
+        $currentToken = $configService->getAuthorizationToken();
+        $configService->setAuthorizationToken($apiKey);
+
+        $enabledMethods = $this->getProxy()->getEnabledPaymentMethods();
+        $configService->setAuthorizationToken($currentToken);
+
+        return $enabledMethods;
+    }
+
+    /**
+     * Return enabled
+     * @param string $profileId
+     *
+     * @return \Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\PaymentMethod[]
+     * @throws HttpAuthenticationException
+     * @throws HttpCommunicationException
+     * @throws HttpRequestException
+     * @throws UnprocessableEntityRequestException
+     */
+    public function getEnabledMethodsWithTempProfileId($profileId)
+    {
+        return $this->getProxy()->getEnabledPaymentMethodsForProfile($profileId);
     }
 
     /**
@@ -158,5 +200,13 @@ class PaymentMethodService extends BaseService
         }
 
         return $paymentMethodConfigsMap;
+    }
+
+    /**
+     * @return Configuration|object
+     */
+    protected function getConfigService()
+    {
+        return ServiceRegister::getService(Configuration::CLASS_NAME);
     }
 }

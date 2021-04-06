@@ -231,6 +231,10 @@ class ChannelSettingsListener
             $paymentMethodConfig->setApiMethod($paymentMethodSetting->getMethod());
             $paymentMethodConfig->setUseMollieComponents($paymentMethodSetting->getMollieComponents());
             $paymentMethodConfig->setIssuerListStyle($paymentMethodSetting->getIssuerListStyle());
+            $paymentMethodConfig->setDaysToOrderExpire($paymentMethodSetting->getOrderExpiryDays());
+            $paymentMethodConfig->setDaysToPaymentExpire($paymentMethodSetting->getPaymentExpiryDays());
+            $paymentMethodConfig->setVoucherCategory($paymentMethodSetting->getVoucherCategory());
+            $paymentMethodConfig->setProductAttribute($paymentMethodSetting->getProductAttribute());
             $paymentMethodConfig->setImage(
                 !empty($paymentMethodSetting->getImagePath()) ? $paymentMethodSetting->getImagePath() : null
             );

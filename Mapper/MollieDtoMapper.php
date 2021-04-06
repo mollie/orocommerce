@@ -7,6 +7,8 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Address;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\Order;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\OrderLine;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Payment;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\DTO\DescriptionParameters;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\PaymentTransactionDescriptionService;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration;
 use Oro\Bundle\EntityBundle\ORM\DoctrineHelper;
 use Oro\Bundle\LocaleBundle\Helper\LocalizationHelper;
@@ -14,6 +16,7 @@ use Oro\Bundle\OrderBundle\Entity\OrderAddress;
 use Oro\Bundle\OrderBundle\Entity\OrderLineItem;
 use Oro\Bundle\PaymentBundle\Entity\PaymentTransaction;
 use Oro\Bundle\PaymentBundle\Provider\SurchargeProvider;
+use Oro\Bundle\ShoppingListBundle\Entity\ShoppingList;
 use Oro\Bundle\TaxBundle\Exception\TaxationDisabledException;
 use Oro\Bundle\TaxBundle\Model\Result;
 use Oro\Bundle\TaxBundle\Model\ResultElement;
@@ -68,6 +71,10 @@ class MollieDtoMapper implements MollieDtoMapperInterface
      * @var string
      */
     protected $webhooksUrlReplacement;
+    /**
+     * @var PaymentTransactionDescriptionService
+     */
+    protected $transactionDescService;
 
     /**
      * MollieDtoMapper constructor.
@@ -91,6 +98,7 @@ class MollieDtoMapper implements MollieDtoMapperInterface
         DoctrineHelper $doctrineHelper,
         RouterInterface $router,
         LocalizationHelper $localizationHelper,
+        PaymentTransactionDescriptionService $transactionDescService,
         $webhooksUrlReplacement = ''
     ) {
         $this->requestStack = $requestStack;
@@ -101,6 +109,7 @@ class MollieDtoMapper implements MollieDtoMapperInterface
         $this->doctrineHelper = $doctrineHelper;
         $this->router = $router;
         $this->localizationHelper = $localizationHelper;
+        $this->transactionDescService = $transactionDescService;
         $this->webhooksUrlReplacement = $webhooksUrlReplacement;
     }
 
@@ -230,7 +239,6 @@ class MollieDtoMapper implements MollieDtoMapperInterface
                 'value' => $paymentTransaction->getAmount(),
                 'currency' => $paymentTransaction->getCurrency()
             ],
-            'description' => "Order #{$paymentTransaction->getEntityIdentifier()}",
             'metadata' => [
                 'order_id' => $paymentTransaction->getEntityIdentifier()
             ],
@@ -257,6 +265,7 @@ class MollieDtoMapper implements MollieDtoMapperInterface
 
         if (($order = $this->getOrderEntity($paymentTransaction)) && ($shippingAddress = $order->getShippingAddress())) {
             $payment->setShippingAddress($this->getAddressData($shippingAddress, $order->getEmail()));
+            $payment->setDescription($this->getDescription($order, $paymentTransaction));
         }
 
         return $payment;
@@ -325,7 +334,7 @@ class MollieDtoMapper implements MollieDtoMapperInterface
      *
      * @return array
      */
-    protected function getSurcharges(OroOrder $order)
+    public function getSurcharges(OroOrder $order)
     {
         $orderLinesData = [];
         $surcharge = $this->surchargeProvider->getSurcharges($order);
@@ -475,8 +484,39 @@ class MollieDtoMapper implements MollieDtoMapperInterface
         }
 
         $form = $currentRequest->get('oro_workflow_transition');
+
         $fullKey = "{$paymentMethod}-{$key}";
 
         return !empty($form[$fullKey]) ? $form[$fullKey] : null;
+    }
+
+    /**
+     * @param OroOrder $order
+     *
+     * @return string
+     */
+    protected function getDescription(OroOrder $order, PaymentTransaction $transaction)
+    {
+        $billingAddress = $order->getBillingAddress();
+        $firstName = $billingAddress ? $billingAddress->getFirstName() : '';
+        $lastName = $billingAddress ? $billingAddress->getLastName() : '';
+        $company = $billingAddress ? $billingAddress->getOrganization() : '';
+        $storeName = $order->getOrganization() ? $order->getOrganization()->getName() : '';
+        $cartNumber = $order->getSourceEntityClass() === ShoppingList::class ?
+            $order->getSourceEntityId() : '';
+
+        $descriptionParameters = new DescriptionParameters(
+            $order->getIdentifier(),
+            $storeName,
+            $firstName,
+            $lastName,
+            $company,
+            $cartNumber
+        );
+
+        return $this->transactionDescService->formatPaymentDescription(
+            $descriptionParameters,
+            $transaction->getPaymentMethod()
+        );
     }
 }
