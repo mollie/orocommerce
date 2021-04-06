@@ -5,6 +5,7 @@ namespace Mollie\Bundle\PaymentBundle\PaymentMethod\Factory;
 use Mollie\Bundle\PaymentBundle\Manager\PaymentLinkConfigProviderInterface;
 use Mollie\Bundle\PaymentBundle\Mapper\MollieDtoMapperInterface;
 use Mollie\Bundle\PaymentBundle\PaymentMethod\Config\MolliePaymentConfigInterface;
+use Oro\Bundle\EntityBundle\ORM\DoctrineHelper;
 use Oro\Bundle\PaymentBundle\Entity\PaymentTransaction;
 
 /**
@@ -28,9 +29,10 @@ class MolliePaymentLinkMapperDecorator extends MollieConfigMapperDecorator
     public function __construct(
         MollieDtoMapperInterface $dtoMapper,
         MolliePaymentConfigInterface $config,
-        PaymentLinkConfigProviderInterface $paymentLinkConfigProvider
+        PaymentLinkConfigProviderInterface $paymentLinkConfigProvider,
+        DoctrineHelper $doctrineHelper
     ) {
-        parent::__construct($dtoMapper, $config);
+        parent::__construct($dtoMapper, $config, $doctrineHelper);
 
         $this->paymentLinkConfigProvider = $paymentLinkConfigProvider;
     }

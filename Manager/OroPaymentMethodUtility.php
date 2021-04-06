@@ -2,9 +2,11 @@
 
 namespace Mollie\Bundle\PaymentBundle\Manager;
 
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\OrderReference\OrderReferenceService;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\Model\PaymentMethodConfig;
 use Mollie\Bundle\PaymentBundle\PaymentMethod\Config\MolliePaymentConfigInterface;
 use Mollie\Bundle\PaymentBundle\PaymentMethod\Config\Provider\MolliePaymentContextAwareConfigProviderInterface;
+use Oro\Bundle\LocaleBundle\Twig\LocaleExtension;
 use Oro\Bundle\OrderBundle\Entity\Order;
 use Oro\Bundle\PaymentBundle\Context\PaymentContext;
 use Oro\Bundle\PaymentBundle\Provider\PaymentTransactionProvider;
@@ -24,19 +26,61 @@ class OroPaymentMethodUtility
      * @var MolliePaymentContextAwareConfigProviderInterface
      */
     private $molliePaymentConfigProvider;
+    /**
+     * @var LocaleExtension
+     */
+    private $localeExtension;
+    /**
+     * @var OrderReferenceService
+     */
+    private $orderReferenceService;
 
     /**
      * OroPaymentMethodUtility constructor.
      *
      * @param PaymentTransactionProvider $paymentTransactionProvider
      * @param MolliePaymentContextAwareConfigProviderInterface $molliePaymentConfigProvider
+     * @param OrderReferenceService $orderReferenceService
+     * @param LocaleExtension $localeExtension
      */
     public function __construct(
         PaymentTransactionProvider $paymentTransactionProvider,
-        MolliePaymentContextAwareConfigProviderInterface $molliePaymentConfigProvider
+        MolliePaymentContextAwareConfigProviderInterface $molliePaymentConfigProvider,
+        OrderReferenceService $orderReferenceService,
+        LocaleExtension $localeExtension
     ) {
         $this->paymentTransactionProvider = $paymentTransactionProvider;
         $this->molliePaymentConfigProvider = $molliePaymentConfigProvider;
+        $this->orderReferenceService = $orderReferenceService;
+        $this->localeExtension = $localeExtension;
+    }
+
+    /**
+     * Returns specific label for voucher method order
+     *
+     * @param Order $order
+     *
+     * @return array
+     */
+    public function getPaymentLabels($order)
+    {
+        $data = [
+            'voucherLabel' => null,
+            'methods' => $this->paymentTransactionProvider->getPaymentMethods($order),
+        ];
+
+        $orderReference = $this->orderReferenceService->getByShopReference($order->getIdentifier());
+        if ($orderReference) {
+            $voucherFormProvider = new VoucherRefundFormProvider($orderReference, $this->localeExtension);
+            if ($voucherFormProvider->isVoucher()) {
+                $data['voucherLabel'] = $voucherFormProvider->formatLabelWithReminder(
+                    $this->molliePaymentConfigProvider->getPaymentConfigs(),
+                    $this->getChannelId($order)
+                );
+            }
+        }
+
+        return $data;
     }
 
     /**

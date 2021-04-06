@@ -52,6 +52,7 @@ class MolliePaymentView implements PaymentMethodViewInterface
             'isTestMode' => $this->config->isTestModeEnabled(),
             'profileId' => $this->config->getProfileId(),
             'lang' => '',
+            'paymentDescription' => $this->config->getPaymentDescription(),
         ];
     }
 

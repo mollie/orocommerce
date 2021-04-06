@@ -45,6 +45,10 @@ class MollieRefund
      * @var bool
      */
     private $isOrderRefundable;
+    /**
+     * @var bool
+     */
+    private $isVoucher;
 
     /**
      * @return mixed
@@ -188,5 +192,21 @@ class MollieRefund
     public function setIsOrderRefundable($isOrderRefundable)
     {
         $this->isOrderRefundable = $isOrderRefundable;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isVoucher()
+    {
+        return $this->isVoucher;
+    }
+
+    /**
+     * @param bool $isVoucher
+     */
+    public function setIsVoucher($isVoucher)
+    {
+        $this->isVoucher = $isVoucher;
     }
 }

@@ -1,0 +1,10 @@
+placeholders:
+  placeholders:
+    view_general_section_after:
+      items:
+        payment_method: ~
+
+  items:
+    payment_method:
+      template: MolliePaymentBundle:Voucher:method.html.twig
+      data: '@mollie_payment.manager.oro_payment_method_utility->getPaymentLabels($entity$)'
