@@ -26,7 +26,7 @@ To finalize the installation you need to enter your organization API token in th
 Read more about the integration configuration on [our Wiki](https://github.com/mollie/orocommerce/wiki).
 
 ## Release notes
- - **Unreleased:**
+ - **3.1.7**
    - New feature: Added order expiry days configuration
    - New feature: Added a dropdown for environment configuration
    - New feature: Added a transaction description on payment methods
