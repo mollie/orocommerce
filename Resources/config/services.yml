@@ -80,7 +80,7 @@ services:
     arguments:
       - '@mollie_payment.payment_method.config.provider'
       - '@mollie_payment.factory.method_view.mollie_payment'
-      - '@oro_payment.method.provider.method_provider'
+      - '@oro_payment.method.provider.applicable_methods_provider'
     tags:
       - { name: oro_payment.payment_method_view_provider }
 

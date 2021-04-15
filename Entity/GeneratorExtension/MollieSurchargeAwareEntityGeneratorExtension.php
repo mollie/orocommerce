@@ -2,7 +2,7 @@
 
 namespace Mollie\Bundle\PaymentBundle\Entity\GeneratorExtension;
 
-use CG\Generator\PhpClass;
+use Oro\Component\PhpUtils\ClassGenerator;
 use Mollie\Bundle\PaymentBundle\Entity\MollieSurchargeAwareInterface;
 use Oro\Bundle\EntityExtendBundle\Tools\GeneratorExtensions\AbstractEntityGeneratorExtension;
 
@@ -31,7 +31,7 @@ class MollieSurchargeAwareEntityGeneratorExtension extends AbstractEntityGenerat
     /**
      * {@inheritdoc}
      */
-    public function supports(array $schema)
+    public function supports(array $schema): bool
     {
         return !empty($this->supportedEntities[$schema['class']]);
     }
@@ -39,10 +39,10 @@ class MollieSurchargeAwareEntityGeneratorExtension extends AbstractEntityGenerat
     /**
      * {@inheritdoc}
      */
-    public function generate(array $schema, PhpClass $class)
+    public function generate(array $schema, ClassGenerator $class): void
     {
         if ($class->hasProperty('mollie_surcharge_amount')) {
-            $class->addInterfaceName(MollieSurchargeAwareInterface::class);
+            $class->addImplement(MollieSurchargeAwareInterface::class);
         }
     }
 }
