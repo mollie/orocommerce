@@ -49,7 +49,7 @@
   ],
   "require": {
     "php": ">=7.0",
-    "oro/commerce": "^4.1"
+    "oro/commerce": "^4.2"
   },
   "autoload": {
     "psr-4": { "Mollie\\Bundle\\PaymentBundle\\": "" }

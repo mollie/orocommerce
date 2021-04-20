@@ -4,7 +4,7 @@ namespace Mollie\Bundle\PaymentBundle\PaymentMethod\View;
 
 use Mollie\Bundle\PaymentBundle\PaymentMethod\Config\MolliePaymentConfigInterface;
 use Oro\Bundle\PaymentBundle\Context\PaymentContextInterface;
-use Oro\Bundle\PaymentBundle\Method\Provider\PaymentMethodProvider;
+use Oro\Bundle\PaymentBundle\Method\Provider\ApplicablePaymentMethodsProvider;
 use Oro\Bundle\PaymentBundle\Method\View\PaymentMethodViewInterface;
 
 /**
@@ -19,7 +19,7 @@ class MolliePaymentView implements PaymentMethodViewInterface
      */
     protected $config;
     /**
-     * @var PaymentMethodProvider
+     * @var ApplicablePaymentMethodsProvider
      */
     protected $paymentMethodProvider;
 
@@ -27,9 +27,9 @@ class MolliePaymentView implements PaymentMethodViewInterface
      * MolliePaymentView constructor.
      *
      * @param MolliePaymentConfigInterface $config
-     * @param PaymentMethodProvider $provider
+     * @param ApplicablePaymentMethodsProvider $provider
      */
-    public function __construct(MolliePaymentConfigInterface $config, PaymentMethodProvider $provider)
+    public function __construct(MolliePaymentConfigInterface $config, ApplicablePaymentMethodsProvider $provider)
     {
         $this->config = $config;
         $this->paymentMethodProvider = $provider;
