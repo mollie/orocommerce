@@ -4,7 +4,7 @@ namespace Mollie\Bundle\PaymentBundle\PaymentMethod\View\Factory;
 
 use Mollie\Bundle\PaymentBundle\PaymentMethod\Config\MolliePaymentConfigInterface;
 use Mollie\Bundle\PaymentBundle\PaymentMethod\View\MolliePaymentView;
-use Oro\Bundle\PaymentBundle\Method\Provider\PaymentMethodProvider;
+use Oro\Bundle\PaymentBundle\Method\Provider\ApplicablePaymentMethodsProvider;
 
 /**
  * Class MolliePaymentViewFactory
@@ -16,7 +16,7 @@ class MolliePaymentViewFactory implements MolliePaymentViewFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function create(MolliePaymentConfigInterface $config, PaymentMethodProvider $provider)
+    public function create(MolliePaymentConfigInterface $config, ApplicablePaymentMethodsProvider $provider)
     {
         return new MolliePaymentView($config, $provider);
     }

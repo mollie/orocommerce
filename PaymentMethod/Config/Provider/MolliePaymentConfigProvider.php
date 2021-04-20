@@ -2,7 +2,7 @@
 
 namespace Mollie\Bundle\PaymentBundle\PaymentMethod\Config\Provider;
 
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Oro\Bundle\EntityBundle\ORM\Registry;
 use Mollie\Bundle\PaymentBundle\Entity\ChannelSettings;
 use Mollie\Bundle\PaymentBundle\Entity\PaymentMethodSettings;
 use Mollie\Bundle\PaymentBundle\Entity\Repository\ChannelSettingsRepository;
@@ -31,8 +31,9 @@ class MolliePaymentConfigProvider implements MolliePaymentConfigProviderInterfac
      * @var Configuration
      */
     private $configService;
+
     /**
-     * @var ManagerRegistry
+     * @var Registry
      */
     protected $doctrine;
 
@@ -64,7 +65,7 @@ class MolliePaymentConfigProvider implements MolliePaymentConfigProviderInterfac
      * MolliePaymentConfigProvider constructor.
      *
      * @param Configuration $configService
-     * @param ManagerRegistry $doctrine
+     * @param Registry $doctrine
      * @param PaymentConfigFactoryInterface $configFactory
      * @param PaymentMethodController $paymentMethodController
      * @param WebsiteProfileController $websiteProfileController
@@ -72,7 +73,7 @@ class MolliePaymentConfigProvider implements MolliePaymentConfigProviderInterfac
      */
     public function __construct(
         Configuration $configService,
-        ManagerRegistry $doctrine,
+        Registry $doctrine,
         PaymentConfigFactoryInterface $configFactory,
         PaymentMethodController $paymentMethodController,
         WebsiteProfileController $websiteProfileController,

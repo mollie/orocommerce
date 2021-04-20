@@ -5,7 +5,7 @@ namespace Mollie\Bundle\PaymentBundle\PaymentMethod\View\Provider;
 use Mollie\Bundle\PaymentBundle\PaymentMethod\Config\MolliePaymentConfigInterface;
 use Mollie\Bundle\PaymentBundle\PaymentMethod\Config\Provider\MolliePaymentConfigProviderInterface;
 use Mollie\Bundle\PaymentBundle\PaymentMethod\View\Factory\MolliePaymentViewFactoryInterface;
-use Oro\Bundle\PaymentBundle\Method\Provider\PaymentMethodProvider;
+use Oro\Bundle\PaymentBundle\Method\Provider\ApplicablePaymentMethodsProvider;
 use Oro\Bundle\PaymentBundle\Method\View\AbstractPaymentMethodViewProvider;
 
 /**
@@ -20,7 +20,7 @@ class MolliePaymentViewProvider extends AbstractPaymentMethodViewProvider
 
     /** @var MolliePaymentConfigProviderInterface */
     private $configProvider;
-    /** @var PaymentMethodProvider */
+    /** @var ApplicablePaymentMethodsProvider */
     private $paymentMethodProvider;
 
     /**
@@ -32,7 +32,7 @@ class MolliePaymentViewProvider extends AbstractPaymentMethodViewProvider
     public function __construct(
         MolliePaymentConfigProviderInterface $configProvider,
         MOlliePaymentViewFactoryInterface $factory,
-        PaymentMethodProvider $paymentMethodProvider
+        ApplicablePaymentMethodsProvider $paymentMethodProvider
     ) {
         $this->factory = $factory;
         $this->configProvider = $configProvider;
