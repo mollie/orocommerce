@@ -61,22 +61,25 @@ mollie:
         status.inactive.label: 'Inaktiv'
         name.label: 'Name'
         description.label: 'Beschreibung'
-        transactionDescription.label: 'Transaction Description'
-        transactionDescription.tooltip: 'The description to be used for payment transaction. These variables are
-        available: {orderNumber}, {storeName}, {customerFirstname}, {customerLastname}, {customerCompany}, and {cartNumber}.'
+        payment.description.label: 'Beschreibung'
+        payment.description.default.value: 'Sie werden auf die Website des Zahlungsportals weitergeleitet um Ihren Kauf nach der Überprüfung der Bestellung abzuschließen.'
+        payment.description.tooltip.label: 'Geben Sie einen Beschreibungstext für die Zahlungsmethode ein der während des Bezahlvorgangs angezeigt wird.'
+        transactionDescription.label: 'Transaktionsbeschreibung'
+        transactionDescription.tooltip: 'Beschreibung für die Transaktion der Zahlung. Die folgenden Variablen stehen zur
+        Verfügung: {orderNumber}, {storeName}, {customerFirstname}, {customerLastname}, {customerCompany}, und {cartNumber}.'
         category:
-          label: 'Category'
-          tooltip: 'Vouchers can only be used for eligible products, and therefore you should define the
-                            category parameter for all order lines. Mollie will calculate the eligible amount based on this parameter.'
-          choice.none: 'None'
-          choice.meal: 'Meal'
-          choice.eco: 'Eco'
-          choice.gift: 'Gift'
+          label: 'Kategorie'
+          tooltip: 'Gutscheine können nur auf zulässige Produkte angewandt werden. Deshalb sollten Sie den Parameter
+          Kategorie für alle Bestellzeilen festlegen. Mollie berechnet den zulässigen Betrag auf der Grundlage dieses Parameters.'
+          choice.none: 'Kein'
+          choice.meal: 'Mahlzeit'
+          choice.eco: 'Öko'
+          choice.gift: 'Geschenk'
           attribute:
-            label: 'Product Attribute'
-            tooltip: 'Use the existing Mollie voucher product attribute or create a
-                            new type of Select or String. The admin value of these product attributes must be meal, eco,
-                            gift, or none.'
+            label: 'Produkteigenschaft'
+            tooltip: 'Verwenden Sie die bestehende Gutschein-Produkteigenschaft von Mollie oder erstellen Sie einen
+            neuen Typ von Auswahl oder Zeichenfolge. Der Admin-Wert dieser Produkteigenschaften muss Mahlzeit, Öko,
+            Geschenk oder Kein sein.'
         image:
           label: 'Abbildung'
           mime_type_error: 'Bitte laden Sie eine gültige Abbildung hoch'
@@ -92,7 +95,7 @@ mollie:
           option.order_api.label: 'Auftrags-API'
         mollie_components:
           label: 'Mollie Components verwenden'
-          tooltip: 'Read more about <a href="https://www.mollie.com/en/news/post/better-checkout-flows-with-mollie-components" target="_blank">Mollie Components</a> and how it improves your conversion'
+          tooltip: 'Erfahren Sie mehr über <a href="https://www.mollie.com/en/news/post/better-checkout-flows-with-mollie-components" target="_blank">Mollie-Komponenten</a> und wie sie Ihre Umsatzquote steigern'
         issuer_list:
           label: 'Issuer List Style'
           tooltip: 'Choose the style in which issuer list will be displayed on checkout.'
@@ -103,18 +106,18 @@ mollie:
           klarna_tooltip: "Geben Sie die zusätzlichen Kosten für eine Klarna-Zahlung mit einem Höchstbetrag von 1,95 € ein. Höhere Beträge werden nicht akzeptiert."
           tooltip: "Geben Sie die zusätzlichen Kosten für eine Zahlung ein."
         orderExpiryDays:
-          label: 'Days To Expire'
-          tooltip: 'How many days before orders for this method becomes expired? Leave empty to use default expiration (28 days)'
-          klarna_tooltip: 'How many days before orders for this method becomes expired? Leave empty to use default
-          expiration (28 days).
-          <br>Please note: It is not possible to use an expiry date more than 28 days in the
-          future, unless another maximum is agreed between the merchant and Klarna.'
+          label: 'Tage bis Ablauf'
+          tooltip: 'Anzahl der Tage bis zu dem Zeitpunkt ab dem Bestellungen über diese Methode nicht mehr möglich sind. Freilassen um den Standardwert (28 Tage) zu verwenden'
+          klarna_tooltip: 'Anzahl der Tage bis zu dem Zeitpunkt ab dem Bestellungen über diese Methode nicht mehr möglich sind. Freilassen um den
+          Standardwert (28 Tage) zu verwenden
+          <br>Bitte beachten Sie: Es ist nicht möglich ein Ablaufdatum zu wählen das mehr als 28 Tage in der
+          Zukunft liegt. Ausnahmeregelungen können zwischen dem Händler und Klarna vereinbart werden.'
         paymentExpiryDays:
-          label: 'Days To Expire'
-          tooltip: 'How many days before payment for this method becomes expired? Leave empty to use default expiration (28 days)'
+          label: 'Tage bis Ablauf'
+          tooltip: 'Anzahl der Tage bis zu dem Zeitpunkt ab dem Bezahlungen über diese Methode nicht mehr möglich sind. Freilassen um den Standardwert (28 Tage) zu verwenden'
         expiryDays.error: 'Expiry days must be value between 1 and 100'
         versionCheck:
-          message: 'A new module version {versionNumber} is available. Please download the latest version <a href="{downloadUrl}" target="_blank">here</a>.'
+          message: 'Eine neue Version {versionNumber} des Moduls ist verfügbar. Bitte laden Sie die neueste Version <a href="{downloadUrl}" target="_blank">herunter</a>.'
       notifications:
         label: 'Benachrichtigungen'
         warning: 'Warnung'
@@ -180,4 +183,4 @@ mollie:
         order_line_refund_info.description: 'Bestellposition im Mollie-Portal erstattet.'
     extend:
       entity:
-        voucher_category.label: 'Mollie Voucher Category'
+        voucher_category.label: 'Mollie-Gutscheinkategorie'
