@@ -2,6 +2,8 @@
 
 namespace Mollie\Bundle\PaymentBundle\Tests\Unit\BusinessLogic\Http;
 
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Authorization\ApiKey\ApiKeyAuthService;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Authorization\Interfaces\AuthorizationService;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\Exceptions\UnprocessableEntityRequestException;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\OrgToken\ProxyDataProvider;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\Proxy;
@@ -44,6 +46,13 @@ class ProxyTest extends BaseTestWithServices
             Proxy::CLASS_NAME,
             function () use ($self) {
                 return new Proxy($self->shopConfig, $self->httpClient, new ProxyDataProvider());
+            }
+        );
+
+        TestServiceRegister::registerService(
+            AuthorizationService::CLASS_NAME,
+            function () {
+                return ApiKeyAuthService::getInstance();
             }
         );
     }

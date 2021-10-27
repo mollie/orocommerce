@@ -1,0 +1,7 @@
+{
+  "access_token": "access_TRbHbeB3my8XywBAdT6HRkGAJMuh4",
+  "refresh_token": "refresh_FS4xc3Mgci2xQ5s5DzaLXh3HhaTZOP",
+  "expires_in": 3600,
+  "token_type": "bearer",
+  "scope": "payments.read organizations.read"
+}

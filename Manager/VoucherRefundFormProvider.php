@@ -87,7 +87,7 @@ class VoucherRefundFormProvider
     {
         $order = $this->getOrder();
 
-        return $order && implode('', $order->getMethod()) === 'voucher';
+        return $order && implode('', $order->getMethods()) === 'voucher';
     }
 
     /**
