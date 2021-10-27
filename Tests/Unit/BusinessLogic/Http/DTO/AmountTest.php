@@ -36,6 +36,17 @@ class AmountTest extends TestCase
         $this->assertSame('10.147', $amountArray['value']);
     }
 
+    public function testAmountValueWithoutMinorUnits()
+    {
+        $amount = Amount::fromSmallestUnit(10147, 'JPY');
+
+        $this->assertEquals(10147, $amount->getAmountValue());
+
+        $amountArray = $amount->toArray();
+
+        $this->assertSame('10147', $amountArray['value']);
+    }
+
     public function testAmountValueToCurrencySmallestUnit()
     {
         $amount = Amount::fromArray(array(
@@ -44,6 +55,16 @@ class AmountTest extends TestCase
         ));
 
         $this->assertEquals(10147, $amount->getAmountValueInSmallestUnit());
+    }
+
+    public function testAmountConversionToCurrencySmallestUnit()
+    {
+        $amount = Amount::fromArray(array(
+            'value' => 2.05,
+            'currency' => 'EUR'
+        ));
+
+        $this->assertEquals(205, $amount->getAmountValueInSmallestUnit());
     }
 
     public function testExistingCurrency()
