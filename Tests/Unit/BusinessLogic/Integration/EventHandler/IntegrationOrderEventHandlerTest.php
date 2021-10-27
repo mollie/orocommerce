@@ -2,6 +2,8 @@
 
 namespace Mollie\Bundle\PaymentBundle\Tests\Unit\BusinessLogic\Integration\EventHandler;
 
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Authorization\ApiKey\ApiKeyAuthService;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Authorization\Interfaces\AuthorizationService;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\Order;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Payment;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\OrgToken\ProxyDataProvider;
@@ -90,6 +92,12 @@ abstract class IntegrationOrderEventHandlerTest extends BaseTestWithServices
             return $me->defaultChannel;
         });
 
+        TestServiceRegister::registerService(
+            AuthorizationService::CLASS_NAME,
+            function () use ($me) {
+                return ApiKeyAuthService::getInstance();
+            }
+        );
 
         $this->setUpTestOrderReferences();
     }

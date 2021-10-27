@@ -44,7 +44,7 @@ class MolliePaymentLinkMapperDecorator extends MollieConfigMapperDecorator
     {
         $orderData = parent::getOrderData($paymentTransaction);
         if ($orderData) {
-            $orderData->setMethod($this->getPaymentLinkMethod($paymentTransaction));
+            $orderData->setMethods($this->getPaymentLinkMethod($paymentTransaction));
         }
 
         return $orderData;
@@ -57,7 +57,7 @@ class MolliePaymentLinkMapperDecorator extends MollieConfigMapperDecorator
     {
         $paymentData = parent::getPaymentData($paymentTransaction);
 
-        $paymentData->setMethod($this->getPaymentLinkMethod($paymentTransaction));
+        $paymentData->setMethods($this->getPaymentLinkMethod($paymentTransaction));
 
         return $paymentData;
     }
