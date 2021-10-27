@@ -16,6 +16,7 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http\HttpResponse
  */
 class IntegrationOrderAddressChangedEvenHandlerTest extends IntegrationOrderEventHandlerTest
 {
+
     /**
      * @throws \Exception
      */

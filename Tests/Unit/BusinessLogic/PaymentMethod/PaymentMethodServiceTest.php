@@ -5,6 +5,8 @@
 
 namespace Mollie\Bundle\PaymentBundle\Tests\Unit\BusinessLogic\PaymentMethod;
 
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Authorization\ApiKey\ApiKeyAuthService;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Authorization\Interfaces\AuthorizationService;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Amount;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\PaymentMethod;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\WebsiteProfile;
@@ -59,6 +61,13 @@ class PaymentMethodServiceTest extends BaseTestWithServices
             }
         );
 
+        TestServiceRegister::registerService(
+            AuthorizationService::CLASS_NAME,
+            function () {
+                return ApiKeyAuthService::getInstance();
+            }
+        );
+
         $this->shopConfig->setAuthorizationToken('test_token');
         $this->shopConfig->setTestMode(true);
         $testProfile = new WebsiteProfile();
@@ -103,7 +112,7 @@ class PaymentMethodServiceTest extends BaseTestWithServices
 
         $result = $this->paymentMethodService->getAllPaymentMethodConfigurations($profileId);
 
-        $this->assertCount(16, $result);
+        $this->assertCount(17, $result);
         $this->assertNull($result[0]->getId());
         $this->assertEquals($profileId, $result[0]->getProfileId());
         $this->assertEquals('applepay', $result[0]->getMollieId());
@@ -131,7 +140,7 @@ class PaymentMethodServiceTest extends BaseTestWithServices
 
         $result = $this->paymentMethodService->getAllPaymentMethodConfigurations($profileId);
 
-        $this->assertCount(16, $result);
+        $this->assertCount(17, $result);
         $this->assertNotNull($result[0]->getId());
         $this->assertEquals($profileId, $result[0]->getProfileId());
         $this->assertEquals('applepay', $result[0]->getMollieId());

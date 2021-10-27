@@ -5,6 +5,8 @@
 
 namespace Mollie\Bundle\PaymentBundle\Tests\Unit\BusinessLogic\UI\Controllers;
 
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Authorization\ApiKey\ApiKeyAuthService;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Authorization\Interfaces\AuthorizationService;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\WebsiteProfile;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\OrgToken\ProxyDataProvider;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\Proxy;
@@ -56,6 +58,13 @@ class WebsiteProfileControllerTest extends BaseTestWithServices
             PaymentMethodService::CLASS_NAME,
             function () {
                 return MockPaymentMethodService::getInstance();
+            }
+        );
+
+        TestServiceRegister::registerService(
+            AuthorizationService::CLASS_NAME,
+            function () {
+                return ApiKeyAuthService::getInstance();
             }
         );
 
