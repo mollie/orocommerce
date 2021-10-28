@@ -104,7 +104,7 @@ abstract class Configuration extends \Mollie\Bundle\PaymentBundle\IntegrationCor
     /**
      * Sets authorization token.
      *
-     * @param AuthInfo $authToken Authorization token.
+     * @param string $authToken Authorization token.
      */
     public function setAuthorizationToken($authToken)
     {

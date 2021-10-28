@@ -35,10 +35,10 @@ mollie:
       redirect_to_mollie_payment: 'You will be redirected to payment gateway website to complete your purchase after the order review step.'
       admin_link_error: 'We were unable to process your payment. Please verify your payment information and <a href="{adminPaymentLink}">try again</a>.'
       selectBank: 'Select bank'
-      cardHolder: 'Card Holder'
-      cardNumber: 'Card Number'
-      expiryDate: 'Expiry Date'
-      verificationCode: 'Verification Code'
+      cardHolder: 'Name on card'
+      cardNumber: 'Card number'
+      expiryDate: 'Expiry date'
+      verificationCode: 'CVC/CVV'
     config:
       authorization:
         label: 'Authorization'
