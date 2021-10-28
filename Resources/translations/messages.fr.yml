@@ -35,10 +35,10 @@ mollie:
       redirect_to_mollie_payment: "Vous allez être redirigé vers le site web de la passerelle de paiement pour effectuer votre achat après l'étape de révision de la commande."
       admin_link_error: "Nous n'avons pas pu traiter votre paiement. Veuillez vérifier vos informations de paiement et <a href='{adminPaymentLink}'>try again</a>."
       selectBank: 'Choisir une banque'
-      cardHolder: 'Titulaire de la carte'
-      cardNumber: 'Numéro de carte'
-      expiryDate: "Date d'expiration"
-      verificationCode: 'Code de vérification'
+      cardHolder: 'Nom du titulaire de la carte'
+      cardNumber: 'Numero de carte de credit'
+      expiryDate: 'MM/AA'
+      verificationCode: 'CVV'
     config:
       authorization:
         label: 'Autorisation'
