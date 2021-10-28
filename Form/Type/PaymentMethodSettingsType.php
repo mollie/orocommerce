@@ -23,7 +23,6 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Constraints\Range;
 
-
 /**
  * Form type for Mollie integration payment methods settings
  */
