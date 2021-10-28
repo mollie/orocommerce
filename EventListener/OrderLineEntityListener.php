@@ -21,7 +21,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class OrderLineEntityListener
 {
-
     public static $MOLLIE_MAPPED_ATTRIBUTES = ['freeFormProduct', 'quantity', 'priceType'];
     /**
      * @var MollieDtoMapperInterface

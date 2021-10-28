@@ -47,7 +47,6 @@ class VoucherRefundFormProvider
             $order = Order::fromArray($this->orderReference->getPayload());
             $reminder = $this->getReminderDetail();
             if ($reminder && $reminder->getRemainderMethod()) {
-
                 $voucherLabel = $this->getLabel($configs, $channelId, 'voucher');
                 $reminderLabel = $this->getLabel($configs, $channelId, $reminder->getRemainderMethod());
                 $voucherCurrencySymbol = $this->localeExtension->getCurrencySymbolByCurrency($order->getAmount()->getCurrency());
