@@ -35,10 +35,10 @@ mollie:
       redirect_to_mollie_payment: 'Nadat je de bestelling hebt gecontroleerd, word je doorgestuurd naar de website van de betalingsprovider om je aankoop af te ronden.'
       admin_link_error: 'We hebben je betaling niet kunnen verwerken. Controleer je betalingsgegevens en <a href="{adminPaymentLink}">probeer het opnieuw</a>.'
       selectBank: 'Selecteer Bank'
-      cardHolder: 'Kaarthouder'
-      cardNumber: 'Kaartnummer'
-      expiryDate: 'Vervaldatum'
-      verificationCode: 'Verificatie code'
+      cardHolder: 'Naam kaarthouder'
+      cardNumber: 'Creditcardnummer'
+      expiryDate: 'MM/JJ'
+      verificationCode: 'CVV'
     config:
       authorization:
         label: 'Autorisatie'
