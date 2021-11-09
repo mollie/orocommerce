@@ -2,6 +2,8 @@
 
 namespace Mollie\Bundle\PaymentBundle\Tests\Unit\BusinessLogic\Refunds;
 
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Authorization\ApiKey\ApiKeyAuthService;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Authorization\Interfaces\AuthorizationService;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Amount;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\Order;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\OrderLine;
@@ -91,6 +93,13 @@ class RefundServiceTest extends BaseTestWithServices
             OrderService::CLASS_NAME,
             function () {
                 return OrderService::getInstance();
+            }
+        );
+
+        TestServiceRegister::registerService(
+            AuthorizationService::CLASS_NAME,
+            function () {
+                return ApiKeyAuthService::getInstance();
             }
         );
 

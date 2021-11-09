@@ -26,7 +26,9 @@ To finalize the installation you need to enter your organization API token in th
 Read more about the integration configuration on [our Wiki](https://github.com/mollie/orocommerce/wiki).
 
 ## Release notes
- - **4.0.8:**   
+ - **4.0.9:**
+   - Added support for the Klarna Pay Now payment method.
+ - **4.0.8:**
    - Optimization: Updated translations
    - Optimization: Fixed Composer version number 
  - **4.0.7:**

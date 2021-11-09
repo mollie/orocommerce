@@ -147,7 +147,7 @@ class ProductAttributesProvider
         // create count map (label as key, and count as value)
         $countMap = [];
         foreach ($attributes as $attributeLabel) {
-            if (!array_key_exists($attributeLabel, $countMap)){
+            if (!array_key_exists($attributeLabel, $countMap)) {
                 $countMap[$attributeLabel] = 0;
             }
 
