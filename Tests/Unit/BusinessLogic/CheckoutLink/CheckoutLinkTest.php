@@ -2,6 +2,8 @@
 
 namespace Mollie\Bundle\PaymentBundle\Tests\Unit\BusinessLogic\CheckoutLink;
 
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Authorization\ApiKey\ApiKeyAuthService;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Authorization\Interfaces\AuthorizationService;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\CheckoutLink\CheckoutLinkService;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\CheckoutLink\Exceptions\CheckoutLinkNotAvailableException;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\Exceptions\UnprocessableEntityRequestException;
@@ -89,6 +91,13 @@ class CheckoutLinkTest extends BaseTestWithServices
             OrderService::CLASS_NAME,
             function () {
                 return OrderService::getInstance();
+            }
+        );
+
+        TestServiceRegister::registerService(
+            AuthorizationService::CLASS_NAME,
+            function () use ($me) {
+                return ApiKeyAuthService::getInstance();
             }
         );
 
