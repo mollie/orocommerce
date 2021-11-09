@@ -2,14 +2,12 @@
 
 namespace Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Connect;
 
-use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Configuration;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Connect\DTO\AuthInfo;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Connect\DTO\TokenRequest;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\Exceptions\UnprocessableEntityRequestException;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http\Exceptions\HttpAuthenticationException;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http\Exceptions\HttpCommunicationException;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http\Exceptions\HttpRequestException;
-use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ServiceRegister;
 
 /**
  * Class TokenService
@@ -80,13 +78,5 @@ class TokenService
         $tokenRequest = new TokenRequest(static::REFRESH_TOKEN, '', $refreshToken, $redirectUrl);
 
         return $this->tokenProxy->retrieveTokens($tokenRequest, $clientId, $clinetSecret);
-    }
-
-    /**
-     * @return Configuration
-     */
-    private function getConfigurationService()
-    {
-        return ServiceRegister::getService(Configuration::CLASS_NAME);
     }
 }
