@@ -12,7 +12,6 @@ use Oro\Bundle\WebsiteBundle\Manager\WebsiteManager;
  */
 class ConfigurationService extends Configuration
 {
-
     const VERSION_CHECK_URL = 'https://raw.githubusercontent.com/mollie/orocommerce/3.1/composer.json';
     const PLUGIN_DOWNLOAD_URL = 'https://github.com/mollie/orocommerce/releases';
 

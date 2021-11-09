@@ -374,8 +374,8 @@ class ChannelSettingsTypeSubscriber implements EventSubscriberInterface
         $paymentMethodConfigs = $this->paymentMethodController->getAll($channelSettings->getWebsiteProfile()->getId());
         foreach ($paymentMethodConfigs as $paymentMethodConfig) {
             $paymentMethodSetting = null;
-	        $paymentMethodConfigMollieIds[] = $paymentMethodConfig->getMollieId();
-	        if (array_key_exists($paymentMethodConfig->getMollieId(), $paymentMethodSettingsMap)) {
+            $paymentMethodConfigMollieIds[] = $paymentMethodConfig->getMollieId();
+            if (array_key_exists($paymentMethodConfig->getMollieId(), $paymentMethodSettingsMap)) {
                 $paymentMethodSetting = $paymentMethodSettingsMap[$paymentMethodConfig->getMollieId()];
             }
 
@@ -429,12 +429,12 @@ class ChannelSettingsTypeSubscriber implements EventSubscriberInterface
             );
         }
 
-	    // Remove any saved method setting that is now missing in the Mollie API
-	    foreach ($paymentMethodSettingsMap as $mollieMethodId => $paymentMethodSetting) {
-		    if (!in_array($mollieMethodId, $paymentMethodConfigMollieIds)) {
-			    $channelSettings->removePaymentMethodSetting($paymentMethodSetting);
-		    }
-	    }
+        // Remove any saved method setting that is now missing in the Mollie API
+        foreach ($paymentMethodSettingsMap as $mollieMethodId => $paymentMethodSetting) {
+            if (!in_array($mollieMethodId, $paymentMethodConfigMollieIds)) {
+                $channelSettings->removePaymentMethodSetting($paymentMethodSetting);
+            }
+        }
     }
 
     /**
