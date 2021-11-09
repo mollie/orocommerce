@@ -58,7 +58,7 @@ class MollieConfigMapperDecorator implements MollieDtoMapperInterface
         $orderData = $this->dtoMapper->getOrderData($paymentTransaction);
         if ($orderData) {
             $orderData->setProfileId($this->config->getProfileId());
-            $orderData->setMethod([$this->config->getMollieId()]);
+            $orderData->setMethods([$this->config->getMollieId()]);
             $expiryDays = $this->config->getOrderExpiryDays();
             if ($expiryDays > 0) {
                 $orderData->calculateExpiresAt($expiryDays);
@@ -102,7 +102,7 @@ class MollieConfigMapperDecorator implements MollieDtoMapperInterface
     {
         $paymentData = $this->dtoMapper->getPaymentData($paymentTransaction);
         $paymentData->setProfileId($this->config->getProfileId());
-        $paymentData->setMethod([$this->config->getMollieId()]);
+        $paymentData->setMethods([$this->config->getMollieId()]);
         $this->setDueDate($paymentData);
 
         return $paymentData;

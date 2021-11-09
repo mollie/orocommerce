@@ -2,6 +2,8 @@
 
 namespace Mollie\Bundle\PaymentBundle\Tests\Unit\BusinessLogic\Orders;
 
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Authorization\ApiKey\ApiKeyAuthService;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Authorization\Interfaces\AuthorizationService;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\Order;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\Exceptions\UnprocessableEntityRequestException;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\OrgToken\ProxyDataProvider;
@@ -76,6 +78,13 @@ class OrderServiceTest extends BaseTestWithServices
             }
         );
 
+        TestServiceRegister::registerService(
+            AuthorizationService::CLASS_NAME,
+            function () {
+                return ApiKeyAuthService::getInstance();
+            }
+        );
+
         $this->shopConfig->setAuthorizationToken('test_token');
         $this->shopConfig->setTestMode(true);
         $this->orderService = OrderService::getInstance();
@@ -125,9 +134,14 @@ class OrderServiceTest extends BaseTestWithServices
     {
         $shopReference = 'test_reference_id';
         $profileId = 'pfl_URR55HPMGx';
-        $paymentMethods = array(PaymentMethods::PayPal, PaymentMethods::KlarnaSliceIt, PaymentMethods::KlarnaPayLater);
+        $paymentMethods = array(
+            PaymentMethods::PayPal,
+            PaymentMethods::KlarnaSliceIt,
+            PaymentMethods::KlarnaPayLater,
+            PaymentMethods::KlarnaPayNow,
+        );
         $order = $this->getOrderData($shopReference, $profileId);
-        $order->setMethod($paymentMethods);
+        $order->setMethods($paymentMethods);
         $this->httpClient->setMockResponses(array($this->getMockOrderResponse(), $this->getMockOrderResponse()));
 
         $createdOrder = $this->orderService->createOrder($shopReference, $order);

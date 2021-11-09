@@ -2,6 +2,8 @@
 
 namespace Mollie\Bundle\PaymentBundle\Tests\Unit\BusinessLogic\Payments;
 
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Authorization\ApiKey\ApiKeyAuthService;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Authorization\Interfaces\AuthorizationService;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\Order;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Payment;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\Exceptions\UnprocessableEntityRequestException;
@@ -73,6 +75,13 @@ class PaymentServiceTest extends BaseTestWithServices
             OrderReferenceService::CLASS_NAME,
             function () {
                 return OrderReferenceService::getInstance();
+            }
+        );
+
+        TestServiceRegister::registerService(
+            AuthorizationService::CLASS_NAME,
+            function () {
+                return ApiKeyAuthService::getInstance();
             }
         );
 
@@ -274,7 +283,12 @@ class PaymentServiceTest extends BaseTestWithServices
     {
         $profileId = 'pfl_QkEhN94Ba';
         $shopReference = 'test_reference_id';
-        $paymentMethods = array(PaymentMethods::PayPal, PaymentMethods::KlarnaSliceIt, PaymentMethods::KlarnaPayLater);
+        $paymentMethods = array(
+            PaymentMethods::PayPal,
+            PaymentMethods::KlarnaSliceIt,
+            PaymentMethods::KlarnaPayLater,
+            PaymentMethods::KlarnaPayNow,
+        );
         $payment = Payment::fromArray(array(
             'profileId' => $profileId,
             'amount' => array(

@@ -35,10 +35,10 @@ mollie:
       redirect_to_mollie_payment: 'Nach dem Kontrollieren Ihrer Bestellung werden Sie zur Website des Zahlungsanbieters weitergeleitet, um den Einkauf abzuschließen.'
       admin_link_error: 'Wir konnten Ihre Zahlung nicht verarbeiten. Überprüfen Sie bitte die Zahlungsinformationen und <a href="{adminPaymentLink}">versuchen Sie es erneut</a>.'
       selectBank: 'Bank auswählen'
-      cardHolder: 'Kartenhalter'
-      cardNumber: 'Kartennummer'
-      expiryDate: 'Verfallsdatum'
-      verificationCode: 'Verifizierungs-Schlüssel'
+      cardHolder: 'Name des Karteninhabers'
+      cardNumber: 'Kreditkartennummer'
+      expiryDate: 'MM/JJ'
+      verificationCode: 'CVV'
     config:
       authorization:
         label: 'Befugnis'
