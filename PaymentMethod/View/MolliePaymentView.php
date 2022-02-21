@@ -46,6 +46,10 @@ class MolliePaymentView implements PaymentMethodViewInterface
             'surchargeAmount' => $this->config->getSurchargeAmount(),
             'currency' => $context->getCurrency(),
             'useMollieComponents' => $this->config->useMollieComponents() && !$this->isMultipleCreditCard($context),
+            'useSingleClickPayment' => $this->config->useMollieComponents() && !$this->isMultipleCreditCard($context) &&
+                $this->config->useSingleClickPayment(),
+            'singleClickPaymentApprovalText' => $this->config->getSingleClickPaymentApprovalText(),
+            'singleClickPaymentDescription' => $this->config->getSingleClickPaymentDescription(),
             'issuerListStyle' => $this->config->getIssuerListStyle(),
             'issuers' => $this->config->getIssuers(),
             'paymentMethod' => $this->config->getPaymentMethodIdentifier(),

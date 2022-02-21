@@ -413,11 +413,24 @@ class ChannelSettingsTypeSubscriber implements EventSubscriberInterface
                 );
             }
 
+            if ($paymentMethodSetting->getSingleClickPaymentApprovalText()->isEmpty()) {
+                $paymentMethodSetting->addSingleClickPaymentApprovalText(
+                    (new LocalizedFallbackValue())->setString($this->translator->trans('mollie.payment.config.payment_methods.single_click_payment_approval_text.value'))
+                );
+            }
+
+            if ($paymentMethodSetting->getSingleClickPaymentDescription()->isEmpty()) {
+                $paymentMethodSetting->addSingleClickPaymentDescription(
+                    (new LocalizedFallbackValue())->setString($this->translator->trans('mollie.payment.config.payment_methods.single_click_payment_description.value'))
+                );
+            }
+
             $paymentMethodSetting->setPaymentMethodConfig($paymentMethodConfig);
             $paymentMethodSetting->setEnabled($paymentMethodConfig->isEnabled());
             $paymentMethodSetting->setSurcharge($paymentMethodConfig->getSurcharge());
             $paymentMethodSetting->setMethod($paymentMethodConfig->getApiMethod());
             $paymentMethodSetting->setMollieComponents($paymentMethodConfig->useMollieComponents());
+            $paymentMethodSetting->setSingleClickPayment($paymentMethodConfig->useSingleClickPayment());
             $paymentMethodSetting->setIssuerListStyle($paymentMethodConfig->getIssuerListStyle());
             $paymentMethodSetting->setVoucherCategory($paymentMethodConfig->getVoucherCategory());
             $paymentMethodSetting->setProductAttribute($paymentMethodConfig->getProductAttribute());
