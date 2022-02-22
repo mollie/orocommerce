@@ -6,6 +6,7 @@ use Mollie\Bundle\PaymentBundle\Entity\Repository\MollieBaseEntityRepository;
 use Mollie\Bundle\PaymentBundle\Entity\Repository\MollieContextAwareEntityRepository;
 use Mollie\Bundle\PaymentBundle\Entity\Repository\MollieNotificationEntityRepository;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Authorization\Interfaces\AuthorizationService;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\CustomerReference\Model\CustomerReference;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\OrgToken\ProxyDataProvider;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Integration\Interfaces\OrderLineTransitionService as OrderLineTransitionServiceInterface;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Integration\Interfaces\OrderTransitionService as OrderTransitionServiceInterface;
@@ -138,6 +139,10 @@ class BootstrapComponent extends \Mollie\Bundle\PaymentBundle\IntegrationCore\Bu
         );
         RepositoryRegistry::registerRepository(
             PaymentLinkMethod::getClassName(),
+            MollieBaseEntityRepository::getClassName()
+        );
+        RepositoryRegistry::registerRepository(
+            CustomerReference::getClassName(),
             MollieBaseEntityRepository::getClassName()
         );
     }

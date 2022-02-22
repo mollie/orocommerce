@@ -6,6 +6,8 @@ use Mollie\Bundle\PaymentBundle\PaymentMethod\Config\MolliePaymentConfigInterfac
 use Oro\Bundle\PaymentBundle\Context\PaymentContextInterface;
 use Oro\Bundle\PaymentBundle\Method\Provider\ApplicablePaymentMethodsProvider;
 use Oro\Bundle\PaymentBundle\Method\View\PaymentMethodViewInterface;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\CustomerReference\CustomerReferenceService;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ServiceRegister;
 
 /**
  * Class MolliePaymentView
@@ -40,6 +42,18 @@ class MolliePaymentView implements PaymentMethodViewInterface
      */
     public function getOptions(PaymentContextInterface $context)
     {
+        $renderSaveCreditCardCheckbox = false;
+        $renderUseSavedCreditCardCheckbox = false;
+
+        if ($this->config->useSingleClickPayment()) {
+            $customerFromDb = $this->getCustomerReferenceService()->getByShopReference($context->getCustomerUser()->getId());
+            if (!$customerFromDb) {
+                $renderSaveCreditCardCheckbox = true;
+            } else {
+                $renderUseSavedCreditCardCheckbox = true;
+            }
+        }
+
         return [
             'isApplePay' => false !== strpos($this->config->getPaymentMethodIdentifier(), 'applepay'),
             'icon' => $this->config->getIcon(),
@@ -57,6 +71,8 @@ class MolliePaymentView implements PaymentMethodViewInterface
             'profileId' => $this->config->getProfileId(),
             'lang' => '',
             'paymentDescription' => $this->config->getPaymentDescription(),
+            'renderSaveCreditCardCheckbox' => $renderSaveCreditCardCheckbox,
+            'renderUseSavedCreditCardCheckbox' => $renderUseSavedCreditCardCheckbox,
         ];
     }
 
@@ -96,6 +112,17 @@ class MolliePaymentView implements PaymentMethodViewInterface
     public function getPaymentMethodIdentifier()
     {
         return $this->config->getPaymentMethodIdentifier();
+    }
+
+    /**
+     * @return CustomerReferenceService
+     */
+    protected function getCustomerReferenceService(): CustomerReferenceService
+    {
+        /** @var CustomerReferenceService $customerReferenceService */
+        $customerReferenceService = ServiceRegister::getService(CustomerReferenceService::CLASS_NAME);
+
+        return $customerReferenceService;
     }
 
     /**
