@@ -11,6 +11,16 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\BaseService;
  */
 class SurchargeService extends BaseService
 {
+    /**
+     * Fully qualified name of this class.
+     */
+    const CLASS_NAME = __CLASS__;
+    /**
+     * Singleton instance of this class.
+     *
+     * @var static
+     */
+    protected static $instance;
 
     /**
      * Calculates surcharge amount based on surcharge config params

@@ -38,6 +38,7 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Refunds\RefundServ
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Refunds\WebHookHandler\OrderLineRefundWebHookHandler;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Refunds\WebHookHandler\OrderRefundWebHookHandler;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Shipments\ShipmentService;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Surcharge\SurchargeService;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\VersionCheck\Http\VersionCheckProxy;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\WebHook\OrderChangedWebHookEvent;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\WebHook\PaymentChangedWebHookEvent;
@@ -144,6 +145,13 @@ class BootstrapComponent extends \Mollie\Bundle\PaymentBundle\IntegrationCore\In
             ShipmentService::CLASS_NAME,
             function () {
                 return ShipmentService::getInstance();
+            }
+        );
+
+        ServiceRegister::registerService(
+            SurchargeService::CLASS_NAME,
+            function () {
+                return SurchargeService::getInstance();
             }
         );
 

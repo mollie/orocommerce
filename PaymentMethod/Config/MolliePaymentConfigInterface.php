@@ -53,9 +53,24 @@ interface MolliePaymentConfigInterface extends PaymentConfigInterface
     public function getChannelId();
 
     /**
+     * @return string
+     */
+    public function getSurchargeType();
+
+    /**
      * @return float
      */
-    public function getSurchargeAmount();
+    public function getSurchargeFixedAmount();
+
+    /**
+     * @return float
+     */
+    public function getSurchargePercentage();
+
+    /**
+     * @return float
+     */
+    public function getSurchargeLimit();
 
     /**
      * @return bool

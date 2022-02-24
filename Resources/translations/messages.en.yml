@@ -39,6 +39,7 @@ mollie:
       cardNumber: 'Card number'
       expiryDate: 'Expiry date'
       verificationCode: 'CVC/CVV'
+      useSavedCreditCardText: 'Use saved credit card information'
     config:
       authorization:
         label: 'Authorization'
