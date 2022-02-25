@@ -3,6 +3,10 @@
 namespace Mollie\Bundle\PaymentBundle\Mapper;
 
 use Doctrine\Common\Collections\Collection;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\CustomerReference\CustomerReferenceService;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ServiceRegister;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Customer\CustomerService;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Customer as MollieCustomer;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Address;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\Order;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\OrderLine;
@@ -135,6 +139,36 @@ class MollieDtoMapper implements MollieDtoMapperInterface
         }
 
         $currentLocalization = $this->localizationHelper->getCurrentLocalization();
+
+        $cardToken = $this->getRequestParam('mollie-card-token', $paymentTransaction->getPaymentMethod());
+        $mollieCustomerId = '';
+        $saveSingleClickPayment = $this->getRequestParam(
+            'mollie-save-single-click-payment',
+            $paymentTransaction->getPaymentMethod()
+        );
+        $useSavedSingleClickPayment = $this->getRequestParam(
+            'mollie-use-saved-single-click-payment',
+            $paymentTransaction->getPaymentMethod()
+        );
+
+        $customerId = $order->getCustomerUser()->getId();
+        if ($saveSingleClickPayment === 'true' && $useSavedSingleClickPayment === 'false') {
+            $mollieCustomerId = $this->getCustomerService()->createCustomer(
+                $this->getCurrentCustomerOrderAPI($order),
+                (string)$customerId
+            );
+        }
+
+        if ($useSavedSingleClickPayment === 'true') {
+            $customer = $this->getCustomerReferenceService()->getByShopReference($customerId);
+
+            if ($customer) {
+                $mollieCustomerId = $customer->getMollieReference();
+            }
+
+            $cardToken = '';
+        }
+
         $orderData = Order::fromArray([
             'locale' => $currentLocalization ? $currentLocalization->getLanguageCode() : LocaleConfiguration::DEFAULT_LANGUAGE,
             'orderNumber' => $order->getIdentifier(),
@@ -155,7 +189,8 @@ class MollieDtoMapper implements MollieDtoMapperInterface
             ),
             'payment' => [
                 'issuer' => $this->getRequestParam('mollie-issuer', $paymentTransaction->getPaymentMethod()),
-                'cardToken' => $this->getRequestParam('mollie-card-token', $paymentTransaction->getPaymentMethod()),
+                'cardToken' => $cardToken,
+                'customerId' => $mollieCustomerId,
             ],
             'webhookUrl' => $this->ensureDebugWebhookUrl(
                 $this->router->generate(
@@ -224,51 +259,6 @@ class MollieDtoMapper implements MollieDtoMapperInterface
         }
 
         return $orderLineData;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getPaymentData(PaymentTransaction $paymentTransaction)
-    {
-        $currentLocalization = $this->localizationHelper->getCurrentLocalization();
-
-        $payment =  Payment::fromArray([
-            'locale' => $currentLocalization ? $currentLocalization->getLanguageCode() : LocaleConfiguration::DEFAULT_LANGUAGE,
-            'amount' => [
-                'value' => $paymentTransaction->getAmount(),
-                'currency' => $paymentTransaction->getCurrency()
-            ],
-            'metadata' => [
-                'order_id' => $paymentTransaction->getEntityIdentifier()
-            ],
-            'redirectUrl' => $this->ensureDebugWebhookUrl(
-                $this->router->generate(
-                    'oro_payment_callback_return',
-                    ['accessIdentifier' => $paymentTransaction->getAccessIdentifier()],
-                    UrlGeneratorInterface::ABSOLUTE_URL
-                )
-            ),
-            'webhookUrl' => $this->ensureDebugWebhookUrl(
-                $this->router->generate(
-                    'oro_payment_callback_notify',
-                    [
-                        'accessIdentifier' => $paymentTransaction->getAccessIdentifier(),
-                        'accessToken' => $paymentTransaction->getAccessToken(),
-                    ],
-                    UrlGeneratorInterface::ABSOLUTE_URL
-                )
-            ),
-            'issuer' => $this->getRequestParam('mollie-issuer', $paymentTransaction->getPaymentMethod()),
-            'cardToken' => $this->getRequestParam('mollie-card-token', $paymentTransaction->getPaymentMethod()),
-        ]);
-
-        if (($order = $this->getOrderEntity($paymentTransaction)) && ($shippingAddress = $order->getShippingAddress())) {
-            $payment->setShippingAddress($this->getAddressData($shippingAddress, $order->getEmail()));
-            $payment->setDescription($this->getDescription($order, $paymentTransaction));
-        }
-
-        return $payment;
     }
 
     /**
@@ -409,6 +399,131 @@ class MollieDtoMapper implements MollieDtoMapperInterface
         }
 
         return $orderLinesData;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPaymentData(PaymentTransaction $paymentTransaction)
+    {
+        $currentLocalization = $this->localizationHelper->getCurrentLocalization();
+
+        $cardToken = $this->getRequestParam('mollie-card-token', $paymentTransaction->getPaymentMethod());
+        $mollieCustomerId = '';
+        $saveSingleClickPayment = $this->getRequestParam(
+            'mollie-save-single-click-payment',
+            $paymentTransaction->getPaymentMethod()
+        );
+        $useSavedSingleClickPayment = $this->getRequestParam(
+            'mollie-use-saved-single-click-payment',
+            $paymentTransaction->getPaymentMethod()
+        );
+
+        $customerId = $paymentTransaction->getFrontendOwner()->getId();
+        if ($saveSingleClickPayment === 'true' && $useSavedSingleClickPayment === 'false') {
+            $mollieCustomerId = $this->getCustomerService()->createCustomer(
+                $this->getCurrentCustomerPaymentAPI($paymentTransaction),
+                (string)$customerId
+            );
+        }
+
+        if ($useSavedSingleClickPayment === 'true') {
+            $customer = $this->getCustomerReferenceService()->getByShopReference($customerId);
+
+            if ($customer) {
+                $mollieCustomerId = $customer->getMollieReference();
+            }
+
+            $cardToken = '';
+        }
+
+        $payment = Payment::fromArray([
+            'locale' => $currentLocalization ? $currentLocalization->getLanguageCode() : LocaleConfiguration::DEFAULT_LANGUAGE,
+            'amount' => [
+                'value' => $paymentTransaction->getAmount(),
+                'currency' => $paymentTransaction->getCurrency()
+            ],
+            'metadata' => [
+                'order_id' => $paymentTransaction->getEntityIdentifier()
+            ],
+            'redirectUrl' => $this->ensureDebugWebhookUrl(
+                $this->router->generate(
+                    'oro_payment_callback_return',
+                    ['accessIdentifier' => $paymentTransaction->getAccessIdentifier()],
+                    UrlGeneratorInterface::ABSOLUTE_URL
+                )
+            ),
+            'webhookUrl' => $this->ensureDebugWebhookUrl(
+                $this->router->generate(
+                    'oro_payment_callback_notify',
+                    [
+                        'accessIdentifier' => $paymentTransaction->getAccessIdentifier(),
+                        'accessToken' => $paymentTransaction->getAccessToken(),
+                    ],
+                    UrlGeneratorInterface::ABSOLUTE_URL
+                )
+            ),
+            'issuer' => $this->getRequestParam('mollie-issuer', $paymentTransaction->getPaymentMethod()),
+            'cardToken' => $cardToken,
+            'customerId' => $mollieCustomerId,
+        ]);
+
+        if (($order = $this->getOrderEntity($paymentTransaction)) && ($shippingAddress = $order->getShippingAddress())) {
+            $payment->setShippingAddress($this->getAddressData($shippingAddress, $order->getEmail()));
+            $payment->setDescription($this->getDescription($order, $paymentTransaction));
+        }
+
+        return $payment;
+    }
+
+    /**
+     * @param OroOrder $order
+     *
+     * @return MollieCustomer
+     */
+    protected function getCurrentCustomerOrderAPI(OroOrder $order): MollieCustomer
+    {
+        $customer = new MollieCustomer();
+        $customer->setName($order->getCustomerUser()->getFirstName() . ' ' . $order->getCustomerUser()->getLastName());
+        $customer->setEmail($order->getCustomerUser()->getEmail());
+
+        return $customer;
+    }
+
+    /**
+     * @param PaymentTransaction $paymentTransaction
+     *
+     * @return MollieCustomer
+     */
+    protected function getCurrentCustomerPaymentAPI(PaymentTransaction $paymentTransaction): MollieCustomer
+    {
+        $customer = new MollieCustomer();
+        $customer->setName($paymentTransaction->getFrontendOwner()->getFirstName() . ' ' . $paymentTransaction->getFrontendOwner()->getLastName());
+        $customer->setEmail($paymentTransaction->getFrontendOwner()->getEmail());
+
+        return $customer;
+    }
+
+    /**
+     * @return CustomerService
+     */
+    protected function getCustomerService(): CustomerService
+    {
+        /** @var CustomerService $customerService */
+        $customerService = ServiceRegister::getService(CustomerService::CLASS_NAME);
+
+        return $customerService;
+    }
+
+    /**
+     * @return CustomerReferenceService
+     */
+    protected function getCustomerReferenceService(): CustomerReferenceService
+    {
+        /** @var CustomerReferenceService $customerReferenceService */
+        $customerReferenceService = ServiceRegister::getService(CustomerReferenceService::CLASS_NAME);
+
+        return $customerReferenceService;
     }
 
     /**
