@@ -100,7 +100,10 @@ class PaymentConfigFactory implements PaymentConfigFactoryInterface
         $configParams[MolliePaymentConfig::IS_API_METHOD_RESTRICTED] = $mollieMethodConfig->isApiMethodRestricted();
         $configParams[MolliePaymentConfig::PROFILE_ID] = $mollieMethodConfig->getProfileId();
         $configParams[MolliePaymentConfig::CHANNEL_ID] = $channel->getId();
-        $configParams[MolliePaymentConfig::SURCHARGE_AMOUNT] = $mollieMethodConfig->getSurcharge();
+        $configParams[MolliePaymentConfig::SURCHARGE_TYPE] = $mollieMethodConfig->getSurchargeType();
+        $configParams[MolliePaymentConfig::SURCHARGE_FIXED_AMOUNT] = $mollieMethodConfig->getSurchargeFixedAmount();
+        $configParams[MolliePaymentConfig::SURCHARGE_PERCENTAGE] = $mollieMethodConfig->getSurchargePercentage();
+        $configParams[MolliePaymentConfig::SURCHARGE_LIMIT] = $mollieMethodConfig->getSurchargeLimit();
         $configParams[MolliePaymentConfig::ISSUER_LIST_STYLE] = $mollieMethodConfig->getIssuerListStyle();
         $configParams[MolliePaymentConfig::USE_MOLLIE_COMPONENTS] = $useMollieComponents;
         $configParams[MolliePaymentConfig::USE_SINGLE_CLICK_PAYMENT] = $useMollieComponents &&
