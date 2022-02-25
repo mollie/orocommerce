@@ -427,7 +427,10 @@ class ChannelSettingsTypeSubscriber implements EventSubscriberInterface
 
             $paymentMethodSetting->setPaymentMethodConfig($paymentMethodConfig);
             $paymentMethodSetting->setEnabled($paymentMethodConfig->isEnabled());
-            $paymentMethodSetting->setSurcharge($paymentMethodConfig->getSurcharge());
+            $paymentMethodSetting->setSurchargeType($paymentMethodConfig->getSurchargeType());
+            $paymentMethodSetting->setSurchargeFixedAmount($paymentMethodConfig->getSurchargeFixedAmount());
+            $paymentMethodSetting->setSurchargePercentage($paymentMethodConfig->getSurchargePercentage());
+            $paymentMethodSetting->setSurchargeLimit($paymentMethodConfig->getSurchargeLimit());
             $paymentMethodSetting->setMethod($paymentMethodConfig->getApiMethod());
             $paymentMethodSetting->setMollieComponents($paymentMethodConfig->useMollieComponents());
             $paymentMethodSetting->setSingleClickPayment($paymentMethodConfig->useSingleClickPayment());

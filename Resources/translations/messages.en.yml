@@ -93,6 +93,29 @@ mollie:
                     Use the new Order API Platform and get additional insights into the orders. <a href="https://docs.mollie.com/orders/why-use-orders" target="_blank">Read more</a>.'
           option.payment_api.label: 'Payment API'
           option.order_api.label: 'Orders API'
+        payment_surcharge:
+          label: 'Payment surcharge'
+          tooltip: 'Payment API<br>
+                              Use the Payment API Platform for the transactions.<br><br>
+
+                              Order API<br>
+                              Use the new Order API Platform and get additional insights into the orders. <a href="https://docs.mollie.com/orders/why-use-orders" target="_blank">Read more</a>.'
+          option.no_fee.label: 'No fee'
+          option.fixed_fee.label: 'Fixed fee'
+          option.percentage.label: 'Percentage'
+          option.fixed_fee_and_percentage.label: 'Fixed fee and percentage'
+        surcharge_fixed_amount:
+          label: 'Payment surcharge fixed amount'
+          klarna_tooltip: "Enter the extra costs for a Klarna payment with a maximum of € 1.95. The greater amounts won't be accepted."
+          tooltip: "Extra cost to be charged to the customer for payment transactions defined as a fixed amount in default store currency."
+        surcharge_percentage:
+          label: 'Payment surcharge percentage'
+          klarna_tooltip: "Enter the extra costs for a Klarna payment with a maximum of € 1.95. The greater amounts won't be accepted."
+          tooltip: "Extra cost to be charged to the customer for payment transactions defined as a percentage of the cart subtotal."
+        surcharge_limit:
+          label: 'Payment surcharge limit'
+          klarna_tooltip: "Enter the extra costs for a Klarna payment with a maximum of € 1.95. The greater amounts won't be accepted."
+          tooltip: "Maximum amount of payment surcharge that should be charged to the customer (in default store currency)."
         mollie_components:
           label: 'Use Mollie Components'
           tooltip: 'Read more about <a href="https://www.mollie.com/en/news/post/better-checkout-flows-with-mollie-components" target="_blank">Mollie Components</a> and how it improves your conversion'
@@ -112,10 +135,6 @@ mollie:
           tooltip: 'Choose the style in which issuer list will be displayed on checkout.'
           option.dropdown: "Dropdown"
           option.list: "List with the images"
-        surcharge:
-          label: 'Surcharge'
-          klarna_tooltip: "Enter the extra costs for a Klarna payment with a maximum of € 1.95. The greater amounts won't be accepted."
-          tooltip: "Enter the extra costs for a payment."
         orderExpiryDays:
           label: 'Days To Expire'
           tooltip: 'How many days before orders for this method becomes expired? Leave empty to use default expiration (28 days)'
