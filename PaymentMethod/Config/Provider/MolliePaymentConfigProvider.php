@@ -167,7 +167,6 @@ class MolliePaymentConfigProvider implements MolliePaymentConfigProviderInterfac
         $paymentLinkMethod->getPaymentMethodConfig()->getOriginalAPIConfig()->setId(null);
         $paymentLinkMethod->getPaymentMethodConfig()->getOriginalAPIConfig()->setImage(Image::fromArray([]));
         $paymentLinkMethod->getPaymentMethodConfig()->setApiMethod(PaymentMethodConfig::API_METHOD_PAYMENT);
-        $paymentLinkMethod->getPaymentMethodConfig()->setSurcharge(0);
 
         return $paymentLinkMethod;
     }
@@ -299,7 +298,10 @@ class MolliePaymentConfigProvider implements MolliePaymentConfigProviderInterfac
 
             $paymentMethodSetting->setPaymentMethodConfig($paymentMethodConfig);
             $paymentMethodSetting->setEnabled($paymentMethodConfig->isEnabled());
-            $paymentMethodSetting->setSurcharge($paymentMethodConfig->getSurcharge());
+            $paymentMethodSetting->setSurchargeType($paymentMethodConfig->getSurchargeType());
+            $paymentMethodSetting->setSurchargeFixedAmount($paymentMethodConfig->getSurchargeFixedAmount());
+            $paymentMethodSetting->setSurchargePercentage($paymentMethodConfig->getSurchargePercentage());
+            $paymentMethodSetting->setSurchargeLimit($paymentMethodConfig->getSurchargeLimit());
             $paymentMethodSetting->setMethod($paymentMethodConfig->getApiMethod());
             $paymentMethodSetting->setOriginalImagePath($paymentMethodConfig->getOriginalAPIConfig()->getImage()->getSize2x());
             $paymentMethodSetting->setImagePath(
