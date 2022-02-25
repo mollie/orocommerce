@@ -13,6 +13,7 @@ define(function (require) {
         },
 
         apiMethodChooserSelector: 'select.mollie-method-select',
+        singleClickPaymentCheckbox: 'input.mollie-payment-single-click-status',
 
         /**
          * Renders a tabs view
@@ -29,10 +30,14 @@ define(function (require) {
             $(this.apiMethodChooserSelector).each(function () {
                 self.displayFieldsBasedOnMethod($(this).val(),$(this).attr('data-method-wrapper'));
             });
+            $(this.singleClickPaymentCheckbox).each(function () {
+                self.displayFieldsBasedOnSinglePaymentStatus($(this)[0].checked);
+            });
         },
 
         addListeners: function () {
             $(this.apiMethodChooserSelector).change(this.handleApiMethodChange.bind(this));
+            $(this.singleClickPaymentCheckbox).change(this.handleSingleClickStatusChange.bind(this));
         },
 
         handleApiMethodChange: function (event) {
@@ -54,6 +59,28 @@ define(function (require) {
             } else {
                 wrapper.find('.mollie-transaction-description, .mollie-payment-expiry-days').addClass('mollie-hide-row');
                 wrapper.find('.mollie-order-expiry-days').removeClass('mollie-hide-row');
+            }
+        },
+
+        handleSingleClickStatusChange: function (event) {
+            let target = $(event.target);
+
+            this.displayFieldsBasedOnSinglePaymentStatus(target[0].checked);
+
+        },
+
+        displayFieldsBasedOnSinglePaymentStatus: function (checked) {
+            let wrapper = $('.mollie-payment-method[data-payment-method-id="creditcard"]');
+            if (wrapper.length === 0) {
+                return;
+            }
+
+            let fields = wrapper.find('.mollie-payment-single-click-approval-text, .mollie-payment-single-click-description');
+
+            if (fields.length > 0 && checked) {
+                fields.removeClass('mollie-hide-row');
+            } else {
+                fields.addClass('mollie-hide-row');
             }
         },
 
