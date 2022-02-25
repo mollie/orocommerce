@@ -96,6 +96,17 @@ mollie:
         mollie_components:
           label: 'Use Mollie Components'
           tooltip: 'Read more about <a href="https://www.mollie.com/en/news/post/better-checkout-flows-with-mollie-components" target="_blank">Mollie Components</a> and how it improves your conversion'
+        single_click_payment:
+          label: 'Use Single Click Payment'
+          tooltip: 'Read more about <a href="https://www.mollie.com/en/news/post/better-checkout-flows-with-mollie-components" target="_blank">Single Click Payments</a> and how it improves your conversion'
+        single_click_payment_approval_text:
+          label: 'Single Click Payment Approval Text'
+          tooltip: 'Please define a label for the Single Click approval'
+          value: 'Save credit card for future purchases'
+        single_click_payment_description:
+          label: 'Single Click Payment Description'
+          tooltip: 'Please define text that will be displayed when the customer selects Single Click payment'
+          value: 'You have previously save your card. You''ll be redirected to Mollie.'
         issuer_list:
           label: 'Issuer List Style'
           tooltip: 'Choose the style in which issuer list will be displayed on checkout.'

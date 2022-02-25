@@ -128,7 +128,45 @@ class PaymentMethodSettings
      * @ORM\Column(name="mollie_method_description", type="string", length=255, nullable=false)
      */
     protected $mollieMethodDescription;
+    /**
+     * @var Collection|LocalizedFallbackValue[]
+     *
+     * @ORM\ManyToMany(
+     *      targetEntity="Oro\Bundle\LocaleBundle\Entity\LocalizedFallbackValue",
+     *      cascade={"ALL"},
+     *      orphanRemoval=true
+     * )
+     * @ORM\JoinTable(
+     *      name="mollie_payment_single_click_approval_text",
+     *      joinColumns={
+     *          @ORM\JoinColumn(name="payment_setting_id", referencedColumnName="id", onDelete="CASCADE")
+     *      },
+     *      inverseJoinColumns={
+     *          @ORM\JoinColumn(name="localized_value_id", referencedColumnName="id", onDelete="CASCADE", unique=true)
+     *      }
+     * )
+     */
 
+    protected $singleClickPaymentApprovalText;
+    /**
+     * @var Collection|LocalizedFallbackValue[]
+     *
+     * @ORM\ManyToMany(
+     *      targetEntity="Oro\Bundle\LocaleBundle\Entity\LocalizedFallbackValue",
+     *      cascade={"ALL"},
+     *      orphanRemoval=true
+     * )
+     * @ORM\JoinTable(
+     *      name="mollie_payment_single_click_desc",
+     *      joinColumns={
+     *          @ORM\JoinColumn(name="payment_setting_id", referencedColumnName="id", onDelete="CASCADE")
+     *      },
+     *      inverseJoinColumns={
+     *          @ORM\JoinColumn(name="localized_value_id", referencedColumnName="id", onDelete="CASCADE", unique=true)
+     *      }
+     * )
+     */
+    protected $singleClickPaymentDescription;
     /**
      * @var \Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\Model\PaymentMethodConfig
      */
@@ -170,6 +208,10 @@ class PaymentMethodSettings
     private $mollieComponents;
 
     /**
+     * @var boolean
+     */
+    private $singleClickPayment;
+    /**
      * @var string
      */
     private $issuerListStyle;
@@ -203,6 +245,8 @@ class PaymentMethodSettings
         $this->descriptions = new ArrayCollection();
         $this->paymentDescriptions = new ArrayCollection();
         $this->transactionDescriptions = new ArrayCollection();
+        $this->singleClickPaymentApprovalText = new ArrayCollection();
+        $this->singleClickPaymentDescription = new ArrayCollection();
     }
 
     /**
@@ -528,6 +572,110 @@ class PaymentMethodSettings
     public function setMollieComponents($mollieComponents)
     {
         $this->mollieComponents = $mollieComponents;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSingleClickPayment()
+    {
+        return $this->singleClickPayment;
+    }
+
+    /**
+     * @param bool $singleClickPayment
+     */
+    public function setSingleClickPayment($singleClickPayment)
+    {
+        $this->singleClickPayment = $singleClickPayment;
+    }
+
+    /**
+     * @param Collection|LocalizedFallbackValue[] $singleClickPaymentApprovalText
+     */
+    public function setSingleClickPaymentApprovalText($singleClickPaymentApprovalText)
+    {
+        $this->singleClickPaymentApprovalText = $singleClickPaymentApprovalText;
+    }
+
+    /**
+     * @return Collection|LocalizedFallbackValue[]
+     */
+    public function getSingleClickPaymentApprovalText()
+    {
+        return $this->singleClickPaymentApprovalText;
+    }
+
+    /**
+     * @param LocalizedFallbackValue $singleClickPaymentApprovalText
+     *
+     * @return $this
+     */
+    public function addSingleClickPaymentApprovalText(LocalizedFallbackValue $singleClickPaymentApprovalText)
+    {
+        if (!$this->singleClickPaymentApprovalText->contains($singleClickPaymentApprovalText)) {
+            $this->singleClickPaymentApprovalText->add($singleClickPaymentApprovalText);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param LocalizedFallbackValue $singleClickPaymentApprovalText
+     *
+     * @return $this
+     */
+    public function removeSingleClickPaymentApprovalText(LocalizedFallbackValue $singleClickPaymentApprovalText)
+    {
+        if ($this->singleClickPaymentApprovalText->contains($singleClickPaymentApprovalText)) {
+            $this->singleClickPaymentApprovalText->removeElement($singleClickPaymentApprovalText);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param Collection|LocalizedFallbackValue[] $singleClickPaymentDescription
+     */
+    public function setSingleClickPaymentDescription($singleClickPaymentDescription)
+    {
+        $this->singleClickPaymentDescription = $singleClickPaymentDescription;
+    }
+
+    /**
+     * @return Collection|LocalizedFallbackValue[]
+     */
+    public function getSingleClickPaymentDescription()
+    {
+        return $this->singleClickPaymentDescription;
+    }
+
+    /**
+     * @param LocalizedFallbackValue $singleClickPaymentDescription
+     *
+     * @return $this
+     */
+    public function addSingleClickPaymentDescription(LocalizedFallbackValue $singleClickPaymentDescription)
+    {
+        if (!$this->singleClickPaymentDescription->contains($singleClickPaymentDescription)) {
+            $this->singleClickPaymentDescription->add($singleClickPaymentDescription);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param LocalizedFallbackValue $singleClickPaymentDescription
+     *
+     * @return $this
+     */
+    public function removeSingleClickPaymentDescription(LocalizedFallbackValue $singleClickPaymentDescription)
+    {
+        if ($this->singleClickPaymentDescription->contains($singleClickPaymentDescription)) {
+            $this->singleClickPaymentDescription->removeElement($singleClickPaymentDescription);
+        }
+
+        return $this;
     }
 
     /**

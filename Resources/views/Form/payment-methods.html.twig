@@ -66,6 +66,23 @@
                 {{ form_row(paymentMethod.paymentExpiryDays, { 'attr': {'class': 'mollie-payment-expiry-days'} }) }}
             {% endif %}
 
+            {% if paymentMethod.mollieComponents is defined %}
+                {{ form_row(paymentMethod.mollieComponents, { 'attr': {'class': 'mollie-payment-mollie-components'} }) }}
+            {% endif %}
+
+            {% if paymentMethod.singleClickPayment is defined %}
+                {{ form_row(paymentMethod.singleClickPayment, { 'attr': {'class': 'mollie-payment-single-click-status'} }) }}
+            {% endif %}
+
+            {% if paymentMethod.singleClickPaymentApprovalText is defined %}
+                {{ form_row(paymentMethod.singleClickPaymentApprovalText, { 'attr': {'class': 'mollie-payment-single-click-approval-text'} }) }}
+            {% endif %}
+
+            {% if paymentMethod.singleClickPaymentDescription is defined %}
+                {{ form_row(paymentMethod.singleClickPaymentDescription, { 'attr': {'class': 'mollie-payment-single-click-description'} }) }}
+            {% endif %}
+
+
             {{ form_rest(paymentMethod) }}
 
         </div>

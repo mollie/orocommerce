@@ -66,6 +66,9 @@ class PaymentConfigFactory implements PaymentConfigFactoryInterface
 
         $paymentDescription = $this->getLocalizedValue($paymentMethodSetting->getPaymentDescriptions());
         $transactionDescription = $this->getLocalizedValue($paymentMethodSetting->getTransactionDescriptions());
+        $singleClickPaymentApprovalText = $this->getLocalizedValue($paymentMethodSetting->getSingleClickPaymentApprovalText());
+        $singleClickPaymentDescription = $this->getLocalizedValue($paymentMethodSetting->getSingleClickPaymentDescription());
+
 
         $paymentLabel = $this->getLocalizedValue($paymentMethodSetting->getDescriptions());
         $adminLabel = "{$channel->getName()} - {$paymentLabel}";
@@ -100,6 +103,10 @@ class PaymentConfigFactory implements PaymentConfigFactoryInterface
         $configParams[MolliePaymentConfig::SURCHARGE_AMOUNT] = $mollieMethodConfig->getSurcharge();
         $configParams[MolliePaymentConfig::ISSUER_LIST_STYLE] = $mollieMethodConfig->getIssuerListStyle();
         $configParams[MolliePaymentConfig::USE_MOLLIE_COMPONENTS] = $useMollieComponents;
+        $configParams[MolliePaymentConfig::USE_SINGLE_CLICK_PAYMENT] = $useMollieComponents &&
+            $mollieMethodConfig->useSingleClickPayment();
+        $configParams[MolliePaymentConfig::SINGLE_CLICK_PAYMENT_APPROVAL_TEXT] = $singleClickPaymentApprovalText;
+        $configParams[MolliePaymentConfig::SINGLE_CLICK_PAYMENT_DESCRIPTION_TEXT] = $singleClickPaymentDescription;
         $configParams[MolliePaymentConfig::ISSUERS] = $this->getIssuers($mollieMethodConfig, $channel->getId());
         $configParams[MolliePaymentConfig::ORDER_EXPIRY_DAYS] = $mollieMethodConfig->getDaysToOrderExpire();
         $configParams[MolliePaymentConfig::PAYMENT_EXPIRY_DAYS] = $mollieMethodConfig->getDaysToPaymentExpire();

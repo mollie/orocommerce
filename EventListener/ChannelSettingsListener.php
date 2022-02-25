@@ -230,6 +230,7 @@ class ChannelSettingsListener
             $paymentMethodConfig->setSurcharge($paymentMethodSetting->getSurcharge());
             $paymentMethodConfig->setApiMethod($paymentMethodSetting->getMethod());
             $paymentMethodConfig->setUseMollieComponents($paymentMethodSetting->getMollieComponents());
+            $paymentMethodConfig->setUseSingleClickPayment($paymentMethodSetting->getSingleClickPayment());
             $paymentMethodConfig->setIssuerListStyle($paymentMethodSetting->getIssuerListStyle());
             $paymentMethodConfig->setDaysToOrderExpire($paymentMethodSetting->getOrderExpiryDays());
             $paymentMethodConfig->setDaysToPaymentExpire($paymentMethodSetting->getPaymentExpiryDays());
