@@ -288,7 +288,7 @@ class PaymentMethodSettingsType extends AbstractType
             );
         }
 
-        if ($paymentMethodConfig->isSingleClickPaymentSupported() && $paymentMethodConfig->useSingleClickPayment()) {
+        if ($paymentMethodConfig->isSingleClickPaymentSupported()) {
             $event->getForm()->add(
                 'singleClickPaymentApprovalText',
                 LocalizedFallbackValueCollectionType::class,
