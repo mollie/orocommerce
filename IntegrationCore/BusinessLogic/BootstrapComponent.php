@@ -3,6 +3,8 @@
 namespace Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic;
 
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\CheckoutLink\CheckoutLinkService;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Customer\CustomerService;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\CustomerReference\CustomerReferenceService;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\OrgToken\ProxyDataProvider;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\Proxy;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Integration\Event\IntegrationOrderBillingAddressChangedEvent;
@@ -107,6 +109,20 @@ class BootstrapComponent extends \Mollie\Bundle\PaymentBundle\IntegrationCore\In
             PaymentService::CLASS_NAME,
             function () {
                 return PaymentService::getInstance();
+            }
+        );
+
+        ServiceRegister::registerService(
+            CustomerReferenceService::CLASS_NAME,
+            function () {
+                return CustomerReferenceService::getInstance();
+            }
+        );
+
+        ServiceRegister::registerService(
+            CustomerService::CLASS_NAME,
+            function () {
+                return CustomerService::getInstance();
             }
         );
 
