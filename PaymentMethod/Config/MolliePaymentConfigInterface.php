@@ -63,6 +63,21 @@ interface MolliePaymentConfigInterface extends PaymentConfigInterface
     public function useMollieComponents();
 
     /**
+     * @return bool
+     */
+    public function useSingleClickPayment();
+
+    /**
+     * @return string
+     */
+    public function getSingleClickPaymentApprovalText();
+
+    /**
+     * @return string
+     */
+    public function getSingleClickPaymentDescription();
+
+    /**
      * @return string
      */
     public function getIssuerListStyle();

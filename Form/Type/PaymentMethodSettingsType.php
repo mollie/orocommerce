@@ -216,6 +216,37 @@ class PaymentMethodSettingsType extends AbstractType
                     'tooltip' => 'mollie.payment.config.payment_methods.mollie_components.tooltip',
                     'required' => true,
                 ]
+            )->add(
+                'singleClickPayment',
+                CheckboxType::class,
+                [
+                    'value' => 1,
+                    'label' => 'mollie.payment.config.payment_methods.single_click_payment.label',
+                    'tooltip' => 'mollie.payment.config.payment_methods.single_click_payment.tooltip',
+                    'required' => true,
+                ]
+            );
+        }
+
+        if ($paymentMethodConfig->isSingleClickPaymentSupported()) {
+            $event->getForm()->add(
+                'singleClickPaymentApprovalText',
+                LocalizedFallbackValueCollectionType::class,
+                [
+                    'label' => 'mollie.payment.config.payment_methods.single_click_payment_approval_text.label',
+                    'tooltip' => 'mollie.payment.config.payment_methods.single_click_payment_approval_text.tooltip',
+                    'required' => true,
+                    'entry_options' => ['constraints' => [new NotBlank()]],
+                ]
+            )->add(
+                'singleClickPaymentDescription',
+                LocalizedFallbackValueCollectionType::class,
+                [
+                    'label' => 'mollie.payment.config.payment_methods.single_click_payment_description.label',
+                    'tooltip' => 'mollie.payment.config.payment_methods.single_click_payment_description.tooltip',
+                    'required' => true,
+                    'entry_options' => ['constraints' => [new NotBlank()]],
+                ]
             );
         }
 
