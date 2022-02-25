@@ -194,13 +194,26 @@ class PaymentMethodSettings
     /**
      * @var string
      */
-    private $method;
+    private $surchargeType;
 
     /**
      * @var string
      */
-    private $surcharge;
+    private $surchargeFixedAmount;
 
+    /**
+     * @var string
+     */
+    private $surchargePercentage;
+
+    /**
+     * @var string
+     */
+    private $surchargeLimit;
+    /**
+     * @var string
+     */
+    private $method;
     /**
      * @var boolean
      */
@@ -494,6 +507,70 @@ class PaymentMethodSettings
     /**
      * @return string
      */
+    public function getSurchargeType()
+    {
+        return $this->surchargeType;
+    }
+
+    /**
+     * @param string $surchargeType
+     */
+    public function setSurchargeType($surchargeType)
+    {
+        $this->surchargeType = $surchargeType;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSurchargeFixedAmount()
+    {
+        return $this->surchargeFixedAmount;
+    }
+
+    /**
+     * @param string $surchargeFixedAmount
+     */
+    public function setSurchargeFixedAmount($surchargeFixedAmount)
+    {
+        $this->surchargeFixedAmount = $surchargeFixedAmount;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSurchargePercentage()
+    {
+        return $this->surchargePercentage;
+    }
+
+    /**
+     * @param string $surchargePercentage
+     */
+    public function setSurchargePercentage($surchargePercentage)
+    {
+        $this->surchargePercentage = $surchargePercentage;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSurchargeLimit()
+    {
+        return $this->surchargeLimit;
+    }
+
+    /**
+     * @param string $surchargeLimit
+     */
+    public function setSurchargeLimit($surchargeLimit)
+    {
+        $this->surchargeLimit = $surchargeLimit;
+    }
+
+    /**
+     * @return string
+     */
     public function getMethod()
     {
         return $this->method;
@@ -540,22 +617,6 @@ class PaymentMethodSettings
     }
 
     /**
-     * @return string
-     */
-    public function getSurcharge()
-    {
-        return $this->surcharge;
-    }
-
-    /**
-     * @param string $surcharge
-     */
-    public function setSurcharge($surcharge)
-    {
-        $this->surcharge = $surcharge;
-    }
-
-    /**
      * @return mixed
      */
     public function getMollieComponents()
@@ -588,19 +649,19 @@ class PaymentMethodSettings
     }
 
     /**
-     * @param Collection|LocalizedFallbackValue[] $singleClickPaymentApprovalText
-     */
-    public function setSingleClickPaymentApprovalText($singleClickPaymentApprovalText)
-    {
-        $this->singleClickPaymentApprovalText = $singleClickPaymentApprovalText;
-    }
-
-    /**
      * @return Collection|LocalizedFallbackValue[]
      */
     public function getSingleClickPaymentApprovalText()
     {
         return $this->singleClickPaymentApprovalText;
+    }
+
+    /**
+     * @param Collection|LocalizedFallbackValue[] $singleClickPaymentApprovalText
+     */
+    public function setSingleClickPaymentApprovalText($singleClickPaymentApprovalText)
+    {
+        $this->singleClickPaymentApprovalText = $singleClickPaymentApprovalText;
     }
 
     /**
@@ -632,19 +693,19 @@ class PaymentMethodSettings
     }
 
     /**
-     * @param Collection|LocalizedFallbackValue[] $singleClickPaymentDescription
-     */
-    public function setSingleClickPaymentDescription($singleClickPaymentDescription)
-    {
-        $this->singleClickPaymentDescription = $singleClickPaymentDescription;
-    }
-
-    /**
      * @return Collection|LocalizedFallbackValue[]
      */
     public function getSingleClickPaymentDescription()
     {
         return $this->singleClickPaymentDescription;
+    }
+
+    /**
+     * @param Collection|LocalizedFallbackValue[] $singleClickPaymentDescription
+     */
+    public function setSingleClickPaymentDescription($singleClickPaymentDescription)
+    {
+        $this->singleClickPaymentDescription = $singleClickPaymentDescription;
     }
 
     /**

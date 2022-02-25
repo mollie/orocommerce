@@ -227,7 +227,10 @@ class ChannelSettingsListener
                 );
             }
 
-            $paymentMethodConfig->setSurcharge($paymentMethodSetting->getSurcharge());
+            $paymentMethodConfig->setSurchargeType($paymentMethodSetting->getSurchargeType());
+            $paymentMethodConfig->setSurchargeFixedAmount($paymentMethodSetting->getSurchargeFixedAmount());
+            $paymentMethodConfig->setSurchargePercentage($paymentMethodSetting->getSurchargePercentage());
+            $paymentMethodConfig->setSurchargeLimit($paymentMethodSetting->getSurchargeLimit());
             $paymentMethodConfig->setApiMethod($paymentMethodSetting->getMethod());
             $paymentMethodConfig->setUseMollieComponents($paymentMethodSetting->getMollieComponents());
             $paymentMethodConfig->setUseSingleClickPayment($paymentMethodSetting->getSingleClickPayment());
