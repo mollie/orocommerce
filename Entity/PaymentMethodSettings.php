@@ -137,7 +137,7 @@ class PaymentMethodSettings
      *      orphanRemoval=true
      * )
      * @ORM\JoinTable(
-     *      name="mollie_payment_single_click_approval_text",
+     *      name="mollie_single_click_appr_text",
      *      joinColumns={
      *          @ORM\JoinColumn(name="payment_setting_id", referencedColumnName="id", onDelete="CASCADE")
      *      },
@@ -157,7 +157,7 @@ class PaymentMethodSettings
      *      orphanRemoval=true
      * )
      * @ORM\JoinTable(
-     *      name="mollie_payment_single_click_desc",
+     *      name="mollie_single_click_desc",
      *      joinColumns={
      *          @ORM\JoinColumn(name="payment_setting_id", referencedColumnName="id", onDelete="CASCADE")
      *      },
