@@ -7,8 +7,8 @@ use Oro\Bundle\MigrationBundle\Migration\QueryBag;
 
 class MollieSingleClickPayment implements Migration
 {
-    const SINGLE_CLICK_PAYMENT_APPROVAL_TEXT = 'mollie_payment_single_click_approval_text';
-    const SINGLE_CLICK_PAYMENT_DESCRIPTION = 'mollie_payment_single_click_desc';
+    const SINGLE_CLICK_PAYMENT_APPROVAL_TEXT = 'mollie_single_click_appr_text';
+    const SINGLE_CLICK_PAYMENT_DESCRIPTION = 'mollie_single_click_desc';
 
     /**
      * {@inheritdoc}
@@ -28,7 +28,7 @@ class MollieSingleClickPayment implements Migration
     }
 
     /**
-     * Create mollie_payment_single_click_approval_text table
+     * Create mollie_single_click_appr_text table
      *
      * @param Schema $schema
      */
@@ -43,7 +43,7 @@ class MollieSingleClickPayment implements Migration
     }
 
     /**
-     * Create mollie_payment_single_click_desc table
+     * Create mollie_single_click_desc table
      *
      * @param Schema $schema
      */
@@ -58,7 +58,7 @@ class MollieSingleClickPayment implements Migration
     }
 
     /**
-     * Add mollie_payment_single_click_approval_text foreign keys.
+     * Add mollie_single_click_appr_text foreign keys.
      *
      * @param Schema $schema
      *
@@ -82,7 +82,7 @@ class MollieSingleClickPayment implements Migration
     }
 
     /**
-     * Add mollie_payment_single_click_desc foreign keys.
+     * Add mollie_single_click_desc foreign keys.
      *
      * @param Schema $schema
      *
