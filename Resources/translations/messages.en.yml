@@ -96,11 +96,7 @@ mollie:
           option.order_api.label: 'Orders API'
         payment_surcharge:
           label: 'Payment surcharge'
-          tooltip: 'Payment API<br>
-                              Use the Payment API Platform for the transactions.<br><br>
-
-                              Order API<br>
-                              Use the new Order API Platform and get additional insights into the orders. <a href="https://docs.mollie.com/orders/why-use-orders" target="_blank">Read more</a>.'
+          tooltip: 'Please select a surcharge type.'
           option.no_fee.label: 'No fee'
           option.fixed_fee.label: 'Fixed fee'
           option.percentage.label: 'Percentage'
@@ -122,15 +118,16 @@ mollie:
           tooltip: 'Read more about <a href="https://www.mollie.com/en/news/post/better-checkout-flows-with-mollie-components" target="_blank">Mollie Components</a> and how it improves your conversion'
         single_click_payment:
           label: 'Use Single Click Payment'
-          tooltip: 'Read more about <a href="https://www.mollie.com/en/news/post/better-checkout-flows-with-mollie-components" target="_blank">Single Click Payments</a> and how it improves your conversion'
+          tooltip: 'Read more about <a href="https://help.mollie
+          .com/hc/en-us/articles/115000671249-What-are-single-click-payments-and-how-does-it-work" target="_blank">Single Click Payments</a> and how it improves your conversion'
         single_click_payment_approval_text:
           label: 'Single Click Payment Approval Text'
-          tooltip: 'Please define a label for the Single Click approval'
+          tooltip: 'Define text to ask customers to save credit card details during the checkout'
           value: 'Save credit card for future purchases'
         single_click_payment_description:
           label: 'Single Click Payment Description'
           tooltip: 'Please define text that will be displayed when the customer selects Single Click payment'
-          value: 'You have previously save your card. You''ll be redirected to Mollie.'
+          value: "You have previously saved your card. You'll be redirected to Mollie."
         issuer_list:
           label: 'Issuer List Style'
           tooltip: 'Choose the style in which issuer list will be displayed on checkout.'
