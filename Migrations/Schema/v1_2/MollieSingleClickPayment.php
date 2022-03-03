@@ -1,5 +1,7 @@
 <?php
 
+namespace Mollie\Bundle\PaymentBundle\Migrations\Schema\v1_2;
+
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\SchemaException;
 use Oro\Bundle\MigrationBundle\Migration\Migration;
