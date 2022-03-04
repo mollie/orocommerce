@@ -143,23 +143,16 @@ class MollieDtoMapper implements MollieDtoMapperInterface
         $cardToken = $this->getRequestParam('mollie-card-token', $paymentTransaction->getPaymentMethod());
         $mollieCustomerId = '';
         $saveSingleClickPayment = $this->getRequestParam(
-            'mollie-save-single-click-payment',
-            $paymentTransaction->getPaymentMethod()
-        );
+                'mollie-save-single-click-payment',
+                $paymentTransaction->getPaymentMethod()
+            ) === 'true';
         $useSavedSingleClickPayment = $this->getRequestParam(
-            'mollie-use-saved-single-click-payment',
-            $paymentTransaction->getPaymentMethod()
-        );
+                'mollie-use-saved-single-click-payment',
+                $paymentTransaction->getPaymentMethod()
+            ) === 'true';
 
         $customerId = $order->getCustomerUser()->getId();
-        if ($saveSingleClickPayment === 'true' && $useSavedSingleClickPayment === 'false') {
-            $mollieCustomerId = $this->getCustomerService()->createCustomer(
-                $this->getCurrentCustomerOrderAPI($order),
-                (string)$customerId
-            );
-        }
-
-        if ($useSavedSingleClickPayment === 'true') {
+        if ($useSavedSingleClickPayment) {
             $customer = $this->getCustomerReferenceService()->getByShopReference($customerId);
 
             if ($customer) {
@@ -167,6 +160,11 @@ class MollieDtoMapper implements MollieDtoMapperInterface
             }
 
             $cardToken = '';
+        }else  if ($saveSingleClickPayment) {
+            $mollieCustomerId = $this->getCustomerService()->createCustomer(
+                $this->getCurrentCustomerOrderAPI($order),
+                (string)$customerId
+            );
         }
 
         $orderData = Order::fromArray([
@@ -411,23 +409,16 @@ class MollieDtoMapper implements MollieDtoMapperInterface
         $cardToken = $this->getRequestParam('mollie-card-token', $paymentTransaction->getPaymentMethod());
         $mollieCustomerId = '';
         $saveSingleClickPayment = $this->getRequestParam(
-            'mollie-save-single-click-payment',
-            $paymentTransaction->getPaymentMethod()
-        );
+                'mollie-save-single-click-payment',
+                $paymentTransaction->getPaymentMethod()
+            ) === 'true';
         $useSavedSingleClickPayment = $this->getRequestParam(
-            'mollie-use-saved-single-click-payment',
-            $paymentTransaction->getPaymentMethod()
-        );
+                'mollie-use-saved-single-click-payment',
+                $paymentTransaction->getPaymentMethod()
+            ) === 'true';
 
         $customerId = $paymentTransaction->getFrontendOwner()->getId();
-        if ($saveSingleClickPayment === 'true' && $useSavedSingleClickPayment === 'false') {
-            $mollieCustomerId = $this->getCustomerService()->createCustomer(
-                $this->getCurrentCustomerPaymentAPI($paymentTransaction),
-                (string)$customerId
-            );
-        }
-
-        if ($useSavedSingleClickPayment === 'true') {
+        if ($useSavedSingleClickPayment) {
             $customer = $this->getCustomerReferenceService()->getByShopReference($customerId);
 
             if ($customer) {
@@ -435,6 +426,11 @@ class MollieDtoMapper implements MollieDtoMapperInterface
             }
 
             $cardToken = '';
+        }else if ($saveSingleClickPayment) {
+            $mollieCustomerId = $this->getCustomerService()->createCustomer(
+                $this->getCurrentCustomerPaymentAPI($paymentTransaction),
+                (string)$customerId
+            );
         }
 
         $payment = Payment::fromArray([
