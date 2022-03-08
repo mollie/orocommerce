@@ -27,8 +27,7 @@ class CheckoutEntityListener
      */
     public function __construct(
         MolliePaymentConfigProviderInterface $paymentConfigProvider
-    )
-    {
+    ) {
         $this->paymentConfigProvider = $paymentConfigProvider;
     }
 
