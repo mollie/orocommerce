@@ -169,6 +169,43 @@ class CustomerServiceTest extends BaseTestWithServices
      * @throws HttpRequestException
      * @throws QueryFilterInvalidParamException
      */
+    public function testCreateInvalidCustomer()
+    {
+        $shopReference = 'test_customer_reference';
+        $customer = Customer::fromArray(array(
+            'name' => 'Marko',
+            'email' => 'test.com'
+        ));
+        $this->httpClient->setMockResponses(array($this->getMockInvalidResponse()));
+
+        $mollieReference = $this->customerService->createCustomer($customer, $shopReference);
+
+        $queryFilter = new QueryFilter();
+        $queryFilter->where('shopReference', Operators::EQUALS, $shopReference);
+        /** @var CustomerReference[] $savedCustomerReferences */
+        $savedCustomerReferences = $this->customerReferenceRepository->select($queryFilter);
+        $this->assertCount(0, $savedCustomerReferences);
+        $this->assertNull($mollieReference);
+    }
+
+    /**
+     * @return HttpResponse
+     */
+    protected function getMockInvalidResponse()
+    {
+        $response = file_get_contents(__DIR__ . '/../Common/ApiResponses/invalidResponse.json');
+
+        return new HttpResponse(422, array(), $response);
+    }
+
+    /**
+     * @return void
+     * @throws UnprocessableEntityRequestException
+     * @throws HttpAuthenticationException
+     * @throws HttpCommunicationException
+     * @throws HttpRequestException
+     * @throws QueryFilterInvalidParamException
+     */
     public function testCustomerCreationExistingCustomerReference()
     {
         $shopReference = 'test_customer_reference';
