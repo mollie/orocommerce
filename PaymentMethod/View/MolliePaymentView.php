@@ -63,12 +63,12 @@ class MolliePaymentView implements PaymentMethodViewInterface
         return [
             'isApplePay' => false !== strpos($this->config->getPaymentMethodIdentifier(), 'applepay'),
             'icon' => $this->config->getIcon(),
-            'surchargeAmount' => $this->getSurchargeService()->calculateSurchargeAmount(
+            'surchargeAmount' => round($this->getSurchargeService()->calculateSurchargeAmount(
                 $surchargeType,
                 $surchargeFixedAmount,
                 $surchargePercentage,
                 $surchargeLimit,
-                $context->getSubtotal()->getValue()
+                $context->getSubtotal()->getValue()), 2
             ),
             'currency' => $context->getCurrency(),
             'useMollieComponents' => $this->config->useMollieComponents() && !$this->isMultipleCreditCard($context),
