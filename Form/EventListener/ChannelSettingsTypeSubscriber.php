@@ -413,13 +413,13 @@ class ChannelSettingsTypeSubscriber implements EventSubscriberInterface
                 );
             }
 
-            if ($paymentMethodSetting->getSingleClickPaymentApprovalText()->isEmpty()) {
+            if (!empty($paymentMethodSetting->getSingleClickPaymentApprovalText()) && $paymentMethodSetting->getSingleClickPaymentApprovalText()->isEmpty()) {
                 $paymentMethodSetting->addSingleClickPaymentApprovalText(
                     (new LocalizedFallbackValue())->setString($this->translator->trans('mollie.payment.config.payment_methods.single_click_payment_approval_text.value'))
                 );
             }
 
-            if ($paymentMethodSetting->getSingleClickPaymentDescription()->isEmpty()) {
+            if (!empty($paymentMethodSetting->getSingleClickPaymentDescription()) && $paymentMethodSetting->getSingleClickPaymentDescription()->isEmpty()) {
                 $paymentMethodSetting->addSingleClickPaymentDescription(
                     (new LocalizedFallbackValue())->setString($this->translator->trans('mollie.payment.config.payment_methods.single_click_payment_description.value'))
                 );
