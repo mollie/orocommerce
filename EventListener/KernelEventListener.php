@@ -4,7 +4,7 @@ namespace Mollie\Bundle\PaymentBundle\EventListener;
 
 use Mollie\Bundle\PaymentBundle\Exceptions\MollieOperationForbiddenException;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 
 /**
  * Class KernelEventListener
@@ -14,11 +14,11 @@ use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 class KernelEventListener
 {
     /**
-     * @param GetResponseForExceptionEvent $exceptionEvent
+     * @param ExceptionEvent $exceptionEvent
      */
-    public function onException(GetResponseForExceptionEvent $exceptionEvent)
+    public function onException(ExceptionEvent $exceptionEvent): void
     {
-        $exception = $exceptionEvent->getException();
+        $exception = $exceptionEvent->getThrowable();
         if ($exception instanceof MollieOperationForbiddenException) {
             $exceptionEvent->allowCustomResponseCode();
             $exceptionEvent->setResponse(

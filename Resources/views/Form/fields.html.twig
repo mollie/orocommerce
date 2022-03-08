@@ -2,12 +2,12 @@
     {# First include and render all tabsl content in a template variable to avoid mixing Mollie content with Oro form #}
     {% set authTokenIsValid = form.authToken.vars.value is not empty and form.authToken.vars.errors is empty %}
     {% set showOnlyAuthorization = not authTokenIsValid or form.formRefreshRequired.vars.value is not empty %}
-    {% set authorizationContent = include('MolliePaymentBundle:Form:authorization.html.twig') %}
+    {% set authorizationContent = include('@MolliePayment/Form/authorization.html.twig') %}
 
     {% if (not showOnlyAuthorization) %}
-        {% set websiteProfileContent = include('MolliePaymentBundle:Form:website-profile.html.twig') %}
-        {% set paymentMethodsContent = include('MolliePaymentBundle:Form:payment-methods.html.twig') %}
-        {% set notificationsContent = include('MolliePaymentBundle:Form:notifications.html.twig') %}
+        {% set websiteProfileContent = include('@MolliePayment/Form/website-profile.html.twig') %}
+        {% set paymentMethodsContent = include('@MolliePayment/Form/payment-methods.html.twig') %}
+        {% set notificationsContent = include('@MolliePayment/Form/notifications.html.twig') %}
     {% endif %}
 
 
@@ -22,12 +22,6 @@
 
     {% if (form.parent.mappingSettings is defined) %}
         {{ form_widget(form.parent.mappingSettings) }}
-    {% endif %}
-
-    {% if (form.parent.connectors is defined) %}
-        <div class="control-group-container {% if form.parent.connectors.vars.choices is empty %}{{ 'hide' }}{% endif %}">
-            {{ form_row(form.parent.connectors) }}
-        </div>
     {% endif %}
     {{ form_rest(form.parent) }}
 

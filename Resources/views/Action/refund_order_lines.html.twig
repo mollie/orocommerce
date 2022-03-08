@@ -71,7 +71,7 @@
     </div>
 
     <div class="mollie-refunded-info-container">
-        {% import 'OroUIBundle::macros.html.twig' as UI %}
+        {% import '@OroUI/macros.html.twig' as UI %}
         <div>{{ UI.tooltip("mollie.payment.refund.tooltip.total") }}{{ 'mollie.payment.refund.amountToRefund'|trans }}</div>
         <div>{{ form.mollieRefund.currencySymbol.vars.value }}{{ form.mollieRefund.totalValue.vars.value }}</div>
         <div>{{ UI.tooltip("mollie.payment.refund.tooltip.refunded") }}{{ 'mollie.payment.refund.totalRefunded'|trans }}</div>

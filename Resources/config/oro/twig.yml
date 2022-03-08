@@ -1,2 +1,2 @@
 bundles:
-  - MolliePaymentBundle:Form:fields.html.twig
+  - '@MolliePayment/Form/fields.html.twig'

@@ -142,13 +142,14 @@ services:
     tags:
       - { name: monolog.logger, channel: mollie }
 
-  mollie_payment.repository.channel_settings:
-    class: 'Mollie\Bundle\PaymentBundle\Entity\Repository\ChannelSettingsRepository'
+  Mollie\Bundle\PaymentBundle\Entity\Repository\ChannelSettingsRepository:
     parent: oro_entity.abstract_repository
     arguments:
       - 'Mollie\Bundle\PaymentBundle\Entity\ChannelSettings'
     calls:
       - [setAclHelper, ['@oro_security.acl_helper']]
+    tags:
+      - { name: doctrine.repository_service }
 
   mollie_payment.form.type.channel_settings:
     class: Mollie\Bundle\PaymentBundle\Form\Type\ChannelSettingsType
@@ -358,17 +359,28 @@ services:
     public: true
     arguments:
       - '@Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration'
+    calls:
+      - ['setContainer', ['@Psr\Container\ContainerInterface']]
 
   Mollie\Bundle\PaymentBundle\Controller\PaymentLinkController:
-      public: true
-      arguments:
-        - '@mollie_payment.manager.admin_link_handler'
+    public: true
+    arguments:
+      - '@mollie_payment.manager.admin_link_handler'
+    calls:
+      - ['setContainer', ['@Psr\Container\ContainerInterface']]
 
   Mollie\Bundle\PaymentBundle\Controller\ActivePaymentMethodsController:
-      public: true
-      arguments:
-        - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\PaymentMethodService'
-        - '@Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration'
+    public: true
+    arguments:
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\PaymentMethodService'
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration'
+    calls:
+      - ['setContainer', ['@Psr\Container\ContainerInterface']]
+
+  Mollie\Bundle\PaymentBundle\Controller\AjaxMollieController:
+    public: true
+    calls:
+      - ['setContainer', ['@Psr\Container\ContainerInterface']]
 
   Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Authorization\Interfaces\AuthorizationService:
     factory: ['Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Authorization\OrgToken\OrgTokenAuthService', 'getInstance']
