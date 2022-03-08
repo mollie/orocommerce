@@ -426,7 +426,7 @@ class MollieDtoMapper implements MollieDtoMapperInterface
             }
 
             $cardToken = '';
-        }else if ($saveSingleClickPayment) {
+        } else if ($saveSingleClickPayment) {
             $mollieCustomerId = $this->getCustomerService()->createCustomer(
                 $this->getCurrentCustomerPaymentAPI($paymentTransaction),
                 (string)$customerId
