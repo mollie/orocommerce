@@ -1,7 +1,7 @@
 {% block _payment_methods_mollie_payment_widget %}
     <div
-        class="{{ class_prefix }}-form__payment-methods mollie-payment-widget"
-        {% if (view.options.isApplePay) %}data-mollie-applepay{% endif %}
+            class="{{ class_prefix }}-form__payment-methods mollie-payment-widget"
+            {% if (view.options.isApplePay) %}data-mollie-applepay{% endif %}
     >
         <div class="mollie-payment-container">
             {% if (view.options.icon) %}
@@ -12,9 +12,7 @@
                     <p class="mollie-payment-surcharge">{{ 'mollie.payment.checkout.subtotals.mollie_payment_surcharge'|trans }}: {{ view.options.surchargeAmount|oro_format_currency({'currency': view.options.currency}) }}</p>
                 {% endif %}
                 {% if (view.options.renderUseSavedCreditCardCheckbox) %}
-                    <p>{{ view.options.singleClickPaymentDescription }}</p>
-                {% else %}
-                    <p>{{ view.options.paymentDescription }}</p>
+                    <p class="mollie-payment-description hidden">{{ view.options.singleClickPaymentDescription }}</p>
                 {% endif %}
             </div>
 
