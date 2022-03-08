@@ -46,7 +46,7 @@ class MolliePaymentView implements PaymentMethodViewInterface
         $renderSaveCreditCardCheckbox = false;
         $renderUseSavedCreditCardCheckbox = false;
 
-        if ($this->config->useSingleClickPayment()) {
+        if ($this->config->useSingleClickPayment() && !$context->getCustomerUser()->isGuest()) {
             $customerFromDb = $this->getCustomerReferenceService()->getByShopReference($context->getCustomerUser()->getId());
             if (!$customerFromDb) {
                 $renderSaveCreditCardCheckbox = true;
