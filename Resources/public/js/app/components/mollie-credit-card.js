@@ -107,7 +107,9 @@ define(function(require) {
         mountComponents: function () {
             let locale = document.querySelector('html').getAttribute('lang'),
                 useSavedCreditCardWrapper = document.getElementsByClassName('form-group--useSavedCreditCardCheckbox')[0],
-                useSavedCreditCard = document.getElementById(this.options.paymentMethod + '-use-saved-credit-card-checkbox');
+                useSavedCreditCard = document.getElementById(this.options.paymentMethod + '-use-saved-credit-card-checkbox'),
+                description = document.getElementsByClassName('mollie-payment-description');
+
             this.$mollieTools = Mollie(
                 this.options.profileId,
                 {
@@ -153,6 +155,10 @@ define(function(require) {
             this.addFormListener();
 
             if (useSavedCreditCardWrapper.classList.contains('hidden')) {
+                if (description.length > 0) {
+                    description[0].classList.add('hidden');
+                }
+
                 useSavedCreditCard.checked = false;
                 this.showComponents();
             } else {
@@ -168,12 +174,17 @@ define(function(require) {
         },
 
         handleCheckboxUseSavedChange: function (e, component) {
-            let target = e.target;
+            let target = e.target,
+                description = document.getElementsByClassName('mollie-payment-description')[0];
             if (target.checked) {
+                description.classList.remove('hidden');
                 component.hideComponents();
             } else if (document.getElementsByClassName('form-group--cardHolder')[0].classList.contains('hidden')) {
                 document.getElementsByClassName('form-group--saveCreditCardCheckbox')[0].classList.remove('hidden');
+                description.classList.add('hidden');
                 component.showComponents();
+            } else {
+                description.classList.add('hidden');
             }
         },
 

@@ -118,8 +118,7 @@ mollie:
           tooltip: 'Read more about <a href="https://www.mollie.com/en/news/post/better-checkout-flows-with-mollie-components" target="_blank">Mollie Components</a> and how it improves your conversion'
         single_click_payment:
           label: 'Use Single Click Payment'
-          tooltip: 'Read more about <a href="https://help.mollie
-          .com/hc/en-us/articles/115000671249-What-are-single-click-payments-and-how-does-it-work" target="_blank">Single Click Payments</a> and how it improves your conversion'
+          tooltip: 'Read more about <a href="https://help.mollie.com/hc/en-us/articles/115000671249-What-are-single-click-payments-and-how-does-it-work" target="_blank">Single Click Payments</a> and how it improves your conversion'
         single_click_payment_approval_text:
           label: 'Single Click Payment Approval Text'
           tooltip: 'Define text to ask customers to save credit card details during the checkout'
