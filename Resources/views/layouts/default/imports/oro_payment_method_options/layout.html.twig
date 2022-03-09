@@ -9,13 +9,12 @@
             {% endif %}
             <div class="mollie-payment-widget-content">
                 {% if (view.options.surchargeAmount is not empty and view.options.surchargeAmount > 0) %}
-                    <p class="mollie-payment-surcharge">{{ 'mollie.payment.checkout.subtotals.mollie_payment_surcharge'|trans }}: {{ view.options.surchargeAmount|oro_format_currency({'currency': view.options.currency}) }}</p>
+                    <p class="mollie-payment-surcharge">{{ 'mollie.payment.checkout.subtotals.mollie_payment_surcharge'|trans }}
+                        : {{ view.options.surchargeAmount|oro_format_currency({'currency': view.options.currency}) }}</p>
                 {% endif %}
-                {% if (view.options.renderUseSavedCreditCardCheckbox) %}
-                    <p class="mollie-payment-description">{{ view.options.singleClickPaymentDescription }}</p>
-                {% else %}
-                    <p class="mollie-payment-description">{{ view.options.paymentDescription }}</p>
-                {% endif %}
+                <p class="mollie-payment-description {% if (view.options.renderUseSavedCreditCardCheckbox or view.options.renderSaveCreditCardCheckbox)
+                %}single-click{% endif %} {% if (view.options.useMollieComponents and not view.options.renderUseSavedCreditCardCheckbox and not view.options.renderSaveCreditCardCheckbox)
+                %}use-components{% endif %}">{{ view.options.paymentDescription }}</p>
             </div>
 
         </div>
@@ -95,7 +94,8 @@
                         <label class="label"
                                for="{{ view.options.paymentMethod }}-vcard-holder">{{ 'mollie.payment.checkout.cardHolder'|trans }}</label>
                         <div id="{{ view.options.paymentMethod }}-card-holder"></div>
-                        <div id="{{ view.options.paymentMethod }}-card-holder-error" class="field-error" role="alert"></div>
+                        <div id="{{ view.options.paymentMethod }}-card-holder-error" class="field-error"
+                             role="alert"></div>
                     </div>
 
                     <div class="form-group form-group--cardNumber
@@ -103,7 +103,8 @@
                         <label class="label"
                                for="{{ view.options.paymentMethod }}-card-number">{{ 'mollie.payment.checkout.cardNumber'|trans }}</label>
                         <div id="{{ view.options.paymentMethod }}-card-number"></div>
-                        <div id="{{ view.options.paymentMethod }}-card-number-error" class="field-error" role="alert"></div>
+                        <div id="{{ view.options.paymentMethod }}-card-number-error" class="field-error"
+                             role="alert"></div>
                     </div>
 
                     <div class="form-group form-group--expiryDate
@@ -111,7 +112,8 @@
                         <label class="label"
                                for="{{ view.options.paymentMethod }}-expiry-date">{{ 'mollie.payment.checkout.expiryDate'|trans }}</label>
                         <div id="{{ view.options.paymentMethod }}-expiry-date"></div>
-                        <div id="{{ view.options.paymentMethod }}-expiry-date-error" class="field-error" role="alert"></div>
+                        <div id="{{ view.options.paymentMethod }}-expiry-date-error" class="field-error"
+                             role="alert"></div>
                     </div>
 
                     <div class="form-group form-group--verificationCode
@@ -119,7 +121,8 @@
                         <label class="label"
                                for="{{ view.options.paymentMethod }}-verification-code">{{ 'mollie.payment.checkout.verificationCode'|trans }}</label>
                         <div id="{{ view.options.paymentMethod }}-verification-code"></div>
-                        <div id="{{ view.options.paymentMethod }}-verification-code-error" class="field-error" role="alert"></div>
+                        <div id="{{ view.options.paymentMethod }}-verification-code-error" class="field-error"
+                             role="alert"></div>
                     </div>
 
                     {% if (view.options.useSingleClickPayment) %}
@@ -135,6 +138,7 @@
                             </label>
                         </div>
                     {% endif %}
+                    <input id="mollie-credit-card-use-saved-description-input" type="hidden" value="{{ view.options.singleClickPaymentDescription }}"/>
                 </div>
             </div>
         {% endif %}
