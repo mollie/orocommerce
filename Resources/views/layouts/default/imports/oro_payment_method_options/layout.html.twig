@@ -12,7 +12,9 @@
                     <p class="mollie-payment-surcharge">{{ 'mollie.payment.checkout.subtotals.mollie_payment_surcharge'|trans }}: {{ view.options.surchargeAmount|oro_format_currency({'currency': view.options.currency}) }}</p>
                 {% endif %}
                 {% if (view.options.renderUseSavedCreditCardCheckbox) %}
-                    <p class="mollie-payment-description hidden">{{ view.options.singleClickPaymentDescription }}</p>
+                    <p class="mollie-payment-description">{{ view.options.singleClickPaymentDescription }}</p>
+                {% else %}
+                    <p class="mollie-payment-description">{{ view.options.paymentDescription }}</p>
                 {% endif %}
             </div>
 

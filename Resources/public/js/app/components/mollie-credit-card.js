@@ -153,13 +153,13 @@ define(function(require) {
             this.addFormListener();
 
             if (useSavedCreditCardWrapper.classList.contains('hidden')) {
+                if (description.length > 0) {
+                    description[0].classList.add('hidden');
+                }
+
                 useSavedCreditCard.checked = false;
                 this.showComponents();
             } else {
-                if (description.length > 0) {
-                    description[0].classList.remove('hidden');
-                }
-
                 useSavedCreditCard.addEventListener('change', event => this.handleCheckboxUseSavedChange(event, this));
 
                 if (useSavedCreditCard.checked === false) {
