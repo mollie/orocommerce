@@ -39,6 +39,7 @@ mollie:
       cardNumber: 'Kreditkartennummer'
       expiryDate: 'MM/JJ'
       verificationCode: 'CVV'
+      useSavedCreditCardText: 'Hinterlegte Kreditkartendaten verwenden'
     config:
       authorization:
         label: 'Befugnis'
@@ -93,9 +94,39 @@ mollie:
                      Verwenden Sie die neue Auftrags-API-Plattform, um mehr Einblicke in die Bestellungen zu erhalten. <a href="https://docs.Mollie.com/orders/why-use-orders" target="_blank">Read more</a>.'
           option.payment_api.label: 'Zahlungs-API'
           option.order_api.label: 'Auftrags-API'
+        payment_surcharge:
+          label: 'Zahlungszuschlag'
+          tooltip: 'Wählen Sie einen Zuschlagstyp aus.'
+          option.no_fee.label: 'Keine Gebühr'
+          option.fixed_fee.label: 'Feste Gebühr'
+          option.percentage.label: 'Anteil'
+          option.fixed_fee_and_percentage.label: 'Feste Gebühr und Anteil'
+        surcharge_fixed_amount:
+          label: 'Fester Zahlungszuschlag'
+          klarna_tooltip: "Geben Sie die zusätzlichen Kosten für eine Klarna-Zahlung mit einem Höchstbetrag von 1,95 € ein. Höhere Beträge werden nicht akzeptiert."
+          tooltip: "Zusätzliche Kosten die für Zahlungsvorgänge anfallen und als fester Betrag in der Standardwährung des Shops berechnet werden."
+        surcharge_percentage:
+          label: 'Anteiliger Zahlungszuschlag'
+          klarna_tooltip: "Geben Sie die zusätzlichen Kosten für eine Klarna-Zahlung mit einem Höchstbetrag von 1,95 € ein. Höhere Beträge werden nicht akzeptiert."
+          tooltip: "Zusätzliche Kosten die für Zahlungsvorgänge anfallen und als Anteil am Gesamtwert des Einkaufswagens berechnet werden."
+        surcharge_limit:
+          label: 'Maximaler Zahlungszuschlag'
+          klarna_tooltip: "Geben Sie die zusätzlichen Kosten für eine Klarna-Zahlung mit einem Höchstbetrag von 1,95 € ein. Höhere Beträge werden nicht akzeptiert."
+          tooltip: "Maximaler Betrag eines Zahlungszuschlags der berechnet werden kann (in der Standardwährung des Shops)."
         mollie_components:
           label: 'Mollie Components verwenden'
           tooltip: 'Erfahren Sie mehr über <a href="https://www.mollie.com/en/news/post/better-checkout-flows-with-mollie-components" target="_blank">Mollie-Komponenten</a> und wie sie Ihre Umsatzquote steigern'
+        single_click_payment:
+          label: 'Ein-Klick-Zahlungen verwenden'
+          tooltip: 'Erfahren Sie mehr über <a href="https://help.mollie.com/hc/en-us/articles/115000671249-What-are-single-click-payments-and-how-does-it-work" target="_blank">Ein-Klick-Zahlungen</a> und wie sie Ihre Umsatzquote steigern.'
+        single_click_payment_approval_text:
+          label: 'Bestätigungstext für Ein-Klick-Zahlungen'
+          tooltip: 'Legen Sie ein Label für die Bestätigung für Ein-Klick-Zahlungen fest.'
+          value: 'Kreditkartendaten für zukünftige Einkäufe hinterlegen'
+        single_click_payment_description:
+          label: 'Beschreibung für Ein-Klick-Zahlungen'
+          tooltip: 'Legen Sie einen Text fest der angezeigt wird wenn Kunden die Ein-Klick-Zahlung wählen.'
+          value: "YSie haben Ihre Kartendaten bereits hinterlegt. Sie werden zu Mollie weitergeleitet."
         issuer_list:
           label: 'Issuer List Style'
           tooltip: 'Choose the style in which issuer list will be displayed on checkout.'

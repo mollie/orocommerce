@@ -39,6 +39,7 @@ mollie:
       cardNumber: 'Numero de carte de credit'
       expiryDate: 'MM/AA'
       verificationCode: 'CVV'
+      useSavedCreditCardText: 'Utilisez les informations de votre carte'
     config:
       authorization:
         label: 'Autorisation'
@@ -93,9 +94,39 @@ mollie:
                     Utilisez la nouvelle plateforme d'API de commande et obtenez plus d'informations sur les commandes. <a href='https://docs.Mollie.com/orders/why-use-orders' target='_blank'>Read more</a>."
           option.payment_api.label: 'API Paiements'
           option.order_api.label: 'API Commandes'
+        payment_surcharge:
+          label: 'Majoration de paiement'
+          tooltip: 'Veuillez sélectionner un type de majoration.'
+          option.no_fee.label: 'Aucuns frais'
+          option.fixed_fee.label: 'Frais fixes'
+          option.percentage.label: 'Pourcentage'
+          option.fixed_fee_and_percentage.label: 'Frais fixes et pourcentage'
+        surcharge_fixed_amount:
+          label: 'Montant fixe pour majoration de paiement'
+          klarna_tooltip: "Entrez le coût additionnel pour un paiement Klarna, avec un maximum de 1,95 €. Les montants supérieurs ne seront pas acceptés."
+          tooltip: "Coût supplémentaire à facturer au client pour les opérations de paiement défini comme un montant fixe dans la devise du magasin par défaut."
+        surcharge_percentage:
+          label: 'Pourcentage de majoration de paiement'
+          klarna_tooltip: "Entrez le coût additionnel pour un paiement Klarna, avec un maximum de 1,95 €. Les montants supérieurs ne seront pas acceptés."
+          tooltip: "Coût supplémentaire à facturer au client pour les opérations de paiement défini comme un pourcentage du sous-total du panier."
+        surcharge_limit:
+          label: 'Limite de majoration de paiement'
+          klarna_tooltip: "Entrez le coût additionnel pour un paiement Klarna, avec un maximum de 1,95 €. Les montants supérieurs ne seront pas acceptés."
+          tooltip: "Montant maximum de la majoration de paiement qui doit être facturée au client (dans la devise du magasin par défaut)."
         mollie_components:
           label: 'Utiliser les composants Mollie'
           tooltip: 'Vous pouvez lire plus sur <a href="https://www.mollie.com/en/news/post/better-checkout-flows-with-mollie-components" target="_blank">Mollie Components</a> et la manière dont il améliore vos transactions'
+        single_click_payment:
+          label: 'Utiliser des paiements Single Click'
+          tooltip: 'En savoir plus sur <a href="https://help.mollie.com/hc/en-us/articles/115000671249-What-are-single-click-payments-and-how-does-it-work" target="_blank">les paiements Single Click</a> et la manière dont il améliore votre conversion.'
+        single_click_payment_approval_text:
+          label: 'Texte d’approbation des paiements Single Click'
+          tooltip: 'Veuillez définir une étiquette pour l’approbation Single Click.'
+          value: 'Enregistrer carte de crédit pour achats ultérieurs'
+        single_click_payment_description:
+          label: 'Description paiements Single Click'
+          tooltip: 'Veuillez définir le texte qui sera affiché lorsque le client sélectionne le paiement Single Click.'
+          value: "Vous avez précédemment enregistrer votre carte. Vous allez être redirigé vers Mollie."
         issuer_list:
           label: "Style de la liste d'émetteurs"
           tooltip: 'Choose the style in which issuer list will be displayed on checkout.'
