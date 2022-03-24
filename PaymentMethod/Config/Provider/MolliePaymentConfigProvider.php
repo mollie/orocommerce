@@ -167,7 +167,6 @@ class MolliePaymentConfigProvider implements MolliePaymentConfigProviderInterfac
         $paymentLinkMethod->getPaymentMethodConfig()->getOriginalAPIConfig()->setId(null);
         $paymentLinkMethod->getPaymentMethodConfig()->getOriginalAPIConfig()->setImage(Image::fromArray([]));
         $paymentLinkMethod->getPaymentMethodConfig()->setApiMethod(PaymentMethodConfig::API_METHOD_PAYMENT);
-        $paymentLinkMethod->getPaymentMethodConfig()->setSurcharge(0);
 
         return $paymentLinkMethod;
     }
@@ -285,9 +284,24 @@ class MolliePaymentConfigProvider implements MolliePaymentConfigProviderInterfac
                 );
             }
 
+            if ($paymentMethodSetting->getSingleClickPaymentApprovalText()->isEmpty()) {
+                $paymentMethodSetting->addSingleClickPaymentApprovalText(
+                    (new LocalizedFallbackValue())->setString($this->translator->trans('mollie.payment.config.payment_methods.single_click_payment_approval_text.value'))
+                );
+            }
+
+            if ($paymentMethodSetting->getSingleClickPaymentDescription()->isEmpty()) {
+                $paymentMethodSetting->addSingleClickPaymentDescription(
+                    (new LocalizedFallbackValue())->setString($this->translator->trans('mollie.payment.config.payment_methods.single_click_payment_description.value'))
+                );
+            }
+
             $paymentMethodSetting->setPaymentMethodConfig($paymentMethodConfig);
             $paymentMethodSetting->setEnabled($paymentMethodConfig->isEnabled());
-            $paymentMethodSetting->setSurcharge($paymentMethodConfig->getSurcharge());
+            $paymentMethodSetting->setSurchargeType($paymentMethodConfig->getSurchargeType());
+            $paymentMethodSetting->setSurchargeFixedAmount($paymentMethodConfig->getSurchargeFixedAmount());
+            $paymentMethodSetting->setSurchargePercentage($paymentMethodConfig->getSurchargePercentage());
+            $paymentMethodSetting->setSurchargeLimit($paymentMethodConfig->getSurchargeLimit());
             $paymentMethodSetting->setMethod($paymentMethodConfig->getApiMethod());
             $paymentMethodSetting->setOriginalImagePath($paymentMethodConfig->getOriginalAPIConfig()->getImage()->getSize2x());
             $paymentMethodSetting->setImagePath(

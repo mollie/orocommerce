@@ -146,6 +146,19 @@
     .form-group--cardNumber {
       grid-column: span 2;
     }
+
+    .form-group--useSavedCreditCardCheckbox,
+    .form-group--saveCreditCardCheckbox {
+      grid-column: span 2;
+
+      label {
+        left: 0;
+
+        input {
+          transform: translateY(10%);
+        }
+      }
+    }
   }
 
   @media (min-width: 480px) {

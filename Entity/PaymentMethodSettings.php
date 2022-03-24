@@ -127,7 +127,45 @@ class PaymentMethodSettings
      * @ORM\Column(name="mollie_method_description", type="string", length=255, nullable=false)
      */
     protected $mollieMethodDescription;
+    /**
+     * @var Collection|LocalizedFallbackValue[]
+     *
+     * @ORM\ManyToMany(
+     *      targetEntity="Oro\Bundle\LocaleBundle\Entity\LocalizedFallbackValue",
+     *      cascade={"ALL"},
+     *      orphanRemoval=true
+     * )
+     * @ORM\JoinTable(
+     *      name="mollie_single_click_appr_text",
+     *      joinColumns={
+     *          @ORM\JoinColumn(name="payment_setting_id", referencedColumnName="id", onDelete="CASCADE")
+     *      },
+     *      inverseJoinColumns={
+     *          @ORM\JoinColumn(name="localized_value_id", referencedColumnName="id", onDelete="CASCADE", unique=true)
+     *      }
+     * )
+     */
 
+    protected $singleClickPaymentApprovalText;
+    /**
+     * @var Collection|LocalizedFallbackValue[]
+     *
+     * @ORM\ManyToMany(
+     *      targetEntity="Oro\Bundle\LocaleBundle\Entity\LocalizedFallbackValue",
+     *      cascade={"ALL"},
+     *      orphanRemoval=true
+     * )
+     * @ORM\JoinTable(
+     *      name="mollie_single_click_desc",
+     *      joinColumns={
+     *          @ORM\JoinColumn(name="payment_setting_id", referencedColumnName="id", onDelete="CASCADE")
+     *      },
+     *      inverseJoinColumns={
+     *          @ORM\JoinColumn(name="localized_value_id", referencedColumnName="id", onDelete="CASCADE", unique=true)
+     *      }
+     * )
+     */
+    protected $singleClickPaymentDescription;
     /**
      * @var \Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\Model\PaymentMethodConfig
      */
@@ -156,18 +194,35 @@ class PaymentMethodSettings
     /**
      * @var string
      */
-    private $method;
+    private $surchargeType;
 
     /**
      * @var string
      */
-    private $surcharge;
+    private $surchargeFixedAmount;
 
+    /**
+     * @var string
+     */
+    private $surchargePercentage;
+
+    /**
+     * @var string
+     */
+    private $surchargeLimit;
+    /**
+     * @var string
+     */
+    private $method;
     /**
      * @var boolean
      */
     private $mollieComponents;
 
+    /**
+     * @var boolean
+     */
+    private $singleClickPayment;
     /**
      * @var string
      */
@@ -202,6 +257,8 @@ class PaymentMethodSettings
         $this->descriptions = new ArrayCollection();
         $this->paymentDescriptions = new ArrayCollection();
         $this->transactionDescriptions = new ArrayCollection();
+        $this->singleClickPaymentApprovalText = new ArrayCollection();
+        $this->singleClickPaymentDescription = new ArrayCollection();
     }
 
     /**
@@ -450,6 +507,70 @@ class PaymentMethodSettings
     /**
      * @return string
      */
+    public function getSurchargeType()
+    {
+        return $this->surchargeType;
+    }
+
+    /**
+     * @param string $surchargeType
+     */
+    public function setSurchargeType($surchargeType)
+    {
+        $this->surchargeType = $surchargeType;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSurchargeFixedAmount()
+    {
+        return $this->surchargeFixedAmount;
+    }
+
+    /**
+     * @param string $surchargeFixedAmount
+     */
+    public function setSurchargeFixedAmount($surchargeFixedAmount)
+    {
+        $this->surchargeFixedAmount = $surchargeFixedAmount;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSurchargePercentage()
+    {
+        return $this->surchargePercentage;
+    }
+
+    /**
+     * @param string $surchargePercentage
+     */
+    public function setSurchargePercentage($surchargePercentage)
+    {
+        $this->surchargePercentage = $surchargePercentage;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSurchargeLimit()
+    {
+        return $this->surchargeLimit;
+    }
+
+    /**
+     * @param string $surchargeLimit
+     */
+    public function setSurchargeLimit($surchargeLimit)
+    {
+        $this->surchargeLimit = $surchargeLimit;
+    }
+
+    /**
+     * @return string
+     */
     public function getMethod()
     {
         return $this->method;
@@ -496,22 +617,6 @@ class PaymentMethodSettings
     }
 
     /**
-     * @return string
-     */
-    public function getSurcharge()
-    {
-        return $this->surcharge;
-    }
-
-    /**
-     * @param string $surcharge
-     */
-    public function setSurcharge($surcharge)
-    {
-        $this->surcharge = $surcharge;
-    }
-
-    /**
      * @return mixed
      */
     public function getMollieComponents()
@@ -525,6 +630,110 @@ class PaymentMethodSettings
     public function setMollieComponents($mollieComponents)
     {
         $this->mollieComponents = $mollieComponents;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSingleClickPayment()
+    {
+        return $this->singleClickPayment;
+    }
+
+    /**
+     * @param bool $singleClickPayment
+     */
+    public function setSingleClickPayment($singleClickPayment)
+    {
+        $this->singleClickPayment = $singleClickPayment;
+    }
+
+    /**
+     * @return Collection|LocalizedFallbackValue[]
+     */
+    public function getSingleClickPaymentApprovalText()
+    {
+        return $this->singleClickPaymentApprovalText;
+    }
+
+    /**
+     * @param Collection|LocalizedFallbackValue[] $singleClickPaymentApprovalText
+     */
+    public function setSingleClickPaymentApprovalText($singleClickPaymentApprovalText)
+    {
+        $this->singleClickPaymentApprovalText = $singleClickPaymentApprovalText;
+    }
+
+    /**
+     * @param LocalizedFallbackValue $singleClickPaymentApprovalText
+     *
+     * @return $this
+     */
+    public function addSingleClickPaymentApprovalText(LocalizedFallbackValue $singleClickPaymentApprovalText)
+    {
+        if (!$this->singleClickPaymentApprovalText->contains($singleClickPaymentApprovalText)) {
+            $this->singleClickPaymentApprovalText->add($singleClickPaymentApprovalText);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param LocalizedFallbackValue $singleClickPaymentApprovalText
+     *
+     * @return $this
+     */
+    public function removeSingleClickPaymentApprovalText(LocalizedFallbackValue $singleClickPaymentApprovalText)
+    {
+        if ($this->singleClickPaymentApprovalText->contains($singleClickPaymentApprovalText)) {
+            $this->singleClickPaymentApprovalText->removeElement($singleClickPaymentApprovalText);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|LocalizedFallbackValue[]
+     */
+    public function getSingleClickPaymentDescription()
+    {
+        return $this->singleClickPaymentDescription;
+    }
+
+    /**
+     * @param Collection|LocalizedFallbackValue[] $singleClickPaymentDescription
+     */
+    public function setSingleClickPaymentDescription($singleClickPaymentDescription)
+    {
+        $this->singleClickPaymentDescription = $singleClickPaymentDescription;
+    }
+
+    /**
+     * @param LocalizedFallbackValue $singleClickPaymentDescription
+     *
+     * @return $this
+     */
+    public function addSingleClickPaymentDescription(LocalizedFallbackValue $singleClickPaymentDescription)
+    {
+        if (!$this->singleClickPaymentDescription->contains($singleClickPaymentDescription)) {
+            $this->singleClickPaymentDescription->add($singleClickPaymentDescription);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param LocalizedFallbackValue $singleClickPaymentDescription
+     *
+     * @return $this
+     */
+    public function removeSingleClickPaymentDescription(LocalizedFallbackValue $singleClickPaymentDescription)
+    {
+        if ($this->singleClickPaymentDescription->contains($singleClickPaymentDescription)) {
+            $this->singleClickPaymentDescription->removeElement($singleClickPaymentDescription);
+        }
+
+        return $this;
     }
 
     /**
