@@ -19,9 +19,15 @@ class MolliePaymentConfig extends AbstractParameterBagPaymentConfig implements M
     const IS_API_METHOD_RESTRICTED = 'is_api_method_restricted';
     const PROFILE_ID = 'profile_id';
     const CHANNEL_ID = 'channel_id';
-    const SURCHARGE_AMOUNT = 'surcharge_amount';
+    const SURCHARGE_TYPE = 'surcharge_type';
+    const SURCHARGE_FIXED_AMOUNT = 'surcharge_fixed_amount';
+    const SURCHARGE_PERCENTAGE = 'surcharge_percentage';
+    const SURCHARGE_LIMIT = 'surcharge_limit';
     const ISSUER_LIST_STYLE = 'issuer_list_style';
     const USE_MOLLIE_COMPONENTS = 'use_mollie_components';
+    const USE_SINGLE_CLICK_PAYMENT = 'use_single_click_payment';
+    const SINGLE_CLICK_PAYMENT_APPROVAL_TEXT = 'single_click_payment_approval_text';
+    const SINGLE_CLICK_PAYMENT_DESCRIPTION_TEXT = 'single_click_payment_description';
     const ISSUERS = 'issuers';
     const PAYMENT_DESCRIPTION = 'payment_description';
     const TRANSACTION_DESCRIPTION = 'transaction_description';
@@ -97,9 +103,33 @@ class MolliePaymentConfig extends AbstractParameterBagPaymentConfig implements M
     /**
      * {@inheritdoc}
      */
-    public function getSurchargeAmount()
+    public function getSurchargeType()
     {
-        return (float)$this->get(self::SURCHARGE_AMOUNT);
+        return (string)$this->get(self::SURCHARGE_TYPE);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSurchargeFixedAmount()
+    {
+        return (float)$this->get(self::SURCHARGE_FIXED_AMOUNT);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSurchargePercentage()
+    {
+        return (float)$this->get(self::SURCHARGE_PERCENTAGE);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSurchargeLimit()
+    {
+        return (float)$this->get(self::SURCHARGE_LIMIT);
     }
 
     /**
@@ -108,6 +138,30 @@ class MolliePaymentConfig extends AbstractParameterBagPaymentConfig implements M
     public function useMollieComponents()
     {
         return (bool)$this->get(self::USE_MOLLIE_COMPONENTS);
+    }
+
+    /**
+     * {@inheritdoc }
+     */
+    public function useSingleClickPayment()
+    {
+        return (bool)$this->get(self::USE_SINGLE_CLICK_PAYMENT);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSingleClickPaymentApprovalText()
+    {
+        return (string)$this->get(self::SINGLE_CLICK_PAYMENT_APPROVAL_TEXT);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSingleClickPaymentDescription()
+    {
+        return (string)$this->get(self::SINGLE_CLICK_PAYMENT_DESCRIPTION_TEXT);
     }
 
     /**

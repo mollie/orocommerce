@@ -105,7 +105,21 @@ define(function(require) {
         },
 
         mountComponents: function () {
-            let locale  = document.querySelector('html').getAttribute('lang');
+            let locale = document.querySelector('html').getAttribute('lang'),
+                useSavedCreditCardWrapper = document.getElementsByClassName('form-group--useSavedCreditCardCheckbox'),
+                useSavedCreditCard = document.getElementById(this.options.paymentMethod + '-use-saved-credit-card-checkbox'),
+                descriptionUseSingleClick = document.getElementsByClassName('mollie-payment-description single-click'),
+                descriptionUseMollieComponents = document.getElementsByClassName('mollie-payment-description use-components');
+
+            if (descriptionUseMollieComponents.length > 0) {
+                descriptionUseMollieComponents[0].classList.add('hidden');
+            }
+
+            if (descriptionUseSingleClick.length > 0) {
+                descriptionUseSingleClick[0].innerHTML = document.getElementById('mollie-credit-card-use-saved-description-input').value;
+                descriptionUseSingleClick[0].classList.add('hidden');
+            }
+
             this.$mollieTools = Mollie(
                 this.options.profileId,
                 {
@@ -149,9 +163,72 @@ define(function(require) {
             this.addListeners(this.$verificationCode, this.options.verificationCodeSelector);
 
             this.addFormListener();
+            if (useSavedCreditCardWrapper.length > 0) {
+                if (useSavedCreditCardWrapper[0].classList.contains('hidden')) {
+                    useSavedCreditCard.checked = false;
+                    this.showComponents();
+                } else {
+                    useSavedCreditCard.addEventListener('change', event => this.handleCheckboxUseSavedChange(event, this, descriptionUseSingleClick));
+
+                    if (useSavedCreditCard.checked === false) {
+                        this.showComponents();
+                        document.getElementsByClassName('form-group--saveCreditCardCheckbox')[0].classList.remove('hidden');
+                    } else {
+                        if (descriptionUseSingleClick.length > 0) {
+                            descriptionUseSingleClick[0].classList.remove('hidden');
+                        }
+
+                        this.hideComponents();
+                    }
+                }
+            }
+        },
+
+        handleCheckboxUseSavedChange: function (e, component, description) {
+            let target = e.target;
+
+            if (target.checked) {
+                if (description.length > 0) {
+                    description[0].classList.remove('hidden');
+                }
+
+                component.hideComponents();
+            } else if (document.getElementsByClassName('form-group--cardHolder')[0].classList.contains('hidden')) {
+                document.getElementsByClassName('form-group--saveCreditCardCheckbox')[0].classList.remove('hidden');
+                if (description.length > 0) {
+                    description[0].classList.add('hidden');
+                }
+
+                component.showComponents();
+            } else {
+                if (description.length > 0) {
+                    description[0].classList.add('hidden');
+                }
+
+            }
+        },
+
+        hideComponents: function () {
+            document.getElementsByClassName('form-group--cardHolder')[0].classList.add('hidden');
+            document.getElementsByClassName('form-group--cardNumber')[0].classList.add('hidden');
+            document.getElementsByClassName('form-group--expiryDate')[0].classList.add('hidden');
+            document.getElementsByClassName('form-group--verificationCode')[0].classList.add('hidden');
+            document.getElementsByClassName('form-group--saveCreditCardCheckbox')[0].classList.add('hidden');
+        }
+        ,
+
+        showComponents: function () {
+            document.getElementsByClassName('form-group--cardHolder')[0].classList.remove('hidden');
+            document.getElementsByClassName('form-group--cardNumber')[0].classList.remove('hidden');
+            document.getElementsByClassName('form-group--expiryDate')[0].classList.remove('hidden');
+            document.getElementsByClassName('form-group--verificationCode')[0].classList.remove('hidden');
         },
 
         addFormListener: function () {
+            let useSavedCreditCard = document.getElementById(this.options.paymentMethod + '-use-saved-credit-card-checkbox'),
+                saveCreditCard = document.getElementById(this.options.paymentMethod + '-save-credit-card-checkbox'),
+                useSavedCreditCardWrapper = document.getElementsByClassName('form-group--useSavedCreditCardCheckbox');
+
             var form = document.forms[this.options.formSelector];
             var me = this;
 
@@ -160,18 +237,28 @@ define(function(require) {
                 var target = $(event.target);
 
                 if (isSubmitButton(target) && isCreditCard()) {
-                    let selector = '#' + me.options.paymentMethod + '-mollie-card-token';
-                    var input = $(selector);
-                    if (!input.val()) {
-                        event.preventDefault();
-                        event.stopPropagation();
-                        me.$mollieTools.createToken().then((token) => {
-                            if (token.token) {
-                                input.val(token.token);
-                                window.localStorage.setItem('mollieToken', token.token);
-                                target.click();
-                            }
-                        });
+                    if (useSavedCreditCardWrapper.length === 0 || (useSavedCreditCardWrapper.length > 0 && useSavedCreditCardWrapper[0].classList.contains('hidden'))) {
+                        let selector = '#' + me.options.paymentMethod + '-mollie-card-token';
+                        var input = $(selector);
+                        if (!input.val()) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            me.$mollieTools.createToken().then((token) => {
+                                if (token.token) {
+                                    input.val(token.token);
+                                    window.localStorage.setItem('mollieToken', token.token);
+                                    target.click();
+                                }
+                            });
+                        }
+                    }
+
+                    if (useSavedCreditCard !== null) {
+                        window.localStorage.setItem('useSavedSingleClickCreditCardPayment', useSavedCreditCard.checked);
+                    }
+
+                    if (saveCreditCard !== null) {
+                        window.localStorage.setItem('saveSingleClickCreditCardPayment', saveCreditCard.checked);
                     }
                 }
             });

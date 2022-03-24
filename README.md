@@ -26,6 +26,9 @@ To finalize the installation you need to enter your organization API token in th
 Read more about the integration configuration on [our Wiki](https://github.com/mollie/orocommerce/wiki).
 
 ## Release notes
+ - **4.2.10:**
+    - Added single-click payments.
+    - Added surcharge rules.  
  - **4.2.9:**
    - Added support for the Klarna Pay Now payment method.
  - **4.2.8:**
