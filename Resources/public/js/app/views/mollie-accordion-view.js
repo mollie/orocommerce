@@ -14,6 +14,14 @@ define(function (require) {
         },
 
         apiMethodChooserSelector: 'select.mollie-method-select',
+        singleClickPaymentCheckbox: 'input.mollie-payment-single-click-status',
+        surchargeTypeChooserSelector: 'select.mollie-surcharge-type-select',
+        surchargeType: {
+            NO_FEE: 'no_fee',
+            FIXED_FEE: 'fixed_fee',
+            PERCENTAGE: 'percentage',
+            FIXED_FEE_AND_PERCENTAGE: 'fixed_fee_and_percentage'
+        },
 
         /**
          * Renders a tabs view
@@ -30,10 +38,18 @@ define(function (require) {
             $(this.apiMethodChooserSelector).each(function () {
                 self.displayFieldsBasedOnMethod($(this).val(),$(this).attr('data-method-wrapper'));
             });
+            $(this.surchargeTypeChooserSelector).each(function () {
+                self.displayFieldsBasedOnSyrchargeType($(this).val(), $(this).attr('data-method-wrapper'));
+            });
+            $(this.singleClickPaymentCheckbox).each(function () {
+                self.displayFieldsBasedOnSinglePaymentStatus($(this)[0].checked);
+            });
         },
 
         addListeners: function () {
             $(this.apiMethodChooserSelector).change(this.handleApiMethodChange.bind(this));
+            $(this.singleClickPaymentCheckbox).change(this.handleSingleClickStatusChange.bind(this));
+            $(this.surchargeTypeChooserSelector).change(this.handleSyrchargeTypeChange.bind(this));
         },
 
         handleApiMethodChange: function (event) {
@@ -41,6 +57,12 @@ define(function (require) {
 
             this.displayFieldsBasedOnMethod(target.val(), target.attr('data-method-wrapper'));
 
+        },
+
+        handleSyrchargeTypeChange: function (event) {
+            let target = $(event.target);
+
+            this.displayFieldsBasedOnSyrchargeType(target.val(), target.attr('data-method-wrapper'));
         },
 
         displayFieldsBasedOnMethod: function (apiMethod, identifier) {
@@ -55,6 +77,52 @@ define(function (require) {
             } else {
                 wrapper.find('.mollie-transaction-description, .mollie-payment-expiry-days').addClass('mollie-hide-row');
                 wrapper.find('.mollie-order-expiry-days').removeClass('mollie-hide-row');
+            }
+        },
+
+        displayFieldsBasedOnSyrchargeType: function (surchargeType, identifier) {
+            let wrapper = $('.mollie-payment-method[data-payment-method-id="' + identifier + '"]');
+            if (wrapper.length === 0) {
+                return;
+            }
+
+            switch (surchargeType) {
+                case this.surchargeType.NO_FEE:
+                    wrapper.find('.mollie-surcharge-fixed-amount, .mollie-surcharge-percentage, .mollie-surcharge-limit').addClass('mollie-hide-row');
+                    break;
+                case this.surchargeType.FIXED_FEE:
+                    wrapper.find('.mollie-surcharge-fixed-amount').removeClass('mollie-hide-row');
+                    wrapper.find('.mollie-surcharge-percentage, .mollie-surcharge-limit').addClass('mollie-hide-row');
+                    break;
+                case this.surchargeType.PERCENTAGE:
+                    wrapper.find('.mollie-surcharge-fixed-amount').addClass('mollie-hide-row');
+                    wrapper.find('.mollie-surcharge-percentage, .mollie-surcharge-limit').removeClass('mollie-hide-row');
+                    break;
+                case this.surchargeType.FIXED_FEE_AND_PERCENTAGE:
+                    wrapper.find('.mollie-surcharge-fixed-amount, .mollie-surcharge-percentage, .mollie-surcharge-limit').removeClass('mollie-hide-row');
+                    break;
+            }
+        },
+
+        handleSingleClickStatusChange: function (event) {
+            let target = $(event.target);
+
+            this.displayFieldsBasedOnSinglePaymentStatus(target[0].checked);
+
+        },
+
+        displayFieldsBasedOnSinglePaymentStatus: function (checked) {
+            let wrapper = $('.mollie-payment-method[data-payment-method-id="creditcard"]');
+            if (wrapper.length === 0) {
+                return;
+            }
+
+            let fields = wrapper.find('.mollie-payment-single-click-approval-text, .mollie-payment-single-click-description');
+
+            if (fields.length > 0 && checked) {
+                fields.removeClass('mollie-hide-row');
+            } else {
+                fields.addClass('mollie-hide-row');
             }
         },
 
