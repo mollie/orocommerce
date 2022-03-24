@@ -39,6 +39,7 @@ mollie:
       cardNumber: 'Creditcardnummer'
       expiryDate: 'MM/JJ'
       verificationCode: 'CVV'
+      useSavedCreditCardText: 'Gebruik opgeslagen creditcardinformatie'
     config:
       authorization:
         label: 'Autorisatie'
@@ -93,9 +94,39 @@ mollie:
                     Gebruik het nieuwe Order API Platform en krijg extra inzichten in de bestellingen. <a href="https://docs.Mollie.com/orders/why-use-orders" target="_blank">Lees meer</a>.'
           option.payment_api.label: 'Payment API'
           option.order_api.label: 'Orders API'
+        payment_surcharge:
+          label: 'Betalingstoeslag'
+          tooltip: 'Selecteer het type toeslag.'
+          option.no_fee.label: 'Geen kosten'
+          option.fixed_fee.label: 'Vaste kosten'
+          option.percentage.label: 'Percentage'
+          option.fixed_fee_and_percentage.label: 'Vaste kosten en percentage'
+        surcharge_fixed_amount:
+          label: 'Betalingstoeslag vast bedrag'
+          klarna_tooltip: "Vul de extra kosten voor een Klarna-betaling in, met een maximum van € 1,95. Hogere bedragen worden niet geaccepteerd."
+          tooltip: "Extra kosten die aan de klant worden doorberekend voor betalingstransacties bepaald als een vast bedrag in standaard winkelvaluta."
+        surcharge_percentage:
+          label: 'Betalingstoeslag percentage'
+          klarna_tooltip: "Vul de extra kosten voor een Klarna-betaling in, met een maximum van € 1,95. Hogere bedragen worden niet geaccepteerd."
+          tooltip: "Extra kosten die aan de klant worden doorberekend voor betalingstransacties bepaald als een percentage van het subtotaal van de winkelwagen."
+        surcharge_limit:
+          label: 'Betalingstoeslag limiet'
+          klarna_tooltip: "Vul de extra kosten voor een Klarna-betaling in, met een maximum van € 1,95. Hogere bedragen worden niet geaccepteerd."
+          tooltip: "Maximumbedrag van de betalingstoeslag die aan de klant moet worden doorberekend (in standaard winkelvaluta)."
         mollie_components:
           label: 'Gebruik Mollie Components'
           tooltip: 'Lees meer over <a href="https://www.mollie.com/en/news/post/better-checkout-flows-with-mollie-components" target="_blank">Mollie componenten</a>en hoe het uw conversie kan verbeteren'
+        single_click_payment:
+          label: 'Gebruik betalen met één klik'
+          tooltip: 'Lees meer over <a href="https://help.mollie.com/hc/en-us/articles/115000671249-What-are-single-click-payments-and-how-does-it-work" target="_blank">betalen met één klik</a> en hoe het uw conversie verbetert.'
+        single_click_payment_approval_text:
+          label: 'Toestemmingstekst betalen met één klik'
+          tooltip: 'Bepaal een label voor de toestemming voor betalen met één klik.'
+          value: 'Bewaar creditcard voor toekomstige aankopen'
+        single_click_payment_description:
+          label: 'Beschrijving betalen met één klik'
+          tooltip: 'Bepaal de tekst die wordt weergegeven wanneer de klant betalen met één klik selecteert.'
+          value: "U heeft uw kaart eerder opgeslagen. U wordt doorgestuurd naar Mollie."
         issuer_list:
           label: 'Issuer List Style'
           tooltip: 'Choose the style in which issuer list will be displayed on checkout.'

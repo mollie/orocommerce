@@ -6,5 +6,5 @@ placeholders:
 
   items:
     payment_method:
-      template: MolliePaymentBundle:Voucher:method.html.twig
+      template: '@@MolliePayment/Voucher/method.html.twig'
       data: '@mollie_payment.manager.oro_payment_method_utility->getPaymentLabels($entity$)'

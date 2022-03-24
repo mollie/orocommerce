@@ -26,26 +26,7 @@ To finalize the installation you need to enter your organization API token in th
 Read more about the integration configuration on [our Wiki](https://github.com/mollie/orocommerce/wiki).
 
 ## Release notes
- - **4.2.9:**
-   - Added support for the Klarna Pay Now payment method.
- - **4.2.8:**
-   - Optimization: Updated translations
-   - Optimization: Fixed Composer version number   
- - **4.2.7:**
-   - Added compatibility with OroCommerce 4.2
- - **4.1.7:**
-   - New feature: Added order expiry days configuration
-   - New feature: Added a dropdown for environment configuration
-   - New feature: Added a transaction description on payment methods
-   - New feature: Added a notification when the current version is outdated
-   - Optimization: Payment methods are visible as soon as the token is verified
-   - Optimization: Extended payment method voucher
- - **4.1.6:**
-   - Optimization: Skip shop order line changes synchronization to Mollie for changed shop order identifier 
- - **4.1.5:**
-   - Remove discontinued payment methods from integration configuration form
- - **4.1.4:** 
-   - New feature: Implemented integration with [Mollie Components](https://docs.mollie.com/guides/mollie-components/overview)
-   - New feature: Added iDeal, Giftcard and KBC/CBC issuer selection in the checkout.
-   - Optimization: Organization API token is now hidden with ***.
- - **4.1.3:** Translations for NL, DE, and FR are added.
+ - **5.0.10:**
+   - Added support for OroCommerce 5.0.0.
+   - Added single-click payments.
+   - Added surcharge rules.

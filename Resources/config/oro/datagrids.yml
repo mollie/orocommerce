@@ -15,7 +15,7 @@ datagrids:
         label: mollie.payment.config.notifications.label.type
         type: twig
         frontend_type: html
-        template: MolliePaymentBundle::Config/Notification/severity.html.twig
+        template: '@MolliePayment/Config/Notification/severity.html.twig'
 
       message:
         type: translatable

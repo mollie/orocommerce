@@ -1,6 +1,6 @@
 
 <div class="mollie-notifications">
-    {% import 'OroDataGridBundle::macros.html.twig' as dataGrid %}
+    {% import '@OroDataGrid/macros.html.twig' as dataGrid %}
     {% block content %}
         {{ dataGrid.renderGrid('mollie-notifications-grid', {'channelId': form.parent.vars.value.id|default(0) }) }}
     {% endblock %}
