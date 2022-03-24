@@ -1,7 +1,7 @@
 {% block _payment_methods_mollie_payment_widget %}
     <div
-        class="{{ class_prefix }}-form__payment-methods mollie-payment-widget"
-        {% if (view.options.isApplePay) %}data-mollie-applepay{% endif %}
+            class="{{ class_prefix }}-form__payment-methods mollie-payment-widget"
+            {% if (view.options.isApplePay) %}data-mollie-applepay{% endif %}
     >
         <div class="mollie-payment-container">
             {% if (view.options.icon) %}
@@ -9,9 +9,12 @@
             {% endif %}
             <div class="mollie-payment-widget-content">
                 {% if (view.options.surchargeAmount is not empty and view.options.surchargeAmount > 0) %}
-                    <p class="mollie-payment-surcharge">{{ 'mollie.payment.checkout.subtotals.mollie_payment_surcharge'|trans }}: {{ view.options.surchargeAmount|oro_format_currency({'currency': view.options.currency}) }}</p>
+                    <p class="mollie-payment-surcharge">{{ 'mollie.payment.checkout.subtotals.mollie_payment_surcharge'|trans }}
+                        : {{ view.options.surchargeAmount|oro_format_currency({'currency': view.options.currency}) }}</p>
                 {% endif %}
-                <p>{{ view.options.paymentDescription }}</p>
+                <p class="mollie-payment-description {% if (view.options.renderUseSavedCreditCardCheckbox or view.options.renderSaveCreditCardCheckbox)
+                %}single-click{% endif %} {% if (view.options.useMollieComponents and not view.options.renderUseSavedCreditCardCheckbox and not view.options.renderSaveCreditCardCheckbox)
+                %}use-components{% endif %}">{{ view.options.paymentDescription }}</p>
             </div>
 
         </div>
@@ -73,29 +76,69 @@
                            required="required" type="hidden"
                            name="oro_workflow_transition[{{ view.options.paymentMethod }}-mollie-card-token]"
                     >
-                    <div id="card-holder-group" class="form-group form-group--cardHolder">
-                        <label class="label" for="{{ view.options.paymentMethod }}-vcard-holder">{{ 'mollie.payment.checkout.cardHolder'|trans }}</label>
+                    {% if (view.options.useSingleClickPayment) %}
+                        <div id="use-saved-credit-card-group" class="form-group form-group--useSavedCreditCardCheckbox
+                          {% if (not view.options.renderUseSavedCreditCardCheckbox) %}hidden{% endif %}">
+                            <label class="label {% if (view.options.renderUseSavedCreditCardCheckbox) %}checked{% endif %}"
+                                   for="{{ view.options.paymentMethod }}-use-saved-credit-card-checkbox">
+                                <input type="checkbox"
+                                       id="{{ view.options.paymentMethod }}-use-saved-credit-card-checkbox"
+                                       name="{{ view.options.paymentMethod }}-use-saved-credit-card-checkbox"
+                                       {% if (view.options.renderUseSavedCreditCardCheckbox) %}checked{% endif %}>
+                                {{ 'mollie.payment.checkout.useSavedCreditCardText'|trans }}
+                            </label>
+                        </div>
+                    {% endif %}
+                    <div id="card-holder-group" class="form-group form-group--cardHolder
+                      {% if (view.options.renderUseSavedCreditCardCheckbox) %}hidden{% endif %}">
+                        <label class="label"
+                               for="{{ view.options.paymentMethod }}-vcard-holder">{{ 'mollie.payment.checkout.cardHolder'|trans }}</label>
                         <div id="{{ view.options.paymentMethod }}-card-holder"></div>
-                        <div id="{{ view.options.paymentMethod }}-card-holder-error" class="field-error" role="alert"></div>
+                        <div id="{{ view.options.paymentMethod }}-card-holder-error" class="field-error"
+                             role="alert"></div>
                     </div>
 
-                    <div class="form-group form-group--cardNumber">
-                        <label class="label" for="{{ view.options.paymentMethod }}-card-number">{{ 'mollie.payment.checkout.cardNumber'|trans }}</label>
+                    <div class="form-group form-group--cardNumber
+                      {% if (view.options.renderUseSavedCreditCardCheckbox) %}hidden{% endif %}">
+                        <label class="label"
+                               for="{{ view.options.paymentMethod }}-card-number">{{ 'mollie.payment.checkout.cardNumber'|trans }}</label>
                         <div id="{{ view.options.paymentMethod }}-card-number"></div>
-                        <div id="{{ view.options.paymentMethod }}-card-number-error" class="field-error" role="alert"></div>
+                        <div id="{{ view.options.paymentMethod }}-card-number-error" class="field-error"
+                             role="alert"></div>
                     </div>
 
-                    <div class="form-group form-group--expiryDate">
-                        <label class="label" for="{{ view.options.paymentMethod }}-expiry-date">{{ 'mollie.payment.checkout.expiryDate'|trans }}</label>
+                    <div class="form-group form-group--expiryDate
+                      {% if (view.options.renderUseSavedCreditCardCheckbox) %}hidden{% endif %}">
+                        <label class="label"
+                               for="{{ view.options.paymentMethod }}-expiry-date">{{ 'mollie.payment.checkout.expiryDate'|trans }}</label>
                         <div id="{{ view.options.paymentMethod }}-expiry-date"></div>
-                        <div id="{{ view.options.paymentMethod }}-expiry-date-error" class="field-error" role="alert"></div>
+                        <div id="{{ view.options.paymentMethod }}-expiry-date-error" class="field-error"
+                             role="alert"></div>
                     </div>
 
-                    <div class="form-group form-group--verificationCode">
-                        <label class="label" for="{{ view.options.paymentMethod }}-verification-code">{{ 'mollie.payment.checkout.verificationCode'|trans }}</label>
+                    <div class="form-group form-group--verificationCode
+                      {% if (view.options.renderUseSavedCreditCardCheckbox) %}hidden{% endif %}">
+                        <label class="label"
+                               for="{{ view.options.paymentMethod }}-verification-code">{{ 'mollie.payment.checkout.verificationCode'|trans }}</label>
                         <div id="{{ view.options.paymentMethod }}-verification-code"></div>
-                        <div id="{{ view.options.paymentMethod }}-verification-code-error" class="field-error" role="alert"></div>
+                        <div id="{{ view.options.paymentMethod }}-verification-code-error" class="field-error"
+                             role="alert"></div>
                     </div>
+
+                    {% if (view.options.useSingleClickPayment) %}
+                        <div id="save-credit-card-checkbox" class="form-group form-group--saveCreditCardCheckbox
+                          {% if (not view.options.renderSaveCreditCardCheckbox) %}hidden{% endif %}">
+                            <label class="label {% if (view.options.renderSaveCreditCardCheckbox) %}checked{% endif %}"
+                                   for="{{ view.options.paymentMethod }}-save-credit-card-checkbox">
+                                <input type="checkbox"
+                                       id="{{ view.options.paymentMethod }}-save-credit-card-checkbox"
+                                       name="{{ view.options.paymentMethod }}-save-credit-card-checkbox"
+                                       {% if (view.options.renderSaveCreditCardCheckbox) %}checked{% endif %}>
+                                {{ view.options.singleClickPaymentApprovalText }}
+                            </label>
+                        </div>
+                    {% endif %}
+                    <input id="mollie-credit-card-use-saved-description-input" type="hidden" value="{{ view.options.singleClickPaymentDescription }}"/>
                 </div>
             </div>
         {% endif %}
