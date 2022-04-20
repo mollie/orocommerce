@@ -5,7 +5,7 @@ operations:
     routes:
       - oro_order_view
     frontend_options:
-      template: MolliePaymentBundle:Action:generate_payment_link.html.twig
+      template: '@MolliePayment/Action/generate_payment_link.html.twig'
     button_options:
       icon: fa-link
     attributes:
@@ -45,7 +45,7 @@ operations:
     routes:
       - oro_order_view
     frontend_options:
-      template: MolliePaymentBundle:Action:refund.html.twig
+      template: '@MolliePayment/Action/refund.html.twig'
     button_options:
       icon: fa-money
     attributes:

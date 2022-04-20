@@ -2,7 +2,7 @@
 
 namespace Mollie\Bundle\PaymentBundle\Entity\Repository;
 
-use Doctrine\ORM\EntityRepository;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Mollie\Bundle\PaymentBundle\Entity\ChannelSettings;
 use Oro\Bundle\SecurityBundle\ORM\Walker\AclHelper;
 
@@ -13,7 +13,7 @@ use Oro\Bundle\SecurityBundle\ORM\Walker\AclHelper;
  *
  * @package Mollie\Bundle\PaymentBundle\Entity\Repository
  */
-class ChannelSettingsRepository extends EntityRepository
+class ChannelSettingsRepository extends ServiceEntityRepository
 {
     /**
      * @var AclHelper

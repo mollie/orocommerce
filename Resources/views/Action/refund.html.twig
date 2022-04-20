@@ -1,10 +1,10 @@
-{% extends 'OroActionBundle:Operation:form.html.twig' %}
+{% extends '@OroAction/Operation/form.html.twig' %}
 
 {% block widget_content_inner %}
     {% if form is defined %}
         {# Define custom Mollie form content #}
         {% if (form.mollieRefund.isVoucher.vars.value) %}
-            {% include 'MolliePaymentBundle:Action:voucher_refund_message.html.twig' %}
+            {% include '@MolliePayment/Action/voucher_refund_message.html.twig' %}
         {% endif %}
         <div class="navbar navbar-static scrollspy-nav">
             {% set options = {
@@ -31,9 +31,9 @@
     {% block oro_order_refund_widget %}
         <div id="mollie-form-container" class="section-content">
             {% if (form.mollieRefund.isOrderApiUsed.vars.value) %}
-                {% include 'MolliePaymentBundle:Action:refund_order_lines.html.twig' %}
+                {% include '@MolliePayment/Action/refund_order_lines.html.twig' %}
             {% endif %}
-            {% include 'MolliePaymentBundle:Action:refund_payment.html.twig' %}
+            {% include '@MolliePayment/Action/refund_payment.html.twig' %}
         </div>
 
         {% if form.mollieRefund.totalValue.vars.value == 0 %}

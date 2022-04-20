@@ -47,6 +47,18 @@ define(function(require) {
                 this.addToForm('mollie-card-token', window.localStorage.getItem('mollieToken'), form);
                 window.localStorage.removeItem('mollieToken');
             }
+
+            let saveSingleClickCreditCardPaymentValue = window.localStorage.getItem('saveSingleClickCreditCardPayment');
+            if (saveSingleClickCreditCardPaymentValue) {
+                this.addToForm('mollie-save-single-click-payment', window.localStorage.getItem('saveSingleClickCreditCardPayment'), form);
+                window.localStorage.removeItem('saveSingleClickCreditCardPayment');
+            }
+
+            let useSavedSingleClickCreditCardPaymentValue = window.localStorage.getItem('useSavedSingleClickCreditCardPayment');
+            if (useSavedSingleClickCreditCardPaymentValue) {
+                this.addToForm('mollie-use-saved-single-click-payment', window.localStorage.getItem('useSavedSingleClickCreditCardPayment'), form);
+                window.localStorage.removeItem('useSavedSingleClickCreditCardPayment');
+            }
         },
 
         addToForm: function (name, value, form) {

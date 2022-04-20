@@ -4,6 +4,7 @@ namespace Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\OrgToke
 
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Configuration;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Address;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Customer;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\Order;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\OrderLine;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\Shipment;
@@ -46,6 +47,7 @@ class ProxyDataProvider
 
         $result = array(
             'profileId' => $payment->getProfileId(),
+            'customerId' => $payment->getCustomerId(),
             'description' => $payment->getDescription(),
             'amount' => $payment->getAmount()->toArray(),
             'redirectUrl' => $payment->getRedirectUrl(),
@@ -414,6 +416,10 @@ class ProxyDataProvider
             $paymentSpecific['dueDate'] = $payment->getDueDate()->format(Order::MOLLIE_DATE_FORMAT);
         }
 
+        if ($payment->getCustomerId()) {
+            $paymentSpecific['customerId'] =$payment->getCustomerId();
+        }
+
         return $paymentSpecific;
     }
 
@@ -470,5 +476,20 @@ class ProxyDataProvider
         }
 
         return $this->configService;
+    }
+
+    /**
+     * @param Customer $customer
+     *
+     * @return array
+     */
+    public function transformCustomer(Customer $customer)
+    {
+        return array(
+            'name' => $customer->getName(),
+            'email' => $customer->getEmail(),
+            'locale' => $customer->getLocale(),
+            'metadata' => $customer->getMetadata(),
+        );
     }
 }
