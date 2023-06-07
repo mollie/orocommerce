@@ -31,7 +31,7 @@ class PlatformVersionReader
      */
     public function getIntegrationVersion()
     {
-        return $this->packageProvider->getOroPackages()[$this->getIntegrationName()]->getFullPrettyVersion();
+        return $this->packageProvider->getOroPackages()[$this->getIntegrationName()]['pretty_version'];
     }
 
     /**
@@ -48,7 +48,7 @@ class PlatformVersionReader
             $molliePackage = $packageInterfaces['mollie/orocommerce'];
         }
 
-        return $molliePackage ? $molliePackage->getFullPrettyVersion() : null;
+        return $molliePackage ? $molliePackage->getFullPrettyVersion()['pretty_version'] : null;
     }
 
     /**
