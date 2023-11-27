@@ -26,7 +26,4 @@ To finalize the installation you need to enter your organization API token in th
 Read more about the integration configuration on [our Wiki](https://github.com/mollie/orocommerce/wiki).
 
 ## Release notes
- - **5.0.10:**
-   - Added support for OroCommerce 5.0.0.
-   - Added single-click payments.
-   - Added surcharge rules.
+All the information is provided per release on the [Releases](https://github.com/mollie/orocommerce/releases) page. 
