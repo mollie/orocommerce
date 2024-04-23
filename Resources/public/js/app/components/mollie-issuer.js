@@ -54,7 +54,17 @@ define(function(require) {
         },
 
         getSelectedIssuer: function () {
-            return '';
+            let issuerListContainer = document.querySelector('#' + this.options.paymentMethod + '-issuer-list');
+            if (!issuerListContainer || this.options.paymentMethod.includes("ideal")) {
+                return '';
+            }
+
+            let select = issuerListContainer.querySelector('select');
+            if (select) {
+                return select.options[select.selectedIndex].value;
+            }
+
+            return issuerListContainer.querySelector(this.options.selectors.issuerList).value;
         },
 
         beforeTransit: function(eventData) {
