@@ -34,25 +34,27 @@ define(function(require) {
          * {@inheritdoc}
          */
         initialize: function(options) {
+            this.handleIdealPayment(options);
             this.options = _.extend({}, this.options, options);
             this.$el = this.options._sourceElement;
 
             mediator.on('checkout:payment:before-transit', this.beforeTransit, this);
         },
 
+        handleIdealPayment: function(options) {
+            const paymentMethod = options.paymentMethod;
+            const sourceElement = options._sourceElement;
+
+            if (paymentMethod.includes("ideal")) {
+                if (sourceElement.length > 0 && sourceElement[0]) {
+                    const issuerList = sourceElement[0];
+                    issuerList.classList.add('hidden');
+                }
+            }
+        },
+
         getSelectedIssuer: function () {
-            let issuerListContainer = document.querySelector('#' + this.options.paymentMethod + '-issuer-list');
-
-            if (!issuerListContainer) {
-                return null;
-            }
-
-            let select = issuerListContainer.querySelector('select');
-            if (select) {
-                return select.options[select.selectedIndex].value;
-            }
-
-            return issuerListContainer.querySelector(this.options.selectors.issuerList).value;
+            return '';
         },
 
         beforeTransit: function(eventData) {
