@@ -313,7 +313,7 @@ services:
   Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\VersionCheck\VersionCheckService:
     factory: ['Mollie\Bundle\PaymentBundle\IntegrationServices\VersionCheckService', 'create']
     arguments:
-      - '@session.flash_bag'
+      - '@request_stack'
       - '@translator'
     public: true
 
@@ -360,14 +360,14 @@ services:
     arguments:
       - '@Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration'
     calls:
-      - ['setContainer', ['@Psr\Container\ContainerInterface']]
+      - ['setContainer', ['@oro_platform.twig.service_locator']]
 
   Mollie\Bundle\PaymentBundle\Controller\PaymentLinkController:
     public: true
     arguments:
       - '@mollie_payment.manager.admin_link_handler'
     calls:
-      - ['setContainer', ['@Psr\Container\ContainerInterface']]
+      - ['setContainer', ['@oro_platform.twig.service_locator']]
 
   Mollie\Bundle\PaymentBundle\Controller\ActivePaymentMethodsController:
     public: true
@@ -375,12 +375,12 @@ services:
       - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\PaymentMethodService'
       - '@Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration'
     calls:
-      - ['setContainer', ['@Psr\Container\ContainerInterface']]
+      - ['setContainer', ['@oro_platform.twig.service_locator']]
 
   Mollie\Bundle\PaymentBundle\Controller\AjaxMollieController:
     public: true
     calls:
-      - ['setContainer', ['@Psr\Container\ContainerInterface']]
+      - ['setContainer', ['@oro_platform.twig.service_locator']]
 
   Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Authorization\Interfaces\AuthorizationService:
     factory: ['Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Authorization\OrgToken\OrgTokenAuthService', 'getInstance']

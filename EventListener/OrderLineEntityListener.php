@@ -13,6 +13,7 @@ use Mollie\Bundle\PaymentBundle\Manager\OroPaymentMethodUtility;
 use Mollie\Bundle\PaymentBundle\Mapper\MollieDtoMapperInterface;
 use Oro\Bundle\OrderBundle\Entity\OrderLineItem;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Class OrderLineEntityListener
@@ -46,11 +47,14 @@ class OrderLineEntityListener
      * @var OrderReferenceService
      */
     private $orderReferenceService;
-
     /**
      * @var bool
      */
     private static $handleLineEvent = true;
+    /**
+     * @var RequestStack
+     */
+    protected RequestStack $requestStack;
 
     /**
      * OrderLineEntityListener constructor.
@@ -61,6 +65,7 @@ class OrderLineEntityListener
      * @param OroPaymentMethodUtility $paymentMethodUtility
      * @param MollieDtoMapperInterface $mollieDtoMapper
      * @param TranslatorInterface $translator
+     * @param RequestStack $requestStack
      */
     public function __construct(
         Configuration $configService,
@@ -68,7 +73,8 @@ class OrderLineEntityListener
         OrderReferenceService $orderReferenceService,
         OroPaymentMethodUtility $paymentMethodUtility,
         MollieDtoMapperInterface $mollieDtoMapper,
-        TranslatorInterface $translator
+        TranslatorInterface $translator,
+        RequestStack $requestStack
     ) {
         $this->configService = $configService;
         $this->eventBus = $eventBus;
@@ -76,6 +82,7 @@ class OrderLineEntityListener
         $this->mollieDtoMapper = $mollieDtoMapper;
         $this->paymentMethodUtility = $paymentMethodUtility;
         $this->translator = $translator;
+        $this->requestStack = $requestStack;
     }
 
     /**
@@ -96,6 +103,9 @@ class OrderLineEntityListener
 
     /**
      * @param OrderLineItem $orderLineItem
+     * @param PreUpdateEventArgs $args
+     *
+     * @throws MollieOperationForbiddenException
      */
     public function onPreUpdate(OrderLineItem $orderLineItem, PreUpdateEventArgs $args)
     {

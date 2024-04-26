@@ -4,8 +4,8 @@ namespace Mollie\Bundle\PaymentBundle\Controller;
 
 use Oro\Bundle\IntegrationBundle\Entity\Channel;
 use Oro\Bundle\IntegrationBundle\Form\Type\ChannelType;
-use Oro\Bundle\SecurityBundle\Annotation\AclAncestor;
-use Oro\Bundle\SecurityBundle\Annotation\CsrfProtection;
+use Oro\Bundle\SecurityBundle\Attribute\AclAncestor;
+use Oro\Bundle\SecurityBundle\Attribute\CsrfProtection;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -21,9 +21,9 @@ class AjaxMollieController extends AbstractController
 {
     /**
      * @Route("/validate-connection/{channelId}/", name="mollie_payment_validate_connection", methods={"POST"})
-     * @AclAncestor("oro_integration_update")
-     * @ParamConverter("channel", class="OroIntegrationBundle:Channel", options={"id" = "channelId"})
-     * @CsrfProtection()
+     * #[AclAncestor("oro_integration_update")]
+     * @ParamConverter("channel", class="Oro\Bundle\IntegrationBundle\Entity\Channel", options={"id" = "channelId"})
+     * #[CsrfProtection()]
      *
      * @param Request      $request
      * @param Channel|null $channel
