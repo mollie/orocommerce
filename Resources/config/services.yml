@@ -379,6 +379,8 @@ services:
 
   Mollie\Bundle\PaymentBundle\Controller\AjaxMollieController:
     public: true
+    arguments:
+      - '@form.factory'
     calls:
       - ['setContainer', ['@oro_platform.twig.service_locator']]
 
