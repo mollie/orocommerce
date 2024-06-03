@@ -36,7 +36,7 @@ class PaymentLinkController extends AbstractController
 
     /**
      * @Route("/paymentlink/generate/{orderId}", name="mollie_payment_link", methods={"GET"})
-     * @ParamConverter("order", class="OroOrderBundle:Order", options={"id" = "orderId"})
+     * @ParamConverter("order", class="Oro\Bundle\OrderBundle\Entity\Order", options={"id" = "orderId"})
      * @param Order $order
      * #[AclAncestor("oro_order_frontend_view")]
      *

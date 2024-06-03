@@ -105,7 +105,7 @@ class PaymentCheckoutCallbackListener
                 return;
             }
 
-            if (!$this->request->getMasterRequest()) {
+            if (!$this->request->getMainRequest()) {
                 Logger::logWarning(
                     'Web hook without master HTTP request detected.',
                     'Integration',
@@ -133,7 +133,7 @@ class PaymentCheckoutCallbackListener
 
             /** @var MolliePayment $paymentMethod */
             $paymentMethod = $this->paymentMethodProvider->getPaymentMethod($paymentMethodId);
-            $webHookPayload = $this->request->getMasterRequest()->getContent();
+            $webHookPayload = $this->request->getMainRequest()->getContent();
 
             /** @var Order $order */
             $order = $this->doctrineHelper->getEntity(
