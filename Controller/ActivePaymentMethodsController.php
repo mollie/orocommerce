@@ -9,7 +9,7 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Con
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Logger\Logger;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 /**
  * Class ActivePaymentMethodsController
@@ -41,12 +41,11 @@ class ActivePaymentMethodsController extends AbstractController
 
 
     /**
-     * @Route("/methods/active/{channelId}/{profileId}", name="mollie_active_payment_methods", methods={"GET"})
      *
      * @param string $profileId
-     *
      * @return JsonResponse
      */
+    #[\Symfony\Component\Routing\Attribute\Route(path: '/methods/active/{channelId}/{profileId}', name: 'mollie_active_payment_methods', methods: ['GET'])]
     public function getActivePaymentMethods($channelId, $profileId)
     {
         try {

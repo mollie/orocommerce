@@ -84,7 +84,7 @@ class MolliePayment implements PaymentMethodInterface, PurchaseActionInterface, 
      */
     public function execute($action, PaymentTransaction $paymentTransaction)
     {
-        if (!method_exists($this, $action)) {
+        if (!\Oro\Bundle\EntityExtendBundle\EntityPropertyInfo::methodExists($this, $action)) {
             throw new \InvalidArgumentException(
                 sprintf(
                     '"%s" payment method "%s" action is not supported',

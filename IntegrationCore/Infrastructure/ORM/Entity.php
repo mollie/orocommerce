@@ -118,16 +118,16 @@ abstract class Entity
     public function getIndexValue($indexKey)
     {
         $methodName = 'get' . ucfirst($indexKey);
-        if (method_exists($this, $methodName)) {
+        if (\Oro\Bundle\EntityExtendBundle\EntityPropertyInfo::methodExists($this, $methodName)) {
             return $this->$methodName();
         }
 
         $methodName = 'is' . ucfirst($indexKey);
-        if (method_exists($this, $methodName)) {
+        if (\Oro\Bundle\EntityExtendBundle\EntityPropertyInfo::methodExists($this, $methodName)) {
             return $this->$methodName();
         }
 
-        if (property_exists($this, $indexKey)) {
+        if (\Oro\Bundle\EntityExtendBundle\EntityPropertyInfo::propertyExists($this, $indexKey)) {
             return $this->$indexKey;
         }
 

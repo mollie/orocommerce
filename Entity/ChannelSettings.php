@@ -9,18 +9,14 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 
 /**
  * Entity with settings for Mollie integration
- *
- * @ORM\Entity(
- *     repositoryClass="Mollie\Bundle\PaymentBundle\Entity\Repository\ChannelSettingsRepository"
- * )
  */
+#[ORM\Entity(repositoryClass: \Mollie\Bundle\PaymentBundle\Entity\Repository\ChannelSettingsRepository::class)]
 class ChannelSettings extends Transport
 {
     /**
      * @var string
-     *
-     * @ORM\Column(name="mollie_save_marker", type="string", length=255, nullable=false)
      */
+    #[ORM\Column(name: 'mollie_save_marker', type: 'string', length: 255, nullable: false)]
     protected $mollieSaveMarker;
 
     /**
@@ -37,11 +33,8 @@ class ChannelSettings extends Transport
     private $websiteProfile;
     /**
      * @var \Mollie\Bundle\PaymentBundle\Entity\PaymentMethodSettings[]|\Doctrine\Common\Collections\ArrayCollection
-     *
-     * @ORM\OneToMany(targetEntity="Mollie\Bundle\PaymentBundle\Entity\PaymentMethodSettings",
-     *     mappedBy="channelSettings", cascade={"ALL"}, orphanRemoval=true
-     * )
      */
+    #[ORM\OneToMany(targetEntity: \Mollie\Bundle\PaymentBundle\Entity\PaymentMethodSettings::class, mappedBy: 'channelSettings', cascade: ['ALL'], orphanRemoval: true)]
     protected $paymentMethodSettings;
     /**
      * @var ParameterBag

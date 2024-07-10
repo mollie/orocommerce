@@ -18,7 +18,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class AdminLinkPaymentRedirectListener
 {
-    /** @var Session */
+    /** @var \Symfony\Component\HttpFoundation\RequestStack */
     private $session;
     /**
      * @var RouterInterface
@@ -32,12 +32,12 @@ class AdminLinkPaymentRedirectListener
     /**
      * AdminLinkPaymentRedirectListener constructor.
      *
-     * @param Session $session
+     * @param \Symfony\Component\HttpFoundation\RequestStack $session
      * @param RouterInterface $router
      * @param TranslatorInterface $translator
      */
     public function __construct(
-        Session $session,
+        \Symfony\Component\HttpFoundation\RequestStack $session,
         RouterInterface $router,
         TranslatorInterface $translator
     ) {

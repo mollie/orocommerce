@@ -20,7 +20,7 @@ use Symfony\Component\Routing\RouterInterface;
  */
 class PaymentCheckoutRedirectListener
 {
-    /** @var Session */
+    /** @var \Symfony\Component\HttpFoundation\RequestStack */
     private $session;
 
     /**
@@ -45,14 +45,14 @@ class PaymentCheckoutRedirectListener
     /**
      * PaymentCheckoutRedirectListener constructor.
      *
-     * @param Session $session
+     * @param \Symfony\Component\HttpFoundation\RequestStack $session
      * @param PaymentMethodProviderInterface $paymentMethodProvider
      * @param PaymentResultMessageProviderInterface $messageProvider
      * @param DoctrineHelper $doctrineHelper
      * @param RouterInterface $router
      */
     public function __construct(
-        Session $session,
+        \Symfony\Component\HttpFoundation\RequestStack $session,
         PaymentMethodProviderInterface $paymentMethodProvider,
         PaymentResultMessageProviderInterface $messageProvider,
         DoctrineHelper $doctrineHelper,

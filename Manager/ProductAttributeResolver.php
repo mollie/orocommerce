@@ -67,7 +67,7 @@ class ProductAttributeResolver
      */
     protected function getCategoryValue($category)
     {
-        if (is_object($category) && method_exists($category, 'getId')) {
+        if (is_object($category) && \Oro\Bundle\EntityExtendBundle\EntityPropertyInfo::methodExists($category, 'getId')) {
             return $category->getId();
         }
 
@@ -81,19 +81,19 @@ class ProductAttributeResolver
      */
     protected function getPropertyGetterName()
     {
-        if (method_exists($this->product, $this->productProperty)) {
+        if (\Oro\Bundle\EntityExtendBundle\EntityPropertyInfo::methodExists($this->product, $this->productProperty)) {
             return $this->productProperty;
         }
 
-        if (method_exists($this->product, "get$this->productProperty")) {
+        if (\Oro\Bundle\EntityExtendBundle\EntityPropertyInfo::methodExists($this->product, "get$this->productProperty")) {
             return "get$this->productProperty";
         }
 
-        if (method_exists($this->product, 'get' . MethodNameGenerator::fromSnakeCase($this->productProperty))) {
+        if (\Oro\Bundle\EntityExtendBundle\EntityPropertyInfo::methodExists($this->product, 'get' . MethodNameGenerator::fromSnakeCase($this->productProperty))) {
             return 'get' . MethodNameGenerator::fromSnakeCase($this->productProperty);
         }
 
-        if (method_exists($this->product, 'get' . MethodNameGenerator::fromSnakeCase($this->productProperty, false))) {
+        if (\Oro\Bundle\EntityExtendBundle\EntityPropertyInfo::methodExists($this->product, 'get' . MethodNameGenerator::fromSnakeCase($this->productProperty, false))) {
             return 'get' . MethodNameGenerator::fromSnakeCase($this->productProperty, false);
         }
 

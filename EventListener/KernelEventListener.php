@@ -27,7 +27,7 @@ class KernelEventListener
                         'success' => false,
                         'message' => $exception->getMessage(),
                     ],
-                    422
+                    \Symfony\Component\HttpFoundation\Response::HTTP_UNPROCESSABLE_ENTITY
                 )
             );
         }
