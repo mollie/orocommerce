@@ -10,7 +10,7 @@ use Oro\Bundle\PaymentBundle\Event\AbstractCallbackEvent;
 use Oro\Bundle\PaymentBundle\Method\Provider\PaymentMethodProviderInterface;
 use Oro\Bundle\PaymentBundle\Provider\PaymentResultMessageProviderInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
@@ -20,9 +20,10 @@ use Symfony\Component\Routing\RouterInterface;
  */
 class PaymentCheckoutRedirectListener
 {
-    /** @var Session */
-    private $session;
-
+    /**
+     * @var RequestStack
+     */
+    protected RequestStack $requestStack;
     /**
      * @var PaymentMethodProviderInterface
      */
@@ -45,20 +46,20 @@ class PaymentCheckoutRedirectListener
     /**
      * PaymentCheckoutRedirectListener constructor.
      *
-     * @param Session $session
+     * @param RequestStack $requestStack
      * @param PaymentMethodProviderInterface $paymentMethodProvider
      * @param PaymentResultMessageProviderInterface $messageProvider
      * @param DoctrineHelper $doctrineHelper
      * @param RouterInterface $router
      */
     public function __construct(
-        Session $session,
+        RequestStack $requestStack,
         PaymentMethodProviderInterface $paymentMethodProvider,
         PaymentResultMessageProviderInterface $messageProvider,
         DoctrineHelper $doctrineHelper,
         RouterInterface $router
     ) {
-        $this->session = $session;
+        $this->requestStack = $requestStack;
         $this->paymentMethodProvider = $paymentMethodProvider;
         $this->messageProvider = $messageProvider;
         $this->doctrineHelper = $doctrineHelper;
@@ -110,7 +111,7 @@ class PaymentCheckoutRedirectListener
     /**
      * @param PaymentTransaction $paymentTransaction
      * @param AbstractCallbackEvent $event
-     * @param string $forceRedirectUrl
+     * @param string $redirectUrl
      */
     private function redirectToFailureUrl(
         PaymentTransaction $paymentTransaction,
@@ -131,7 +132,7 @@ class PaymentCheckoutRedirectListener
             $event->markFailed();
         }
 
-        $flashBag = $this->session->getFlashBag();
+        $flashBag = $this->requestStack->getSession()?->getFlashBag();
         if (!$flashBag->has('error')) {
             $flashBag->add('error', $this->messageProvider->getErrorMessage($paymentTransaction));
         }

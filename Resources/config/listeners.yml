@@ -7,7 +7,7 @@ services:
       - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\UI\Controllers\PaymentMethodController'
       - '@Mollie\Bundle\PaymentBundle\IntegrationServices\FileUploader'
       - '@translator'
-      - '@session.flash_bag'
+      - '@request_stack'
       - '%mollie_payment.uploader.public_image_path%'
     tags:
       - { name: doctrine.orm.entity_listener, entity: Oro\Bundle\IntegrationBundle\Entity\Channel, event: postPersist, method: onNewChannel }
@@ -43,7 +43,7 @@ services:
       - '@mollie_payment.manager.oro_payment_method_utility'
       - '@mollie_payment.mapper.mollie_dto_mapper'
       - '@translator'
-      - '@session.flash_bag'
+      - '@request_stack'
     tags:
       - { name: doctrine.orm.entity_listener, entity: '\Oro\Bundle\OrderBundle\Entity\OrderLineItem', event: preUpdate, method: onPreUpdate }
 
@@ -84,7 +84,7 @@ services:
     class: 'Mollie\Bundle\PaymentBundle\EventListener\Callback\PaymentCheckoutRedirectListener'
     lazy: true
     arguments:
-      - '@session'
+      - '@request_stack'
       - '@mollie_payment.payment_method_provider.mollie_payment'
       - '@oro_payment.provider.result_messages'
       - '@oro_entity.doctrine_helper'
@@ -97,7 +97,7 @@ services:
     class: 'Mollie\Bundle\PaymentBundle\EventListener\Callback\AdminLinkPaymentRedirectListener'
     lazy: true
     arguments:
-      - '@session'
+      - '@request_stack'
       - '@router'
       - '@translator'
     tags:

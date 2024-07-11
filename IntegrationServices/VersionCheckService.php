@@ -4,7 +4,7 @@
 namespace Mollie\Bundle\PaymentBundle\IntegrationServices;
 
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\VersionCheck\VersionCheckService as BaseService;
-use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
@@ -14,31 +14,29 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class VersionCheckService extends BaseService
 {
-
-    /**
-     * @var FlashBagInterface
-     */
-    private $flashBag;
     /**
      * @var TranslatorInterface
      */
     private $translationService;
+    /**
+     * @var RequestStack
+     */
+    protected RequestStack $requestStack;
 
     /**
-     * @param FlashBagInterface $flashBag
+     * @param RequestStack $requestStack
      * @param TranslatorInterface $translationService
      *
      * @return VersionCheckService
      */
-    public static function create(FlashBagInterface $flashBag, TranslatorInterface $translationService)
+    public static function create(RequestStack $requestStack, TranslatorInterface $translationService)
     {
         $instance = static::getInstance();
-        $instance->flashBag = $flashBag;
+        $instance->requestStack = $requestStack;
         $instance->translationService = $translationService;
 
         return $instance;
     }
-
 
     /**
      * @inheritDoc
@@ -53,6 +51,6 @@ class VersionCheckService extends BaseService
 
         $message = $this->translationService->trans($messageKey, $params);
 
-        $this->flashBag->add('info', $message);
+        $this->requestStack->getSession()?->getFlashBag()->add('warning', $message);
     }
 }
