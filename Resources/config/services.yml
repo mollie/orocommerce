@@ -1,5 +1,5 @@
 parameters:
-  mollie_payment.version: 4.2.9
+  mollie_payment.version: 5.0.10
   mollie_payment.method.identifier_prefix.mollie_payment: 'mollie_payment'
   mollie_payment.uploader.public_image_path: 'bundles/molliepayment/img/uploads'
   mollie_payment.uploader.image_dir: '%kernel.project_dir%/public/%mollie_payment.uploader.public_image_path%'
@@ -142,13 +142,14 @@ services:
     tags:
       - { name: monolog.logger, channel: mollie }
 
-  mollie_payment.repository.channel_settings:
-    class: 'Mollie\Bundle\PaymentBundle\Entity\Repository\ChannelSettingsRepository'
+  Mollie\Bundle\PaymentBundle\Entity\Repository\ChannelSettingsRepository:
     parent: oro_entity.abstract_repository
     arguments:
       - 'Mollie\Bundle\PaymentBundle\Entity\ChannelSettings'
     calls:
       - [setAclHelper, ['@oro_security.acl_helper']]
+    tags:
+      - { name: doctrine.repository_service }
 
   mollie_payment.form.type.channel_settings:
     class: Mollie\Bundle\PaymentBundle\Form\Type\ChannelSettingsType
@@ -312,7 +313,7 @@ services:
   Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\VersionCheck\VersionCheckService:
     factory: ['Mollie\Bundle\PaymentBundle\IntegrationServices\VersionCheckService', 'create']
     arguments:
-      - '@session.flash_bag'
+      - '@request_stack'
       - '@translator'
     public: true
 
@@ -358,17 +359,30 @@ services:
     public: true
     arguments:
       - '@Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration'
+    calls:
+      - ['setContainer', ['@oro_platform.twig.service_locator']]
 
   Mollie\Bundle\PaymentBundle\Controller\PaymentLinkController:
-      public: true
-      arguments:
-        - '@mollie_payment.manager.admin_link_handler'
+    public: true
+    arguments:
+      - '@mollie_payment.manager.admin_link_handler'
+    calls:
+      - ['setContainer', ['@oro_platform.twig.service_locator']]
 
   Mollie\Bundle\PaymentBundle\Controller\ActivePaymentMethodsController:
-      public: true
-      arguments:
-        - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\PaymentMethodService'
-        - '@Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration'
+    public: true
+    arguments:
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\PaymentMethodService'
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration'
+    calls:
+      - ['setContainer', ['@oro_platform.twig.service_locator']]
+
+  Mollie\Bundle\PaymentBundle\Controller\AjaxMollieController:
+    public: true
+    arguments:
+      - '@form.factory'
+    calls:
+      - ['setContainer', ['@oro_platform.twig.service_locator']]
 
   Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Authorization\Interfaces\AuthorizationService:
     factory: ['Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Authorization\OrgToken\OrgTokenAuthService', 'getInstance']

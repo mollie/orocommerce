@@ -3,6 +3,8 @@
 namespace Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic;
 
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\CheckoutLink\CheckoutLinkService;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Customer\CustomerService;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\CustomerReference\CustomerReferenceService;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\OrgToken\ProxyDataProvider;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\Proxy;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Integration\Event\IntegrationOrderBillingAddressChangedEvent;
@@ -36,6 +38,8 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Refunds\RefundServ
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Refunds\WebHookHandler\OrderLineRefundWebHookHandler;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Refunds\WebHookHandler\OrderRefundWebHookHandler;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Shipments\ShipmentService;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Surcharge\SurchargeCalculationService;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Surcharge\SurchargeService;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\VersionCheck\Http\VersionCheckProxy;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\WebHook\OrderChangedWebHookEvent;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\WebHook\PaymentChangedWebHookEvent;
@@ -111,6 +115,20 @@ class BootstrapComponent extends \Mollie\Bundle\PaymentBundle\IntegrationCore\In
         );
 
         ServiceRegister::registerService(
+            CustomerReferenceService::CLASS_NAME,
+            function () {
+                return CustomerReferenceService::getInstance();
+            }
+        );
+
+        ServiceRegister::registerService(
+            CustomerService::CLASS_NAME,
+            function () {
+                return CustomerService::getInstance();
+            }
+        );
+
+        ServiceRegister::registerService(
             OrderReferenceService::CLASS_NAME,
             function () {
                 return OrderReferenceService::getInstance();
@@ -128,6 +146,13 @@ class BootstrapComponent extends \Mollie\Bundle\PaymentBundle\IntegrationCore\In
             ShipmentService::CLASS_NAME,
             function () {
                 return ShipmentService::getInstance();
+            }
+        );
+
+        ServiceRegister::registerService(
+            SurchargeCalculationService::CLASS_NAME,
+            function () {
+                return SurchargeService::getInstance();
             }
         );
 

@@ -48,12 +48,24 @@
 
             </div>
 
-            {% if paymentMethod.method is defined %}
-                {{ form_row(paymentMethod.method) }}
+            {% if paymentMethod.surchargeType is defined %}
+                {{ form_row(paymentMethod.surchargeType) }}
             {% endif %}
 
-            {% if paymentMethod.surcharge is defined %}
-                {{ form_row(paymentMethod.surcharge) }}
+            {% if paymentMethod.surchargeFixedAmount is defined %}
+                {{ form_row(paymentMethod.surchargeFixedAmount, { 'attr': {'class': 'mollie-surcharge-fixed-amount'}}) }}
+            {% endif %}
+
+            {% if paymentMethod.surchargePercentage is defined %}
+                {{ form_row(paymentMethod.surchargePercentage, { 'attr': {'class': 'mollie-surcharge-percentage'} }) }}
+            {% endif %}
+
+            {% if paymentMethod.surchargeLimit is defined %}
+                {{ form_row(paymentMethod.surchargeLimit, { 'attr': {'class': 'mollie-surcharge-limit'} }) }}
+            {% endif %}
+
+            {% if paymentMethod.method is defined %}
+                {{ form_row(paymentMethod.method, { 'attr': {'class': 'mollie-transaction-description'} }) }}
             {% endif %}
 
             {% if paymentMethod.transactionDescriptions is defined %}
@@ -67,6 +79,23 @@
             {% if paymentMethod.paymentExpiryDays is defined %}
                 {{ form_row(paymentMethod.paymentExpiryDays, { 'attr': {'class': 'mollie-payment-expiry-days'} }) }}
             {% endif %}
+
+            {% if paymentMethod.mollieComponents is defined %}
+                {{ form_row(paymentMethod.mollieComponents, { 'attr': {'class': 'mollie-payment-mollie-components'} }) }}
+            {% endif %}
+
+            {% if paymentMethod.singleClickPayment is defined %}
+                {{ form_row(paymentMethod.singleClickPayment, { 'attr': {'class': 'mollie-payment-single-click-status'} }) }}
+            {% endif %}
+
+            {% if paymentMethod.singleClickPaymentApprovalText is defined %}
+                {{ form_row(paymentMethod.singleClickPaymentApprovalText, { 'attr': {'class': 'mollie-payment-single-click-approval-text'} }) }}
+            {% endif %}
+
+            {% if paymentMethod.singleClickPaymentDescription is defined %}
+                {{ form_row(paymentMethod.singleClickPaymentDescription, { 'attr': {'class': 'mollie-payment-single-click-description'} }) }}
+            {% endif %}
+
 
             {{ form_rest(paymentMethod) }}
 

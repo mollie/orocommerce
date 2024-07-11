@@ -5,6 +5,7 @@ namespace Mollie\Bundle\PaymentBundle\Form\Type;
 use Mollie\Bundle\PaymentBundle\Entity\PaymentMethodSettings;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\Model\PaymentMethodConfig;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\PaymentMethods;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Surcharge\SurchargeType;
 use Mollie\Bundle\PaymentBundle\Manager\ProductAttributesProvider;
 use Oro\Bundle\ApiBundle\Form\Type\NumberType;
 use Oro\Bundle\LocaleBundle\Form\Type\LocalizedFallbackValueCollectionType;
@@ -132,26 +133,11 @@ class PaymentMethodSettingsType extends AbstractType
             return;
         }
 
-        $surchargeTooltip = 'mollie.payment.config.payment_methods.surcharge.tooltip';
-        if ($paymentMethodConfig->isSurchargeRestricted()) {
-            $surchargeTooltip = 'mollie.payment.config.payment_methods.surcharge.klarna_tooltip';
-        }
-
         $orderExpiryDaysTooltip = $paymentMethodConfig->isApiMethodRestricted() ?
             'mollie.payment.config.payment_methods.orderExpiryDays.klarna_tooltip' :
             'mollie.payment.config.payment_methods.orderExpiryDays.tooltip';
 
         $event->getForm()->add(
-            'surcharge',
-            NumberType::class,
-            [
-                'label' => 'mollie.payment.config.payment_methods.surcharge.label',
-                'tooltip' => $surchargeTooltip,
-                'required' => false,
-                'attr' => ['autocomplete' => 'off'],
-                'constraints' => [new Range(['min' => 0])],
-            ]
-        )->add(
             'orderExpiryDays',
             IntegerType::class,
             [
@@ -171,6 +157,79 @@ class PaymentMethodSettingsType extends AbstractType
                     'tooltip' => 'mollie.payment.config.payment_methods.paymentExpiryDays.tooltip',
                     'required' => false,
                     'constraints' => [new Range(['min' => 1, 'max' => 100])],
+                ]
+            );
+        }
+
+        if (!$paymentMethodConfig->isSurchargeRestricted()) {
+            $surchargeTypeChoices = [
+                'mollie.payment.config.payment_methods.payment_surcharge.option.no_fee.label' => SurchargeType::NO_FEE,
+                'mollie.payment.config.payment_methods.payment_surcharge.option.fixed_fee.label' => SurchargeType::FIXED_FEE,
+                'mollie.payment.config.payment_methods.payment_surcharge.option.percentage.label' => SurchargeType::PERCENTAGE,
+                'mollie.payment.config.payment_methods.payment_surcharge.option.fixed_fee_and_percentage.label' => SurchargeType::FIXED_FEE_AND_PERCENTAGE
+            ];
+            $event->getForm()->add(
+                'surchargeType',
+                ChoiceType::class,
+                [
+                    'choices' => $surchargeTypeChoices,
+                    'label' => 'mollie.payment.config.payment_methods.payment_surcharge.label',
+                    'tooltip' => 'mollie.payment.config.payment_methods.payment_surcharge.tooltip',
+                    'required' => true,
+                    'placeholder' => false,
+                    'attr' => [
+                        'class' => 'mollie-surcharge-type-select',
+                        'data-method-wrapper' => $paymentMethodConfig->getMollieId(),
+                    ],
+                ]
+            );
+
+            $surchargeFixedAmountTooltip = 'mollie.payment.config.payment_methods.surcharge_fixed_amount.tooltip';
+            if ($paymentMethodConfig->isSurchargeRestricted()) {
+                $surchargeFixedAmountTooltip = 'mollie.payment.config.payment_methods.surcharge_fixed_amount.klarna_tooltip';
+            }
+
+            $event->getForm()->add(
+                'surchargeFixedAmount',
+                NumberType::class,
+                [
+                    'label' => 'mollie.payment.config.payment_methods.surcharge_fixed_amount.label',
+                    'tooltip' => $surchargeFixedAmountTooltip,
+                    'required' => false,
+                    'attr' => ['autocomplete' => 'off'],
+                    'constraints' => [new Range(['min' => 0])],
+                ]
+            );
+
+            $surchargePercentageTooltip = 'mollie.payment.config.payment_methods.surcharge_percentage.tooltip';
+            if ($paymentMethodConfig->isSurchargeRestricted()) {
+                $surchargePercentageTooltip = 'mollie.payment.config.payment_methods.surcharge_percentage.klarna_tooltip';
+            }
+
+            $surchargeLimitTooltip = 'mollie.payment.config.payment_methods.surcharge_limit.tooltip';
+            if ($paymentMethodConfig->isSurchargeRestricted()) {
+                $surchargeLimitTooltip = 'mollie.payment.config.payment_methods.surcharge_limit.klarna_tooltip';
+            }
+
+            $event->getForm()->add(
+                'surchargePercentage',
+                NumberType::class,
+                [
+                    'label' => 'mollie.payment.config.payment_methods.surcharge_percentage.label',
+                    'tooltip' => $surchargePercentageTooltip,
+                    'required' => false,
+                    'attr' => ['autocomplete' => 'off'],
+                    'constraints' => [new Range(['min' => 0, 'max' => 100])],
+                ]
+            )->add(
+                'surchargeLimit',
+                NumberType::class,
+                [
+                    'label' => 'mollie.payment.config.payment_methods.surcharge_limit.label',
+                    'tooltip' => $surchargeLimitTooltip,
+                    'required' => false,
+                    'attr' => ['autocomplete' => 'off'],
+                    'constraints' => [new Range(['min' => 0])],
                 ]
             );
         }
@@ -216,6 +275,37 @@ class PaymentMethodSettingsType extends AbstractType
                     'label' => 'mollie.payment.config.payment_methods.mollie_components.label',
                     'tooltip' => 'mollie.payment.config.payment_methods.mollie_components.tooltip',
                     'required' => true,
+                ]
+            )->add(
+                'singleClickPayment',
+                CheckboxType::class,
+                [
+                    'value' => 1,
+                    'label' => 'mollie.payment.config.payment_methods.single_click_payment.label',
+                    'tooltip' => 'mollie.payment.config.payment_methods.single_click_payment.tooltip',
+                    'required' => true,
+                ]
+            );
+        }
+
+        if ($paymentMethodConfig->isSingleClickPaymentSupported()) {
+            $event->getForm()->add(
+                'singleClickPaymentApprovalText',
+                LocalizedFallbackValueCollectionType::class,
+                [
+                    'label' => 'mollie.payment.config.payment_methods.single_click_payment_approval_text.label',
+                    'tooltip' => 'mollie.payment.config.payment_methods.single_click_payment_approval_text.tooltip',
+                    'required' => true,
+                    'entry_options' => ['constraints' => [new NotBlank()]],
+                ]
+            )->add(
+                'singleClickPaymentDescription',
+                LocalizedFallbackValueCollectionType::class,
+                [
+                    'label' => 'mollie.payment.config.payment_methods.single_click_payment_description.label',
+                    'tooltip' => 'mollie.payment.config.payment_methods.single_click_payment_description.tooltip',
+                    'required' => true,
+                    'entry_options' => ['constraints' => [new NotBlank()]],
                 ]
             );
         }
