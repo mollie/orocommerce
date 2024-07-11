@@ -4,7 +4,7 @@ namespace Mollie\Bundle\PaymentBundle\Controller;
 
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration;
 use Mollie\Bundle\PaymentBundle\IntegrationServices\DebugService;
-use Oro\Bundle\SecurityBundle\Annotation\Acl;
+use Oro\Bundle\SecurityBundle\Attribute\Acl;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -43,12 +43,12 @@ class SupportController extends AbstractController
      *     methods={"GET"}
      * )
      *
-     * @Acl(
+     * #[Acl(
      *      id="oro_integration_view",
      *      type="entity",
      *      permission="VIEW",
-     *      class="OroIntegrationBundle:Channel"
-     * )
+     *      class="Oro\Bundle\IntegrationBundle\Entity\Channel"
+     * )]
      *
      * @return JsonResponse
      */
@@ -64,12 +64,12 @@ class SupportController extends AbstractController
      *     methods={"POST"}
      * )
      *
-     * @Acl(
+     * #[Acl(
      *      id="oro_integration_view",
      *      type="entity",
      *      permission="VIEW",
-     *      class="OroIntegrationBundle:Channel"
-     * )
+     *      class="Oro\Bundle\IntegrationBundle\Entity\Channel"
+     * )]
      *
      * @param Request $request
      * @return JsonResponse
@@ -94,12 +94,12 @@ class SupportController extends AbstractController
      *     methods={"GET"}
      * )
      *
-     * @Acl(
+     * #[Acl(
      *      id="oro_integration_view",
      *      type="entity",
      *      permission="VIEW",
-     *      class="OroIntegrationBundle:Channel"
-     * )
+     *      class="Oro\Bundle\IntegrationBundle\Entity\Channel"
+     * )]
      *
      * @return BinaryFileResponse
      */

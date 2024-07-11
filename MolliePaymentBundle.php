@@ -21,10 +21,11 @@ class MolliePaymentBundle extends Bundle
         parent::boot();
         BootstrapComponent::boot($this->container);
     }
+
     /**
      * {@inheritdoc}
      */
-    public function getContainerExtension()
+    public function getContainerExtension(): ?\Symfony\Component\DependencyInjection\Extension\ExtensionInterface
     {
         if (!$this->extension) {
             $this->extension = new PaymentExtension();

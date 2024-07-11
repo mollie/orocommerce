@@ -15,7 +15,7 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ORM\Exceptions\Re
 use Mollie\Bundle\PaymentBundle\IntegrationServices\FileUploader;
 use Oro\Bundle\IntegrationBundle\Entity\Channel;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
@@ -45,9 +45,9 @@ class ChannelSettingsListener
      */
     private $translator;
     /**
-     * @var FlashBagInterface
+     * @var RequestStack
      */
-    private $flashBag;
+    protected RequestStack $requestStack;
     /**
      * @var string
      */
@@ -61,7 +61,7 @@ class ChannelSettingsListener
      * @param PaymentMethodController $paymentMethodController
      * @param FileUploader $fileUploader
      * @param TranslatorInterface $translator
-     * @param FlashBagInterface $flashBag
+     * @param RequestStack $requestStack
      * @param string $publicImagePath
      */
     public function __construct(
@@ -70,7 +70,7 @@ class ChannelSettingsListener
         PaymentMethodController $paymentMethodController,
         FileUploader $fileUploader,
         TranslatorInterface $translator,
-        FlashBagInterface $flashBag,
+        RequestStack $requestStack,
         $publicImagePath
     ) {
         $this->configService = $configService;
@@ -78,7 +78,7 @@ class ChannelSettingsListener
         $this->paymentMethodController = $paymentMethodController;
         $this->fileUploader = $fileUploader;
         $this->translator = $translator;
-        $this->flashBag = $flashBag;
+        $this->requestStack = $requestStack;
         $this->publicImagePath = $publicImagePath;
     }
 
@@ -176,7 +176,7 @@ class ChannelSettingsListener
         $uploadedImageName = $this->fileUploader->upload($image, $fileNamePrefix);
 
         if (!$uploadedImageName) {
-            $this->flashBag->add(
+            $this->requestStack->getSession()?->getFlashBag()->add(
                 'warning',
                 $this->translator->trans(
                     'mollie.payment.config.payment_methods.image.upload_error',

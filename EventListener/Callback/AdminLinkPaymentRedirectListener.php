@@ -6,7 +6,7 @@ use Mollie\Bundle\PaymentBundle\PaymentMethod\Config\MolliePaymentConfigInterfac
 use Oro\Bundle\PaymentBundle\Entity\PaymentTransaction;
 use Oro\Bundle\PaymentBundle\Event\AbstractCallbackEvent;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -18,8 +18,10 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class AdminLinkPaymentRedirectListener
 {
-    /** @var Session */
-    private $session;
+    /**
+     * @var RequestStack
+     */
+    protected RequestStack $requestStack;
     /**
      * @var RouterInterface
      */
@@ -32,16 +34,16 @@ class AdminLinkPaymentRedirectListener
     /**
      * AdminLinkPaymentRedirectListener constructor.
      *
-     * @param Session $session
+     * @param RequestStack $requestStack
      * @param RouterInterface $router
      * @param TranslatorInterface $translator
      */
     public function __construct(
-        Session $session,
+        RequestStack $requestStack,
         RouterInterface $router,
         TranslatorInterface $translator
     ) {
-        $this->session = $session;
+        $this->requestStack = $requestStack;
         $this->router = $router;
         $this->translator = $translator;
     }
@@ -62,7 +64,7 @@ class AdminLinkPaymentRedirectListener
         }
 
         if ($paymentTransaction->isSuccessful()) {
-            $this->session->getFlashBag()->add('success', 'oro.checkout.workflow.success.thank_you.label');
+            $this->requestStack->getSession()?->getFlashBag()->add('success', 'oro.checkout.workflow.success.thank_you.label');
             $event->markSuccessful();
             return;
         }
