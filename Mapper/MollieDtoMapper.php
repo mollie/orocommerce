@@ -464,8 +464,10 @@ class MollieDtoMapper implements MollieDtoMapperInterface
             'customerId' => $mollieCustomerId,
         ]);
 
-        if (($order = $this->getOrderEntity($paymentTransaction)) && ($shippingAddress = $order->getShippingAddress())) {
+        if (($order = $this->getOrderEntity($paymentTransaction)) && ($shippingAddress = $order->getShippingAddress())
+            && ($billingAddress = $order->getBillingAddress())) {
             $payment->setShippingAddress($this->getAddressData($shippingAddress, $order->getEmail()));
+            $payment->setBillingAddress($this->getAddressData($billingAddress, $order->getEmail()));
             $payment->setDescription($this->getDescription($order, $paymentTransaction));
         }
 

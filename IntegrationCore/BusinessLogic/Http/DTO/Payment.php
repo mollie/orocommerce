@@ -69,6 +69,10 @@ class Payment extends BaseDto
      */
     protected $shippingAddress;
     /**
+     * @var Address
+     */
+    protected $billingAddress;
+    /**
      * @var array
      */
     protected $metadata = array();
@@ -138,6 +142,11 @@ class Payment extends BaseDto
             $result->shippingAddress = Address::fromArray($shippingAddress);
         }
 
+        $billingAddress = static::getValue($raw, 'billingAddress', array());
+        if (!empty($billingAddress)) {
+            $result->billingAddress = Address::fromArray($billingAddress);
+        }
+
         foreach (static::getValue($raw, '_links', array()) as $linkKey => $linkData) {
             $result->links[$linkKey] = Link::fromArray($linkData);
         }
@@ -198,6 +207,10 @@ class Payment extends BaseDto
 
         if ($this->shippingAddress) {
             $result['shippingAddress'] = $this->shippingAddress->toArray();
+        }
+
+        if ($this->billingAddress) {
+            $result['billingAddress'] = $this->billingAddress->toArray();
         }
 
         return $result;
@@ -426,6 +439,22 @@ class Payment extends BaseDto
     public function setShippingAddress($shippingAddress)
     {
         $this->shippingAddress = $shippingAddress;
+    }
+
+    /**
+     * @return Address|null
+     */
+    public function getBillingAddress()
+    {
+        return $this->billingAddress;
+    }
+
+    /**
+     * @param Address $billingAddress
+     */
+    public function setBillingAddress($billingAddress)
+    {
+        $this->billingAddress = $billingAddress;
     }
 
     /**
