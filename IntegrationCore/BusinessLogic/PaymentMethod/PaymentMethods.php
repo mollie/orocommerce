@@ -20,4 +20,5 @@ class PaymentMethods
     const Vouchers = 'voucher';
     const Banktransfer = 'banktransfer';
     const Alma = 'alma';
+    const Payconiq = 'payconiq';
 }
