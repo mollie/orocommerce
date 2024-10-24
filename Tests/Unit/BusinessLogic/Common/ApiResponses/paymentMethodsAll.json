@@ -221,6 +221,30 @@
       },
       {
         "resource": "method",
+        "id": "payconiq",
+        "description": "Payconiq",
+        "minimumAmount": {
+          "value": "0.01",
+          "currency": "EUR"
+        },
+        "maximumAmount": {
+          "value": "50000.00",
+          "currency": "EUR"
+        },
+        "image": {
+          "size1x": "https://www.mollie.com/external/icons/payment-methods/payconiq.png",
+          "size2x": "https://www.mollie.com/external/icons/payment-methods/payconiq%402x.png",
+          "svg": "https://www.mollie.com/external/icons/payment-methods/payconiq.svg"
+        },
+        "_links": {
+          "self": {
+            "href": "https://api.mollie.com/v2/methods/payconiq",
+            "type": "application/hal+json"
+          }
+        }
+      },
+      {
+        "resource": "method",
         "id": "banktransfer",
         "description": "Bank transfer",
         "minimumAmount": {

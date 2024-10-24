@@ -2,6 +2,7 @@
 
 namespace Mollie\Bundle\PaymentBundle\PaymentMethod\Provider;
 
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\Model\PaymentMethodConfig;
 use Mollie\Bundle\PaymentBundle\PaymentMethod\Config\MolliePaymentConfigInterface;
 use Mollie\Bundle\PaymentBundle\PaymentMethod\Config\Provider\MolliePaymentConfigProviderInterface;
 use Mollie\Bundle\PaymentBundle\PaymentMethod\Factory\MolliePaymentPaymentMethodFactoryInterface;
@@ -45,6 +46,9 @@ class MolliePaymentProvider extends AbstractPaymentMethodProvider
     {
         $configs = $this->configProvider->getPaymentConfigs();
         foreach ($configs as $config) {
+            if (in_array($config->getMollieId(), PaymentMethodConfig::$paymentOnlyApiMethods)) {
+                $config->set('api_method', PaymentMethodConfig::API_METHOD_PAYMENT);
+            }
             $this->addPaymentMethod($config);
         }
     }

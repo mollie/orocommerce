@@ -94,17 +94,18 @@ class MollieDtoMapper implements MollieDtoMapperInterface
      * @param string $webhooksUrlReplacement
      */
     public function __construct(
-        RequestStack $requestStack,
-        Configuration $configService,
-        TaxProviderRegistry $taxProviderRegistry,
-        SurchargeProvider $surchargeProvider,
-        TranslatorInterface $translator,
-        DoctrineHelper $doctrineHelper,
-        RouterInterface $router,
-        LocalizationHelper $localizationHelper,
+        RequestStack                         $requestStack,
+        Configuration                        $configService,
+        TaxProviderRegistry                  $taxProviderRegistry,
+        SurchargeProvider                    $surchargeProvider,
+        TranslatorInterface                  $translator,
+        DoctrineHelper                       $doctrineHelper,
+        RouterInterface                      $router,
+        LocalizationHelper                   $localizationHelper,
         PaymentTransactionDescriptionService $transactionDescService,
-        $webhooksUrlReplacement = ''
-    ) {
+                                             $webhooksUrlReplacement = ''
+    )
+    {
         $this->requestStack = $requestStack;
         $this->configService = $configService;
         $this->taxProviderRegistry = $taxProviderRegistry;
@@ -143,13 +144,13 @@ class MollieDtoMapper implements MollieDtoMapperInterface
         $cardToken = $this->getRequestParam('mollie-card-token', $paymentTransaction->getPaymentMethod());
         $mollieCustomerId = '';
         $saveSingleClickPayment = $this->getRequestParam(
-            'mollie-save-single-click-payment',
-            $paymentTransaction->getPaymentMethod()
-        ) === 'true';
+                'mollie-save-single-click-payment',
+                $paymentTransaction->getPaymentMethod()
+            ) === 'true';
         $useSavedSingleClickPayment = $this->getRequestParam(
-            'mollie-use-saved-single-click-payment',
-            $paymentTransaction->getPaymentMethod()
-        ) === 'true';
+                'mollie-use-saved-single-click-payment',
+                $paymentTransaction->getPaymentMethod()
+            ) === 'true';
 
         $customerId = $order->getCustomerUser()->getId();
         if ($useSavedSingleClickPayment) {
@@ -409,13 +410,13 @@ class MollieDtoMapper implements MollieDtoMapperInterface
         $cardToken = $this->getRequestParam('mollie-card-token', $paymentTransaction->getPaymentMethod());
         $mollieCustomerId = '';
         $saveSingleClickPayment = $this->getRequestParam(
-            'mollie-save-single-click-payment',
-            $paymentTransaction->getPaymentMethod()
-        ) === 'true';
+                'mollie-save-single-click-payment',
+                $paymentTransaction->getPaymentMethod()
+            ) === 'true';
         $useSavedSingleClickPayment = $this->getRequestParam(
-            'mollie-use-saved-single-click-payment',
-            $paymentTransaction->getPaymentMethod()
-        ) === 'true';
+                'mollie-use-saved-single-click-payment',
+                $paymentTransaction->getPaymentMethod()
+            ) === 'true';
 
         $customerId = $paymentTransaction->getFrontendOwner()->getId();
         if ($useSavedSingleClickPayment) {
@@ -464,9 +465,15 @@ class MollieDtoMapper implements MollieDtoMapperInterface
             'customerId' => $mollieCustomerId,
         ]);
 
-        if (($order = $this->getOrderEntity($paymentTransaction)) && ($shippingAddress = $order->getShippingAddress())) {
+        $order = $this->getOrderEntity($paymentTransaction);
+
+        if ($order && ($shippingAddress = $order->getShippingAddress())) {
             $payment->setShippingAddress($this->getAddressData($shippingAddress, $order->getEmail()));
             $payment->setDescription($this->getDescription($order, $paymentTransaction));
+        }
+
+        if ($order && ($billingAddress = $order->getBillingAddress())) {
+            $payment->setBillingAddress($this->getAddressData($billingAddress, $order->getEmail()));
         }
 
         return $payment;

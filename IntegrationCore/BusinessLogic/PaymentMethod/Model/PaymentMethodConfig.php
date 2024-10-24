@@ -37,6 +37,10 @@ class PaymentMethodConfig extends Entity
 
     const DEFAULT_TRANSACTION_DESCRIPTION = '{orderNumber}';
 
+    public static $paymentOnlyApiMethods = array(
+        PaymentMethods::Alma
+    );
+
     protected static $allowedSurchargeTypes = array(
         SurchargeType::NO_FEE,
         SurchargeType::FIXED_FEE,
@@ -51,7 +55,8 @@ class PaymentMethodConfig extends Entity
         PaymentMethods::KlarnaPayLater => self::API_METHOD_ORDERS,
         PaymentMethods::KlarnaSliceIt => self::API_METHOD_ORDERS,
         PaymentMethods::KlarnaPayNow => self::API_METHOD_ORDERS,
-        PaymentMethods::Vouchers => self::API_METHOD_ORDERS
+        PaymentMethods::Vouchers => self::API_METHOD_ORDERS,
+        PaymentMethods::Alma => self::API_METHOD_PAYMENT
     );
 
     /**
