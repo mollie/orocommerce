@@ -26,7 +26,17 @@ To finalize the installation you need to enter your organization API token in th
 Read more about the integration configuration on [our Wiki](https://github.com/mollie/orocommerce/wiki).
 
 ## Release notes
- - **5.0.10:**
-   - Added support for OroCommerce 5.0.0.
-   - Added single-click payments.
-   - Added surcharge rules.
+
+**5.2.1:**
+- Added cancel url to fix issue caused by clicking "previous page" on Mollie hosted payment page
+
+**5.2.0:**
+- Update from iDeal 1.0 to iDeal 2.0
+
+**5.1.0:**
+- Added compatibility with OroCommerce 5.1.0
+
+**5.0.10:**
+ - Added support for OroCommerce 5.0.0.
+ - Added single-click payments.
+ - Added surcharge rules.

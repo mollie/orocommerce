@@ -185,6 +185,13 @@ class MollieDtoMapper implements MollieDtoMapperInterface
                     UrlGeneratorInterface::ABSOLUTE_URL
                 )
             ),
+            'cancelUrl' => $this->ensureDebugWebhookUrl(
+                $this->router->generate(
+                    'oro_payment_callback_error',
+                    ['accessIdentifier' => $paymentTransaction->getAccessIdentifier()],
+                    UrlGeneratorInterface::ABSOLUTE_URL
+                )
+            ),
             'payment' => [
                 'issuer' => $this->getRequestParam('mollie-issuer', $paymentTransaction->getPaymentMethod()),
                 'cardToken' => $cardToken,

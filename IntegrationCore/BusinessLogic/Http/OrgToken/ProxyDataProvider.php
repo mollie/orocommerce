@@ -98,6 +98,7 @@ class ProxyDataProvider
             'orderNumber' => $order->getOrderNumber(),
             'billingAddress' => $this->transformAddress($order->getBillingAddress()),
             'redirectUrl' => $order->getRedirectUrl(),
+            'cancelUrl' => $order->getCancelUrl(),
             'webhookUrl' => $order->getWebhookUrl(),
 
             'locale' => $order->getLocale(),

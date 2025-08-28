@@ -1,6 +1,6 @@
 {
   "name": "mollie/orocommerce",
-  "version": "5.2.0",
+  "version": "5.2.1",
   "type": "symfony-bundle",
   "description": "Mollie Payment Module for OroCommerce",
   "keywords": [
