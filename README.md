@@ -27,6 +27,9 @@ Read more about the integration configuration on [our Wiki](https://github.com/m
 
 ## Release notes
 
+**5.2.2:**
+- Added redirect to checkout page on failed or canceled payment
+
 **5.2.1:**
 - Added cancel url to fix issue caused by clicking "previous page" on Mollie hosted payment page
 

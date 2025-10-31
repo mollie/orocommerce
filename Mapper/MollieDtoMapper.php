@@ -180,7 +180,7 @@ class MollieDtoMapper implements MollieDtoMapperInterface
             'billingAddress' => $this->getAddressData($billingAddress, $order->getEmail())->toArray(),
             'redirectUrl' => $this->ensureDebugWebhookUrl(
                 $this->router->generate(
-                    'oro_payment_callback_return',
+                    'mollie_payment_callback_return',
                     ['accessIdentifier' => $paymentTransaction->getAccessIdentifier()],
                     UrlGeneratorInterface::ABSOLUTE_URL
                 )
@@ -451,7 +451,7 @@ class MollieDtoMapper implements MollieDtoMapperInterface
             ],
             'redirectUrl' => $this->ensureDebugWebhookUrl(
                 $this->router->generate(
-                    'oro_payment_callback_return',
+                    'mollie_payment_callback_return',
                     ['accessIdentifier' => $paymentTransaction->getAccessIdentifier()],
                     UrlGeneratorInterface::ABSOLUTE_URL
                 )
