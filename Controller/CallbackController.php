@@ -5,19 +5,20 @@ namespace Mollie\Bundle\PaymentBundle\Controller;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Orders\OrderService;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ServiceRegister;
-use Oro\Bundle\PaymentBundle\Controller\Frontend\CallbackController as BaseCallbackController;
 use Oro\Bundle\PaymentBundle\Entity\PaymentTransaction;
 use Oro\Bundle\PaymentBundle\Event\CallbackReturnEvent;
 use Oro\Bundle\PaymentBundle\Event\CallbackErrorEvent;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
-class CallbackController extends BaseCallbackController
+
+class CallbackController extends AbstractController
 {
     /**
      * @var EventDispatcherInterface
@@ -37,6 +38,7 @@ class CallbackController extends BaseCallbackController
     /**
      * @param EventDispatcherInterface $eventDispatcher
      * @param RouterInterface $router
+     * @param Configuration $configService
      */
     public function __construct(EventDispatcherInterface $eventDispatcher, RouterInterface $router, Configuration $configService)
     {
@@ -47,7 +49,7 @@ class CallbackController extends BaseCallbackController
 
     /**
      * @Route(
-     * "/mollie/return/{accessIdentifier}",
+     * "/return/{accessIdentifier}",
      * name="mollie_payment_callback_return",
      * requirements={"accessIdentifier"="[a-zA-Z0-9\-]+"},
      * methods={"GET", "POST"}
@@ -63,7 +65,7 @@ class CallbackController extends BaseCallbackController
         $shopReference = $transaction->getEntityIdentifier();
 
         if (!$shopReference) {
-            return $this->handleCallbackError($transaction);
+            return $this->handleCallbackError($transaction, $request);
         }
 
         try {
@@ -82,9 +84,9 @@ class CallbackController extends BaseCallbackController
                 return $this->handleCallbackReturn($transaction);
             }
 
-            return $this->handleCallbackError($transaction);
+            return $this->handleCallbackError($transaction, $request);
         } catch (\Throwable $e) {
-            return $this->handleCallbackError($transaction);
+            return $this->handleCallbackError($transaction, $request);
         }
     }
 
@@ -112,9 +114,14 @@ class CallbackController extends BaseCallbackController
      *
      * @return Response
      */
-    private function handleCallbackError(PaymentTransaction $paymentTransaction)
+    private function handleCallbackError(PaymentTransaction $paymentTransaction, Request $request)
     {
-        $this->addFlash('error', 'Your payment could not be processed. Please try again.');
+        if ($request->hasSession()) {
+            $request->getSession()->getFlashBag()->add(
+                'error',
+                'Your payment could not be processed. Please try again.'
+            );
+        }
 
         $event = new CallbackErrorEvent((array)$paymentTransaction->getPaymentMethod());
         $event->setPaymentTransaction($paymentTransaction);
@@ -126,16 +133,6 @@ class CallbackController extends BaseCallbackController
         }
 
         return new RedirectResponse($this->router->generate('oro_checkout_frontend_checkout'));
-    }
-
-    /**
-     * @return string[]
-     */
-    public static function getSubscribedServices(): array
-    {
-        return [
-            '?' . OrderService::CLASS_NAME,
-        ];
     }
 
     /**

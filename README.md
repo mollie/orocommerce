@@ -27,6 +27,10 @@ Read more about the integration configuration on [our Wiki](https://github.com/m
 
 ## Release notes
 
+**5.2.3:**
+- Fixed DI error being logged for callback controller
+- Changed Mollie payment callback prefix
+
 **5.2.2:**
 - Added redirect to checkout page on failed or canceled payment
 
