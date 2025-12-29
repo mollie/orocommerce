@@ -391,3 +391,11 @@ services:
   Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\OrgToken\ProxyDataProvider:
     public: true
 
+  Mollie\Bundle\PaymentBundle\Controller\CallbackController:
+    public: true
+    arguments:
+      - '@event_dispatcher'
+      - '@router'
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration'
+    calls:
+      - ['setContainer', ['@oro_platform.twig.service_locator']]

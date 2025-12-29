@@ -19,3 +19,10 @@ mollie_active_payment_methods:
     resource:     "@MolliePaymentBundle/Controller/ActivePaymentMethodsController.php"
     type:         annotation
     prefix:       /mollie
+
+mollie_payment_callback:
+    resource: "@MolliePaymentBundle/Controller/CallbackController.php"
+    type: annotation
+    prefix: /payment/callback/mollie
+    options:
+        frontend: true
