@@ -29,11 +29,8 @@ class MollieRefundType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('isOrderApiUsed', HiddenType::class)
             ->add('refundPayment', MollieRefundPaymentType::class)
-            ->add('selectedTab', HiddenType::class)
             ->add('totalRefunded', HiddenType::class)
-            ->add('isOrderRefundable', HiddenType::class)
             ->add('isVoucher', HiddenType::class)
             ->add('totalValue', HiddenType::class)
             ->add('currency', TextType::class, [
@@ -42,14 +39,7 @@ class MollieRefundType extends AbstractType
                     'readonly' => true
                 ],
             ])
-            ->add('currencySymbol', HiddenType::class)
-            ->add('refundItems', CollectionType::class, [
-                'entry_type' => MollieRefundLineItemType::class,
-                'entry_options' => ['label' => false],
-                'label' =>  false,
-                'by_reference' => false,
-                'required' => false,
-            ]);
+            ->add('currencySymbol', HiddenType::class);
     }
 
     /**

@@ -84,7 +84,6 @@ class MolliePaymentLinkProvider implements PaymentLinkConfigProviderInterface
         $paymentLink = new MolliePaymentLink();
         $paymentLink->setPaymentLink($this->getSiteSpecificPaymentLink($order));
         $paymentLink->setIsMolliePaymentOnOrder($this->paymentMethodUtility->hasMolliePaymentConfig($order, true));
-        $paymentLink->setIsPaymentsApiOnly(!$this->paymentMethodUtility->isOrderValidForOrdersApi($order));
         $paymentLink->setPaymentMethods(array_map(static function (MolliePaymentConfigInterface $paymentMethodConfig) {
             return $paymentMethodConfig->getLabel();
         }, $this->getPaymentMethods($order)));
@@ -155,7 +154,6 @@ class MolliePaymentLinkProvider implements PaymentLinkConfigProviderInterface
         }
 
         $paymentLinkConfig->setShopReference($order->getId());
-        $paymentLinkConfig->setApiMethod($this->getApiMethodFor($molliePaymentLink, $order));
         $paymentLinkConfig->setPaymentMethods($molliePaymentLink->getSelectedPaymentMethods());
 
         RepositoryRegistry::getRepository(PaymentLinkMethod::getClassName())->saveOrUpdate($paymentLinkConfig);
@@ -190,32 +188,6 @@ class MolliePaymentLinkProvider implements PaymentLinkConfigProviderInterface
         $paymentLinkConfig = $this->getPaymentLinkConfig($order->getId());
 
         return $paymentLinkConfig ? $paymentLinkConfig->getPaymentMethods() : [];
-    }
-
-    /**
-     * @param MolliePaymentLink $molliePaymentLink
-     * @param Order $order
-     * @return string
-     */
-    private function getApiMethodFor(MolliePaymentLink $molliePaymentLink, Order $order)
-    {
-        $paymentMethodConfigs = $this->getPaymentMethods($order);
-        $selectedMethodIds = $molliePaymentLink->getSelectedPaymentMethods();
-        foreach ($selectedMethodIds as $selectedMethodId) {
-            if (
-                array_key_exists($selectedMethodId, $paymentMethodConfigs) &&
-                $paymentMethodConfigs[$selectedMethodId]->isApiMethodRestricted()
-            ) {
-                return PaymentMethodConfig::API_METHOD_ORDERS;
-            }
-        }
-
-        // Handle select all case where payment list is empty
-        if (empty($selectedMethodIds) && !$molliePaymentLink->isPaymentsApiOnly()) {
-            return PaymentMethodConfig::API_METHOD_ORDERS;
-        }
-
-        return PaymentMethodConfig::API_METHOD_PAYMENT;
     }
 
     /**

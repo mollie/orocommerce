@@ -431,7 +431,6 @@ class ChannelSettingsTypeSubscriber implements EventSubscriberInterface
             $paymentMethodSetting->setSurchargeFixedAmount($paymentMethodConfig->getSurchargeFixedAmount());
             $paymentMethodSetting->setSurchargePercentage($paymentMethodConfig->getSurchargePercentage());
             $paymentMethodSetting->setSurchargeLimit($paymentMethodConfig->getSurchargeLimit());
-            $paymentMethodSetting->setMethod($paymentMethodConfig->getApiMethod());
             $paymentMethodSetting->setMollieComponents($paymentMethodConfig->useMollieComponents());
             $paymentMethodSetting->setSingleClickPayment($paymentMethodConfig->useSingleClickPayment());
             $paymentMethodSetting->setIssuerListStyle($paymentMethodConfig->getIssuerListStyle());
@@ -439,6 +438,7 @@ class ChannelSettingsTypeSubscriber implements EventSubscriberInterface
             $paymentMethodSetting->setProductAttribute($paymentMethodConfig->getProductAttribute());
             $paymentMethodSetting->setOrderExpiryDays($paymentMethodConfig->getDaysToOrderExpire());
             $paymentMethodSetting->setPaymentExpiryDays($paymentMethodConfig->getDaysToPaymentExpire());
+            $paymentMethodSetting->setCaptureMode($paymentMethodConfig->getCaptureOption());
             $paymentMethodSetting->setOriginalImagePath($paymentMethodConfig->getOriginalAPIConfig()->getImage()->getSize2x());
             $paymentMethodSetting->setImagePath(
                 $paymentMethodConfig->hasCustomImage() ? $paymentMethodConfig->getImage() : null

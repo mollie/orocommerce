@@ -46,9 +46,6 @@ class MolliePaymentProvider extends AbstractPaymentMethodProvider
     {
         $configs = $this->configProvider->getPaymentConfigs();
         foreach ($configs as $config) {
-            if (in_array($config->getMollieId(), PaymentMethodConfig::$paymentOnlyApiMethods)) {
-                $config->set('api_method', PaymentMethodConfig::API_METHOD_PAYMENT);
-            }
             $this->addPaymentMethod($config);
         }
     }

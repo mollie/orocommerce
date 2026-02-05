@@ -12,7 +12,6 @@ define(function (require) {
             'click .mollie-remove-image': 'onRemoveImageClick',
         },
 
-        apiMethodChooserSelector: 'select.mollie-method-select',
         singleClickPaymentCheckbox: 'input.mollie-payment-single-click-status',
         surchargeTypeChooserSelector: 'select.mollie-surcharge-type-select',
         surchargeType: {
@@ -34,9 +33,6 @@ define(function (require) {
 
         setInitialFields: function () {
             var self = this;
-            $(this.apiMethodChooserSelector).each(function () {
-                self.displayFieldsBasedOnMethod($(this).val(), $(this).attr('data-method-wrapper'));
-            });
             $(this.surchargeTypeChooserSelector).each(function () {
                 self.displayFieldsBasedOnSyrchargeType($(this).val(), $(this).attr('data-method-wrapper'));
             });
@@ -46,37 +42,14 @@ define(function (require) {
         },
 
         addListeners: function () {
-            $(this.apiMethodChooserSelector).change(this.handleApiMethodChange.bind(this));
             $(this.singleClickPaymentCheckbox).change(this.handleSingleClickStatusChange.bind(this));
             $(this.surchargeTypeChooserSelector).change(this.handleSyrchargeTypeChange.bind(this));
-        },
-
-        handleApiMethodChange: function (event) {
-            let target = $(event.target);
-
-            this.displayFieldsBasedOnMethod(target.val(), target.attr('data-method-wrapper'));
-
         },
 
         handleSyrchargeTypeChange: function (event) {
             let target = $(event.target);
 
             this.displayFieldsBasedOnSyrchargeType(target.val(), target.attr('data-method-wrapper'));
-        },
-
-        displayFieldsBasedOnMethod: function (apiMethod, identifier) {
-            let wrapper = $('.mollie-payment-method[data-payment-method-id="' + identifier + '"]');
-            if (wrapper.length === 0) {
-                return;
-            }
-
-            if (apiMethod === 'payment_api') {
-                wrapper.find('.mollie-transaction-description, .mollie-payment-expiry-days').removeClass('mollie-hide-row');
-                wrapper.find('.mollie-order-expiry-days').addClass('mollie-hide-row');
-            } else {
-                wrapper.find('.mollie-transaction-description, .mollie-payment-expiry-days').addClass('mollie-hide-row');
-                wrapper.find('.mollie-order-expiry-days').removeClass('mollie-hide-row');
-            }
         },
 
         displayFieldsBasedOnSyrchargeType: function (surchargeType, identifier) {
