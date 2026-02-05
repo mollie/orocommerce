@@ -60,7 +60,6 @@ class PaymentMethodController
         $profileId,
         $billingCountry = null,
         $amount = null,
-        $apiMethod = PaymentMethodConfig::API_METHOD_ORDERS,
         $orderLineCategories = array()
     ) {
         /** @var PaymentMethodService $paymentMethodService */
@@ -69,7 +68,7 @@ class PaymentMethodController
             $profileId,
             $billingCountry,
             $amount,
-            $apiMethod,
+            PaymentMethodConfig::API_METHOD_PAYMENT,
             $orderLineCategories
         );
     }

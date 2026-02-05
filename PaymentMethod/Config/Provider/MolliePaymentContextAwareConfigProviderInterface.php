@@ -18,8 +18,4 @@ interface MolliePaymentContextAwareConfigProviderInterface extends MolliePayment
      * @return mixed
      */
     public function setPaymentContext(PaymentContextInterface $context = null);
-    /**
-     * @param string $apiMethod PaymentMethodConfig::API_METHOD_ORDERS|PaymentMethodConfig::API_METHOD_PAYMENT
-     */
-    public function setApiMethod(string $apiMethod = PaymentMethodConfig::API_METHOD_ORDERS);
 }

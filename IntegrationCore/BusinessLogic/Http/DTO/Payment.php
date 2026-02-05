@@ -3,6 +3,7 @@
 namespace Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO;
 
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\Order;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\OrderLine;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Refunds\Refund;
 
 /**
@@ -69,6 +70,10 @@ class Payment extends BaseDto
      */
     protected $shippingAddress;
     /**
+     * @var Address
+     */
+    protected $billingAddress;
+    /**
      * @var array
      */
     protected $metadata = array();
@@ -104,6 +109,10 @@ class Payment extends BaseDto
      * @var \DateTime
      */
     protected $expiresAt;
+    /**
+     * @var array
+     */
+    protected $lines = array();
 
     /**
      * {@inheritdoc}
@@ -129,6 +138,7 @@ class Payment extends BaseDto
         $method = static::getValue($raw, 'method', array());
         $result->methods = is_array($method) ? $method : array($method);
         $result->metadata = static::getValue($raw, 'metadata', array());
+        $result->lines = OrderLine::fromArrayBatch(static::getValue($raw, 'lines', array()));
 
         $result->dueDate = \DateTime::createFromFormat(Order::MOLLIE_DATE_FORMAT, static::getValue($raw, 'dueDate'));
         $result->expiresAt = \DateTime::createFromFormat(DATE_ATOM, static::getValue($raw, 'expiresAt'));
@@ -136,6 +146,11 @@ class Payment extends BaseDto
         $shippingAddress = static::getValue($raw, 'shippingAddress', array());
         if (!empty($shippingAddress)) {
             $result->shippingAddress = Address::fromArray($shippingAddress);
+        }
+
+        $billingAddress = static::getValue($raw, 'billingAddress', array());
+        if (!empty($billingAddress)) {
+            $result->billingAddress = Address::fromArray($billingAddress);
         }
 
         foreach (static::getValue($raw, '_links', array()) as $linkKey => $linkData) {
@@ -194,10 +209,15 @@ class Payment extends BaseDto
             'details' => $this->details ? $this->details->toArray() : null,
             '_embedded' => $embedded,
             '_links' => $links,
+            'lines' => !empty($this->lines) ? $this->lines : array()
         );
 
         if ($this->shippingAddress) {
             $result['shippingAddress'] = $this->shippingAddress->toArray();
+        }
+
+        if ($this->billingAddress) {
+            $result['billingAddress'] = $this->billingAddress->toArray();
         }
 
         return $result;
@@ -429,6 +449,22 @@ class Payment extends BaseDto
     }
 
     /**
+     * @return Address|null
+     */
+    public function getBillingAddress()
+    {
+        return $this->billingAddress;
+    }
+
+    /**
+     * @param Address $billingAddress
+     */
+    public function setBillingAddress($billingAddress)
+    {
+        $this->billingAddress = $billingAddress;
+    }
+
+    /**
      * @return array
      */
     public function getMetadata()
@@ -575,5 +611,24 @@ class Payment extends BaseDto
     public function setDetails($details)
     {
         $this->details = $details;
+    }
+
+    /**
+     * @return array
+     */
+    public function getLines()
+    {
+        return $this->lines;
+    }
+
+
+    /**
+     * @param array $lines
+     *
+     * @return void
+     */
+    public function setLines($lines)
+    {
+        $this->lines = $lines;
     }
 }

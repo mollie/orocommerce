@@ -1,0 +1,57 @@
+{% extends '@OroAction/Operation/form.html.twig' %}
+
+{% block form_widget %}
+    {% block oro_order_capture_widget %}
+        <div id="mollie-form-container" class="section-content">
+            <fieldset class="form-horizontal">
+                {% set noRemaining = form.mollieCapture.totalValue.vars.value <= 0 %}
+                <div class="{{ noRemaining ? 'hide' : '' }}">
+                    <div class="mollie-refund-items-message">
+                        {{ 'mollie.payment.capture.confirmMessage'|trans }}
+                    </div>
+
+                    <div class="control-group">
+                        <div class="control-label wrap">{{ form_label(form.mollieCapture.amount) }}</div>
+                        <div class="controls controls-refund-payment-amount">
+                            <div class="refund-payment-amount">
+                                <div class="fields-row">
+                                    <div class="refund-payment-amount-value input-append">
+                                        {{ form_widget(form.mollieCapture.amount) }}
+                                        <div class="refund-payment-currency">
+                                            {{ form_widget(form.mollieCapture.currency) }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <div class="control-label wrap">{{ 'mollie.payment.capture.totals.captured'|trans }}</div>
+                        <div class="controls" style="padding-top: 6px;">
+                            {{ form.mollieCapture.currencySymbol.vars.value }} {{ form.mollieCapture.totalCaptured.vars.value|number_format(2, '.', ',') }}
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <div class="control-label wrap">{{ 'mollie.payment.capture.totals.remaining'|trans }}</div>
+                        <div class="controls" style="padding-top: 6px;">
+                            {{ form.mollieCapture.currencySymbol.vars.value }} {{ form.mollieCapture.totalValue.vars.value|number_format(2, '.', ',') }}
+                        </div>
+                    </div>
+                </div>
+
+                {% if noRemaining %}
+                    <div class="mollie-input-not-valid-message">{{ 'mollie.payment.capture.totalAmountCapturedMessage'|trans }}</div>
+                {% endif %}
+            </fieldset>
+        </div>
+    {% endblock %}
+{% endblock %}
+
+{% block form_actions_inner %}
+    <button type="reset" class="btn">{{ 'oro.order.orderdiscount.action.cancel'|trans }}</button>
+    {% if form.mollieCapture.totalValue.vars.value > 0 %}
+        <button type="submit" class="btn btn-primary">{{ 'mollie.payment.capture.label'|trans }}</button>
+    {% endif %}
+{% endblock %}

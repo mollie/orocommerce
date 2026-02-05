@@ -2,7 +2,7 @@
 
 namespace Mollie\Bundle\PaymentBundle\Controller;
 
-use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Orders\OrderService;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Payments\PaymentService;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ServiceRegister;
 use Oro\Bundle\PaymentBundle\Entity\PaymentTransaction;
@@ -69,16 +69,13 @@ class CallbackController extends AbstractController
         }
 
         try {
-            /** @var OrderService $orderService */
-            $orderService = ServiceRegister::getService(OrderService::CLASS_NAME);
-            $mollieOrder = $this->configService->doWithContext($this->getChannelIdFromTransaction($transaction), function () use ($orderService, $shopReference) {
-                return $orderService->getOrder($shopReference);
+            /** @var PaymentService $paymentService */
+            $paymentService = ServiceRegister::getService(PaymentService::CLASS_NAME);
+            $molliePayment = $this->configService->doWithContext($this->getChannelIdFromTransaction($transaction), function () use ($paymentService, $shopReference) {
+                return $paymentService->getPayment($shopReference);
             });
 
-            $unsuccessfulPayments = array_filter($mollieOrder->getEmbedded()['payments'], function ($payment) {
-                return in_array($payment->getStatus(), ['failed', 'canceled']);
-            });
-            $isSuccessful = empty($unsuccessfulPayments);
+            $isSuccessful = !in_array($molliePayment->getStatus(), ['failed', 'canceled']);
 
             if ($isSuccessful) {
                 return $this->handleCallbackReturn($transaction);
