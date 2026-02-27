@@ -277,13 +277,24 @@ class OrderTransitionService implements OrderTransitionServiceInterface
      */
     protected function getInternalStatus($statusId)
     {
-        $entityManager = $this->doctrineHelper->getEntityManagerForClass(EnumOption::class);
+        if (class_exists(EnumOption::class)) {
+            $entityManager = $this->doctrineHelper->getEntityManagerForClass(EnumOption::class);
+            if (!$entityManager) {
+                return null;
+            }
+
+            $enumOptionId = ExtendHelper::buildEnumOptionId(OroOrder::INTERNAL_STATUS_CODE, $statusId);
+
+            return $entityManager->getRepository(EnumOption::class)->find($enumOptionId);
+        }
+
+        // Fallback for OroCommerce < 6.1
+        $className = ExtendHelper::buildEnumValueClassName(OroOrder::INTERNAL_STATUS_CODE);
+        $entityManager = $this->doctrineHelper->getEntityManagerForClass($className);
         if (!$entityManager) {
             return null;
         }
 
-        $enumOptionId = ExtendHelper::buildEnumOptionId(OroOrder::INTERNAL_STATUS_CODE, $statusId);
-
-        return $entityManager->getRepository(EnumOption::class)->find($enumOptionId);
+        return $entityManager->getRepository($className)->find($statusId);
     }
 }
