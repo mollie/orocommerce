@@ -203,6 +203,18 @@ class MollieDtoMapper implements MollieDtoMapperInterface
             ),
         ]);
 
+        // Fall back to CustomerUser name when address has no first/last name (common in B2B)
+        $customerUser = $order->getCustomerUser();
+        $mollieAddress = $orderData->getBillingAddress();
+        if (
+            $customerUser
+            && ((string) $billingAddress->getFirstName() === '' || (string) $billingAddress->getLastName() === '')
+        ) {
+            $mollieAddress->setGivenName($customerUser->getFirstName());
+            $mollieAddress->setFamilyName($customerUser->getLastName());
+            $orderData->setBillingAddress($mollieAddress);
+        }
+
         $orderData->setLines(
             array_merge(
                 $this->getOrderLinesData($orderLines),
@@ -212,6 +224,16 @@ class MollieDtoMapper implements MollieDtoMapperInterface
 
         if ($shippingAddress = $order->getShippingAddress()) {
             $orderData->setShippingAddress($this->getAddressData($shippingAddress, $order->getEmail()));
+
+            if (
+                $customerUser
+                && ((string) $shippingAddress->getFirstName() === '' || (string) $shippingAddress->getLastName() === '')
+            ) {
+                $mollieShipping = $orderData->getShippingAddress();
+                $mollieShipping->setGivenName($customerUser->getFirstName());
+                $mollieShipping->setFamilyName($customerUser->getLastName());
+                $orderData->setShippingAddress($mollieShipping);
+            }
         }
 
         if ($frontendOwner = $paymentTransaction->getFrontendOwner()) {
