@@ -221,6 +221,14 @@ class MollieDtoMapper implements MollieDtoMapperInterface
             }
         }
 
+        // Pass cancelUrl from OroCommerce payment transaction options to Mollie via metadata
+        $transactionOptions = $paymentTransaction->getTransactionOptions();
+        if (isset($transactionOptions['failureUrl'])) {
+            $metadata = $orderData->getMetadata() ?? [];
+            $metadata['cancelUrl'] = $this->ensureAbsoluteUrl($transactionOptions['failureUrl']);
+            $orderData->setMetadata($metadata);
+        }
+
         return $orderData;
     }
 
@@ -564,6 +572,27 @@ class MollieDtoMapper implements MollieDtoMapperInterface
             $orderLineData->setVatRate(
                 round(100 * (float)($taxesRow->getTaxAmount()) / (float)($taxesRow->getExcludingTax()), 2)
             );
+        }
+    }
+
+    /**
+     * Converts a potentially relative URL to an absolute URL as required by the Mollie API.
+     *
+     * @param string $url
+     *
+     * @return string
+     */
+    protected function ensureAbsoluteUrl($url)
+    {
+        if (str_contains($url, '://')) {
+            return $url;
+        }
+
+        try {
+            return $this->router->generate('oro_frontend_root', [], UrlGeneratorInterface::ABSOLUTE_URL)
+                . ltrim($url, '/');
+        } catch (\Exception $e) {
+            return $url;
         }
     }
 
