@@ -144,6 +144,12 @@ class ProxyDataProvider
         // ensure that webhookUrl is same as on the order object
         $orderData['payment']['webhookUrl'] = $order->getWebhookUrl();
 
+        // Pass cancelUrl from metadata to the Mollie API payload
+        $metadata = $order->getMetadata();
+        if (isset($metadata['cancelUrl'])) {
+            $orderData['cancelUrl'] = $metadata['cancelUrl'];
+        }
+
         return $orderData;
     }
 
