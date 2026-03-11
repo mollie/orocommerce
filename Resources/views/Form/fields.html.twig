@@ -14,7 +14,7 @@
         {{ form_widget(form.parent.transport, {'attr': {'class': 'control-group-container'}}) }}
     {% endif %}
 
-    {% if (form.parent.synchronizationSettings is defined) %}
+    {% if (form.parent.synchronizationSettings is defined and not form.parent.synchronizationSettings.rendered) %}
         {{ form_widget(form.parent.synchronizationSettings) }}
     {% endif %}
 
