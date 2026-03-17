@@ -2,8 +2,9 @@
 
 namespace Mollie\Bundle\PaymentBundle\Provider;
 
-use Mollie\Bundle\PaymentBundle\Entity\MollieSurchargeAwareInterface;
 use Oro\Bundle\CheckoutBundle\DataProvider\Converter\CheckoutToOrderConverter;
+use Oro\Bundle\CheckoutBundle\Entity\Checkout;
+use Oro\Bundle\OrderBundle\Entity\Order;
 use Oro\Bundle\CurrencyBundle\Rounding\RoundingServiceInterface;
 use Oro\Bundle\PricingBundle\SubtotalProcessor\Model\Subtotal;
 use Oro\Bundle\PricingBundle\SubtotalProcessor\Model\SubtotalProviderInterface;
@@ -66,7 +67,7 @@ class MollieSurchargeProvider extends AbstractSubtotalProvider implements Subtot
     }
 
     /**
-     * @param MollieSurchargeAwareInterface $entity
+     * @param Checkout|Order $entity
      *
      * @return Subtotal
      * @throws \Oro\Bundle\CurrencyBundle\Exception\InvalidRoundingTypeException
@@ -101,7 +102,6 @@ class MollieSurchargeProvider extends AbstractSubtotalProvider implements Subtot
      */
     public function isSupported($entity)
     {
-        // return $entity instanceof Checkout;
-        return $entity instanceof MollieSurchargeAwareInterface;
+        return $entity instanceof Checkout || $entity instanceof Order;
     }
 }
