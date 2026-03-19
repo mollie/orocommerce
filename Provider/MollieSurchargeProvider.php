@@ -2,6 +2,7 @@
 
 namespace Mollie\Bundle\PaymentBundle\Provider;
 
+use Mollie\Bundle\PaymentBundle\Entity\MollieSurchargeAwareInterface;
 use Oro\Bundle\CheckoutBundle\DataProvider\Converter\CheckoutToOrderConverter;
 use Oro\Bundle\CheckoutBundle\Entity\Checkout;
 use Oro\Bundle\OrderBundle\Entity\Order;
@@ -102,6 +103,6 @@ class MollieSurchargeProvider extends AbstractSubtotalProvider implements Subtot
      */
     public function isSupported($entity)
     {
-        return $entity instanceof Checkout || $entity instanceof Order;
+        return $entity instanceof MollieSurchargeAwareInterface || $entity instanceof Checkout || $entity instanceof Order;
     }
 }
