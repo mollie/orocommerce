@@ -68,7 +68,7 @@ class MollieSurchargeProvider extends AbstractSubtotalProvider implements Subtot
     }
 
     /**
-     * @param Checkout|Order $entity
+     * @param Checkout|Order|MollieSurchargeAwareInterface $entity
      *
      * @return Subtotal
      * @throws \Oro\Bundle\CurrencyBundle\Exception\InvalidRoundingTypeException
