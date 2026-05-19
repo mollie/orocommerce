@@ -129,10 +129,15 @@ class MollieDtoMapper implements MollieDtoMapperInterface
             return null;
         }
 
+        $customerUser = $order->getCustomerUser();
+
         $billingAddress = $order->getBillingAddress();
         if (!$billingAddress) {
             return null;
         }
+
+        $billingAddress->setFirstName($billingAddress->getFirstName() ?? $customerUser?->getFirstName());
+        $billingAddress->setLastName($billingAddress->getLastName() ?? $customerUser?->getLastName());
 
         $orderLines = $order->getLineItems();
         if ($orderLines->isEmpty()) {
@@ -186,6 +191,13 @@ class MollieDtoMapper implements MollieDtoMapperInterface
                     UrlGeneratorInterface::ABSOLUTE_URL
                 )
             ),
+            'cancelUrl' => $this->ensureDebugWebhookUrl(
+                $this->router->generate(
+                    'oro_payment_callback_error',
+                    ['accessIdentifier' => $paymentTransaction->getAccessIdentifier()],
+                    UrlGeneratorInterface::ABSOLUTE_URL
+                )
+            ),
             'payment' => [
                 'issuer' => $this->getRequestParam('mollie-issuer', $paymentTransaction->getPaymentMethod()),
                 'cardToken' => $cardToken,
@@ -211,6 +223,8 @@ class MollieDtoMapper implements MollieDtoMapperInterface
         );
 
         if ($shippingAddress = $order->getShippingAddress()) {
+            $shippingAddress->setFirstName($shippingAddress->getFirstName() ?? $customerUser?->getFirstName());
+            $shippingAddress->setLastName($shippingAddress->getLastName() ?? $customerUser?->getLastName());
             $orderData->setShippingAddress($this->getAddressData($shippingAddress, $order->getEmail()));
         }
 

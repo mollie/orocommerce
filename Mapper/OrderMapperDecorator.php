@@ -2,9 +2,9 @@
 
 namespace Mollie\Bundle\PaymentBundle\Mapper;
 
-use Mollie\Bundle\PaymentBundle\Entity\MollieSurchargeAwareInterface;
 use Oro\Bundle\CheckoutBundle\Entity\Checkout;
 use Oro\Bundle\CheckoutBundle\Mapper\MapperInterface;
+use Oro\Bundle\OrderBundle\Entity\Order;
 
 /**
  * Class OrderMapperDecorator
@@ -32,10 +32,9 @@ class OrderMapperDecorator implements MapperInterface
     public function map(Checkout $checkout, array $data = [], array $skipped = [])
     {
         $skipped['mollieSurchargeAmount'] = true;
-        /** @var MollieSurchargeAwareInterface $order */
         $order = $this->orderMapper->map($checkout, $data, $skipped);
 
-        if ($checkout instanceof MollieSurchargeAwareInterface) {
+        if ($order instanceof Order) {
             $order->setMollieSurchargeAmount($checkout->getMollieSurchargeAmount());
         }
 

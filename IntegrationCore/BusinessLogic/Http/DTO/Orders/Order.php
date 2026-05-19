@@ -122,6 +122,10 @@ class Order extends BaseDto
     /**
      * @var string
      */
+    protected $cancelUrl;
+    /**
+     * @var string
+     */
     protected $webhookUrl;
     /**
      * @var Payment
@@ -179,6 +183,7 @@ class Order extends BaseDto
         $shippingAddress = static::getValue($raw, 'shippingAddress', array());
         $order->shippingAddress = !empty($shippingAddress) ? Address::fromArray($shippingAddress) : null;
         $order->redirectUrl = static::getValue($raw, 'redirectUrl');
+        $order->cancelUrl = static::getValue($raw, 'cancelUrl');
         $order->webhookUrl = static::getValue($raw, 'webhookUrl');
         $order->cardToken = static::getValue($raw, 'cardToken');
         $order->setLines(OrderLine::fromArrayBatch(static::getValue($raw, 'lines', array())));
@@ -254,6 +259,7 @@ class Order extends BaseDto
             'orderNumber' => $this->orderNumber,
             'shippingAddress' => $this->shippingAddress ? $this->shippingAddress->toArray() : array(),
             'redirectUrl' => $this->redirectUrl,
+            'cancelUrl' => $this->cancelUrl,
             'webhookUrl' => $this->webhookUrl,
             'payment' => $this->payment ? $this->payment->toArray() : null,
             'lines' => $lines,
@@ -671,6 +677,22 @@ class Order extends BaseDto
     public function setRedirectUrl($redirectUrl)
     {
         $this->redirectUrl = $redirectUrl;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCancelUrl()
+    {
+        return $this->cancelUrl;
+    }
+
+    /**
+     * @param string $cancelUrl
+     */
+    public function setCancelUrl($cancelUrl)
+    {
+        $this->cancelUrl = $cancelUrl;
     }
 
     /**
