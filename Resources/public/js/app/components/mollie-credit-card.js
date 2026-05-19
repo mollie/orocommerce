@@ -116,7 +116,7 @@ define(function(require) {
             }
 
             if (descriptionUseSingleClick.length > 0) {
-                descriptionUseSingleClick[0].innerHTML = document.getElementById('mollie-credit-card-use-saved-description-input').value;
+                descriptionUseSingleClick[0].textContent = document.getElementById('mollie-credit-card-use-saved-description-input').value;
                 descriptionUseSingleClick[0].classList.add('hidden');
             }
 
