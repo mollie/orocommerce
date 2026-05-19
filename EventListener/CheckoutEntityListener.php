@@ -2,7 +2,6 @@
 
 namespace Mollie\Bundle\PaymentBundle\EventListener;
 
-use Mollie\Bundle\PaymentBundle\Entity\MollieSurchargeAwareInterface;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Surcharge\SurchargeService;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ServiceRegister;
 use Mollie\Bundle\PaymentBundle\PaymentMethod\Config\Provider\MolliePaymentConfigProviderInterface;
@@ -46,10 +45,6 @@ class CheckoutEntityListener
      */
     protected function setSurcharge(Checkout $checkout)
     {
-        if (!$checkout instanceof MollieSurchargeAwareInterface) {
-            return;
-        }
-
         $paymentMethodConfig = $this->paymentConfigProvider->getPaymentConfig($checkout->getPaymentMethod());
 
         if ($paymentMethodConfig) {
