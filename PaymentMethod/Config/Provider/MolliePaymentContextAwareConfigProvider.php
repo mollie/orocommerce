@@ -27,10 +27,6 @@ class MolliePaymentContextAwareConfigProvider extends MolliePaymentConfigProvide
      * @var \Oro\Bundle\PaymentBundle\Context\PaymentContextInterface
      */
     protected $context;
-    /**
-     * @var string PaymentMethodConfig::API_METHOD_ORDERS|PaymentMethodConfig::API_METHOD_PAYMENT
-     */
-    protected $apiMethod = PaymentMethodConfig::API_METHOD_ORDERS;
 
     /**
      * @param PaymentContextInterface|null $context
@@ -40,14 +36,6 @@ class MolliePaymentContextAwareConfigProvider extends MolliePaymentConfigProvide
     public function setPaymentContext(PaymentContextInterface $context = null)
     {
         $this->context = $context;
-    }
-
-    /**
-     * @param string $apiMethod PaymentMethodConfig::API_METHOD_ORDERS|PaymentMethodConfig::API_METHOD_PAYMENT
-     */
-    public function setApiMethod(string $apiMethod = PaymentMethodConfig::API_METHOD_ORDERS)
-    {
-        $this->apiMethod = $apiMethod;
     }
 
     /**
@@ -104,7 +92,6 @@ class MolliePaymentContextAwareConfigProvider extends MolliePaymentConfigProvide
                 $websiteProfile->getId(),
                 $billingAddress ? $billingAddress->getCountryIso2() : null,
                 $amount,
-                $this->apiMethod,
                 $categories
             );
 
@@ -137,6 +124,9 @@ class MolliePaymentContextAwareConfigProvider extends MolliePaymentConfigProvide
     {
         $categories = [];
         $lines = $this->context->getLineItems();
+        if (!$lines) {
+            return $categories;
+        }
         /** @var PaymentLineItemInterface $line */
         foreach ($lines as $line) {
             $category = $this->getProductCategory($line->getProduct());

@@ -4,7 +4,6 @@ namespace Mollie\Bundle\PaymentBundle\EventListener;
 
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Mollie\Bundle\PaymentBundle\Exceptions\MollieOperationForbiddenException;
-use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\Tracking;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Integration\Event\IntegrationOrderBillingAddressChangedEvent;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Integration\Event\IntegrationOrderCanceledEvent;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Integration\Event\IntegrationOrderClosedEvent;
@@ -19,7 +18,6 @@ use Mollie\Bundle\PaymentBundle\Manager\OroPaymentMethodUtility;
 use Mollie\Bundle\PaymentBundle\Mapper\MollieDtoMapperInterface;
 use Oro\Bundle\OrderBundle\Entity\Order;
 use Oro\Bundle\OrderBundle\Entity\OrderAddress;
-use Oro\Bundle\OrderBundle\Entity\OrderShippingTracking;
 use Oro\Bundle\OrderBundle\Provider\OrderStatusesProviderInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -168,25 +166,6 @@ class OrderEntityListener
 
     /**
      * @param Order $order
-     *
-     * @return Tracking|null
-     */
-    protected function getTracking(Order $order)
-    {
-        if ($order->getShippingTrackings()->isEmpty()) {
-            return null;
-        }
-
-        /** @var OrderShippingTracking $orderTracking */
-        $orderTracking = $order->getShippingTrackings()->first();
-        return Tracking::fromArray([
-            'carrier' => $orderTracking->getMethod(),
-            'code' => $orderTracking->getNumber(),
-        ]);
-    }
-
-    /**
-     * @param Order $order
      * @param PreUpdateEventArgs $args
      *
      * @return bool
@@ -241,7 +220,7 @@ class OrderEntityListener
                 $internalStatusId = $order->getInternalStatus()->getId();
                 if ($internalStatusId === OrderStatusesProviderInterface::INTERNAL_STATUS_SHIPPED) {
                     $this->handleStatusEvent(
-                        new IntegrationOrderShippedEvent($order->getIdentifier(), $this->getTracking($order)),
+                        new IntegrationOrderShippedEvent($order->getIdentifier()),
                         'order_ship_error'
                     );
                 }

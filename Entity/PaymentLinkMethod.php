@@ -25,7 +25,6 @@ class PaymentLinkMethod extends Entity
     protected $fields = array(
         'id',
         'shopReference',
-        'apiMethod',
         'paymentMethods',
     );
 
@@ -33,10 +32,6 @@ class PaymentLinkMethod extends Entity
      * @var string
      */
     protected $shopReference;
-    /**
-     * @var string
-     */
-    protected $apiMethod;
     /**
      * @var string[]
      */
@@ -68,22 +63,6 @@ class PaymentLinkMethod extends Entity
     public function setShopReference($shopReference)
     {
         $this->shopReference = (string)$shopReference;
-    }
-
-    /**
-     * @return string
-     */
-    public function getApiMethod()
-    {
-        return $this->apiMethod;
-    }
-
-    /**
-     * @param string $apiMethod
-     */
-    public function setApiMethod($apiMethod)
-    {
-        $this->apiMethod = $apiMethod;
     }
 
     /**

@@ -303,10 +303,7 @@ class MolliePaymentConfigProvider implements MolliePaymentConfigProviderInterfac
             $paymentMethodSetting->setSurchargeFixedAmount($paymentMethodConfig->getSurchargeFixedAmount());
             $paymentMethodSetting->setSurchargePercentage($paymentMethodConfig->getSurchargePercentage());
             $paymentMethodSetting->setSurchargeLimit($paymentMethodConfig->getSurchargeLimit());
-            $paymentMethodSetting->setMethod($paymentMethodConfig->getApiMethod());
-            if (in_array($paymentMethodConfig->getMollieId(), PaymentMethodConfig::$paymentOnlyApiMethods)) {
-                $paymentMethodSetting->setMethod(PaymentMethodConfig::API_METHOD_PAYMENT);
-            }
+            $paymentMethodSetting->setCaptureMode($paymentMethodConfig->getCaptureOption());
             $paymentMethodSetting->setOriginalImagePath($paymentMethodConfig->getOriginalAPIConfig()->getImage()->getSize2x());
             $paymentMethodSetting->setImagePath(
                 $paymentMethodConfig->hasCustomImage() ? $paymentMethodConfig->getImage() : null

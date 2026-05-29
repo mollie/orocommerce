@@ -69,6 +69,29 @@ class PaymentMethodService extends BaseService
     }
 
     /**
+     * @param string $profileId
+     * @param string $paymentMethodId
+     *
+     * @return PaymentMethodConfig|null
+     * @throws HttpAuthenticationException
+     * @throws HttpCommunicationException
+     * @throws HttpRequestException
+     * @throws UnprocessableEntityRequestException
+     */
+    public function getPaymentConfigurationById($profileId, $paymentMethodId)
+    {
+        $configurations = $this->getAllPaymentMethodConfigurations($profileId);
+
+        foreach ($configurations as $configuration) {
+            if ($configuration->getMollieId() === $paymentMethodId) {
+                return $configuration;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Gets list of payment method configurations for enabled Mollie payment methods.
      *
      * @param string $profileId

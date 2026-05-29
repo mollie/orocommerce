@@ -1,7 +1,7 @@
 <fieldset class="form-horizontal">
-    <div data-target="#payment_refund" class="hide">
+    <div>
         {% set className = '' %}
-        {% if form.mollieRefund.totalValue.vars.value == 0 or not form.mollieRefund.isOrderRefundable.vars.value %}
+        {% if form.mollieRefund.totalValue.vars.value == 0 %}
             {% set className = 'hide' %}
         {% endif %}
         <div class="{{ className }}">

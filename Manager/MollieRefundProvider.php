@@ -3,13 +3,11 @@
 namespace Mollie\Bundle\PaymentBundle\Manager;
 
 use Mollie\Bundle\PaymentBundle\Form\Entity\MollieRefund;
-use Mollie\Bundle\PaymentBundle\Form\Entity\MollieRefundLineItem;
 use Mollie\Bundle\PaymentBundle\Form\Entity\MollieRefundPayment;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Amount;
-use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\OrderLine;
-use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Orders\Order as OrderDTO;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Payment;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Refunds\Refund;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\Proxy;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\OrderReference\OrderReferenceService;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Orders\OrderService;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\Model\PaymentMethodConfig;
@@ -18,6 +16,7 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Refunds\Exceptions
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Refunds\RefundService;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Logger\Logger;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ServiceRegister;
 use Oro\Bundle\LocaleBundle\Twig\LocaleExtension;
 use Oro\Bundle\OrderBundle\Entity\Order;
 use Symfony\Component\Form\Form;
@@ -30,7 +29,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class MollieRefundProvider
 {
-    const ORDER_LINE_REFUND = '#order_line_refund';
     const PAYMENT_REFUND = '#payment_refund';
 
     /**
@@ -106,8 +104,6 @@ class MollieRefundProvider
     public function getMollieRefund($order)
     {
         $orderReference = $this->orderReferenceService->getByShopReference($order->getIdentifier());
-        $isOrdersApiUsed = $orderReference ? $orderReference->getApiMethod() ===
-            PaymentMethodConfig::API_METHOD_ORDERS : false;
 
         $voucherRefundProvider = new VoucherRefundFormProvider($orderReference, $this->localeExtension);
         if ($voucherRefundProvider->isVoucher()) {
@@ -115,13 +111,8 @@ class MollieRefundProvider
         }
 
         $refund = new MollieRefund();
-        $refund->setIsOrderApiUsed($isOrdersApiUsed);
 
-        if ($isOrdersApiUsed) {
-            $this->setRefundableItems($order, $refund);
-        } else {
-            $this->setPaymentRefund($order, $refund);
-        }
+        $this->setPaymentRefund($order, $refund);
 
         $refund->setCurrency($order->getCurrency());
         $refund->setCurrencySymbol($this->localeExtension->getCurrencySymbolByCurrency($order->getCurrency()));
@@ -151,15 +142,12 @@ class MollieRefundProvider
                     ];
                 }
 
-                $isOrderApiUsed = $this->orderReferenceService->getApiMethod($orderId) === PaymentMethodConfig::API_METHOD_ORDERS;
-
-                if ($mollieRefundForm->getSelectedTab() === self::PAYMENT_REFUND) {
-                    $refundDto = $this->createRefundDTO($mollieRefundForm, PaymentMethodConfig::API_METHOD_PAYMENT);
-                    $refundMethod = $isOrderApiUsed ? 'refundWholeOrder' : 'refundPayment';
-                    $this->refundService->{$refundMethod}($orderId, $refundDto);
+                $refundDto = $this->createRefundDTO($mollieRefundForm, PaymentMethodConfig::API_METHOD_PAYMENT);
+                $orderReference = $this->orderReferenceService->getByShopReference($orderId);
+                if ($orderReference && $orderReference->getApiMethod() === PaymentMethodConfig::API_METHOD_ORDERS) {
+                    $this->refundService->refundWholeOrder($orderId, $refundDto);
                 } else {
-                    $refundDto = $this->createRefundDTO($mollieRefundForm, PaymentMethodConfig::API_METHOD_ORDERS);
-                    $this->refundService->refundOrderLines($orderId, $refundDto);
+                    $this->refundService->refundPayment($orderId, $refundDto);
                 }
 
                 return [
@@ -203,46 +191,11 @@ class MollieRefundProvider
             return $isMollieSelected
                 && ($orderReference !== null)
                 && !(new VoucherRefundFormProvider($orderReference, $this->localeExtension))
-                    ->isVoucherWithoutReminderMethod();
+                    ->isVoucherWithoutReminderMethod()
+                && !$this->paymentMethodUtility->isPaymentAuthorizedOnly($order);
         }
 
         return false;
-    }
-
-    /**
-     * Set refund lines on refund form
-     *
-     * @param Order $order
-     * @param MollieRefund $refund
-     */
-    private function setRefundableItems(Order $order, MollieRefund $refund)
-    {
-        /** @var OrderDTO $mollieOrder */
-        $mollieOrder = $this->configService->doWithContext($this->paymentMethodUtility->getChannelId($order), function () use ($order) {
-            return $this->orderService->getOrder($order->getIdentifier());
-        });
-
-        $refundItems = [];
-        $refund->setIsOrderRefundable(false);
-
-        foreach ($mollieOrder->getLines() as $mollieItem) {
-            if ($mollieItem->getRefundableQuantity() > 0) {
-                $refund->setIsOrderRefundable(true);
-            }
-
-            if ($mollieItem->getType() === 'discount') {
-                continue;
-            }
-            $refundItems[] = $this->buildRefundItem($mollieItem);
-        }
-
-        $refund->setRefundItems($refundItems);
-        $refunded = $mollieOrder->getAmountRefunded()->getAmountValue();
-        $refund->setTotalRefunded($refunded);
-        $refund->setTotalValue($mollieOrder->getAmount()->getAmountValue() - $refunded);
-        $paymentRefund = new MollieRefundPayment();
-        $paymentRefund->setAmount($mollieOrder->getAmount()->getAmountValue() - $refunded);
-        $refund->setRefundPayment($paymentRefund);
     }
 
     /**
@@ -260,39 +213,6 @@ class MollieRefundProvider
     }
 
     /**
-     * @param OrderLine $mollieOrderLine
-     *
-     * @return MollieRefundLineItem
-     */
-    private function buildRefundItem(OrderLine $mollieOrderLine)
-    {
-        $refundItem = new MollieRefundLineItem();
-        $refundItem->setOrderedQuantity($mollieOrderLine->getQuantity());
-        $price = number_format((float)$mollieOrderLine->getUnitPrice()->getAmountValue(), 2, '.', ' ');
-        $refundItem->setPrice($price);
-        $refundItem->setRefundedQuantity($mollieOrderLine->getQuantityRefunded());
-        $refundItem->setProduct($mollieOrderLine->getName());
-        if ($mollieOrderLine->getRefundableQuantity() > 0) {
-            $refundItem->setQuantityToRefund($mollieOrderLine->getRefundableQuantity());
-        }
-
-        $refundItem->setIsRefundable($mollieOrderLine->getRefundableQuantity() > 0);
-        $sku = '';
-        if ($mollieOrderLine->getType() === 'physical') {
-            $sku = $mollieOrderLine->getSku();
-        } elseif ($mollieOrderLine->getType() === 'shipping_fee') {
-            $sku = 'shipping';
-        } elseif ($mollieOrderLine->getType() === 'surcharge') {
-            $sku = $mollieOrderLine->getType();
-        }
-
-        $refundItem->setSku($sku);
-        $refundItem->setMollieId($mollieOrderLine->getId());
-
-        return $refundItem;
-    }
-
-    /**
      * @param MollieRefund $refundForm
      * @param $apiEndpointForUse
      *
@@ -303,49 +223,14 @@ class MollieRefundProvider
     private function createRefundDTO(MollieRefund $refundForm, $apiEndpointForUse)
     {
         $refundDto = new Refund();
-
-        if ($apiEndpointForUse === PaymentMethodConfig::API_METHOD_ORDERS) {
-            $refundLines = [];
-            /** @var MollieRefundLineItem $formItem */
-            foreach ($refundForm->getRefundItems() as $formItem) {
-                if ($formItem->getMollieId() !== null) {
-                    $refundLines[] = $this->createOrderLineDto($formItem);
-                }
-            }
-
-            $refundDto->setLines($refundLines);
-        } else {
-            $refundPayment = $refundForm->getRefundPayment();
-            $amount = new Amount();
-            $amount->setAmountValue($refundPayment->getAmount());
-            $amount->setCurrency($refundForm->getCurrency());
-            $refundDto->setAmount($amount);
-            $refundDto->setDescription($refundPayment->getDescription());
-        }
+        $refundPayment = $refundForm->getRefundPayment();
+        $amount = new Amount();
+        $amount->setAmountValue($refundPayment->getAmount());
+        $amount->setCurrency($refundForm->getCurrency());
+        $refundDto->setAmount($amount);
+        $refundDto->setDescription($refundPayment->getDescription());
 
         return $refundDto;
-    }
-
-    /**
-     * @param MollieRefundLineItem $formItem
-     *
-     * @return OrderLine
-     * @throws RefundNotAllowedException
-     */
-    private function createOrderLineDto(MollieRefundLineItem $formItem)
-    {
-        $quantityToRefund = $formItem->getQuantityToRefund() !== null ? $formItem->getQuantityToRefund() : 0;
-        if ($quantityToRefund > ($formItem->getRefundedQuantity() + $formItem->getOrderedQuantity())) {
-            $allowedQuantity = $formItem->getOrderedQuantity() - $formItem->getRefundedQuantity();
-            $message = "Operation not allowed: You are trying to refund {$quantityToRefund}, and allowed quantity is {$allowedQuantity}";
-            throw new RefundNotAllowedException($message);
-        }
-
-        $line = new OrderLine();
-        $line->setId($formItem->getMollieId());
-        $line->setQuantity($quantityToRefund);
-
-        return $line;
     }
 
     /**
@@ -354,17 +239,48 @@ class MollieRefundProvider
      */
     private function setPaymentRefund(Order $order, MollieRefund $refund)
     {
-        /** @var Payment $molliePayment */
-        $molliePayment = $this->configService->doWithContext($this->paymentMethodUtility->getChannelId($order), function () use ($order) {
-            return $this->paymentService->getPayment($order->getIdentifier());
-        });
+        $orderId = $order->getIdentifier();
+        $orderReference = $this->orderReferenceService->getByShopReference($orderId);
 
-        $refund->setIsOrderRefundable($molliePayment->getStatus() === 'paid');
-        $refunded = $molliePayment->getAmountRefunded()->getAmountValue();
+        $isOrdersApi = $orderReference && $orderReference->getApiMethod() === PaymentMethodConfig::API_METHOD_ORDERS;
+
+        $data = $this->configService->doWithContext($this->paymentMethodUtility->getChannelId($order),
+            function () use ($orderId, $orderReference, $isOrdersApi) {
+                if ($isOrdersApi) {
+                    return ['entity' => $this->orderService->getOrder($orderId), 'captured' => null];
+                }
+
+                $payment = $this->paymentService->getPayment($orderId);
+                $captured = null;
+                if ($orderReference && $orderReference->getMollieReference()) {
+                    /** @var Proxy $proxy */
+                    $proxy = ServiceRegister::getService(Proxy::CLASS_NAME);
+                    $captures = $proxy->getCaptures($orderReference->getMollieReference());
+                    if (!empty($captures)) {
+                        $captured = 0.0;
+                        foreach ($captures as $capture) {
+                            if ($capture->getAmount()) {
+                                $captured += (float)$capture->getAmount()->getValueAmount();
+                            }
+                        }
+                    }
+                }
+
+                return ['entity' => $payment, 'captured' => $captured];
+            }
+        );
+
+        $mollieEntity = $data['entity'];
+        $refunded = $mollieEntity->getAmountRefunded()->getAmountValue();
+        $totalAmount = $data['captured'] !== null
+            ? $data['captured']
+            : (float)$mollieEntity->getAmount()->getAmountValue();
+        $remaining = max(0.0, $totalAmount - (float)$refunded);
+
         $refund->setTotalRefunded($refunded);
-        $refund->setTotalValue($molliePayment->getAmount()->getAmountValue() - $refunded);
+        $refund->setTotalValue($remaining);
         $paymentRefund = new MollieRefundPayment();
-        $paymentRefund->setAmount($molliePayment->getAmount()->getAmountValue() - $refunded);
+        $paymentRefund->setAmount($remaining);
         $refund->setRefundPayment($paymentRefund);
     }
 }

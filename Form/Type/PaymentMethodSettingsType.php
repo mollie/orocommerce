@@ -7,6 +7,7 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\Mode
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\PaymentMethods;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Surcharge\SurchargeType;
 use Mollie\Bundle\PaymentBundle\Manager\ProductAttributesProvider;
+use Mollie\Bundle\PaymentBundle\PaymentMethod\Config\CaptureModeRestrictions;
 use Oro\Bundle\ApiBundle\Form\Type\NumberType;
 use Oro\Bundle\LocaleBundle\Form\Type\LocalizedFallbackValueCollectionType;
 use Symfony\Component\Form\AbstractType;
@@ -133,9 +134,7 @@ class PaymentMethodSettingsType extends AbstractType
             return;
         }
 
-        $orderExpiryDaysTooltip = $paymentMethodConfig->isApiMethodRestricted() ?
-            'mollie.payment.config.payment_methods.orderExpiryDays.klarna_tooltip' :
-            'mollie.payment.config.payment_methods.orderExpiryDays.tooltip';
+        $orderExpiryDaysTooltip = 'mollie.payment.config.payment_methods.orderExpiryDays.tooltip';
 
         $event->getForm()->add(
             'orderExpiryDays',
@@ -234,37 +233,38 @@ class PaymentMethodSettingsType extends AbstractType
             );
         }
 
-        if (!$paymentMethodConfig->isApiMethodRestricted()) {
-            $paymentMethodApiChoices = [
-                'mollie.payment.config.payment_methods.method.option.payment_api.label' => PaymentMethodConfig::API_METHOD_PAYMENT,
-                'mollie.payment.config.payment_methods.method.option.order_api.label' => PaymentMethodConfig::API_METHOD_ORDERS,
-            ];
+        $event->getForm()->add(
+            'transactionDescriptions',
+            LocalizedFallbackValueCollectionType::class,
+            [
+                'label' => 'mollie.payment.config.payment_methods.transactionDescription.label',
+                'tooltip' => 'mollie.payment.config.payment_methods.transactionDescription.tooltip',
+                'required' => true,
+                'entry_options' => ['constraints' => [new NotBlank()]],
+            ]
+        );
+
+        $methodId = $paymentMethodConfig->getMollieId();
+        $showCaptureDropdown = !in_array($methodId, CaptureModeRestrictions::MANUAL_ONLY, true)
+            && !in_array($methodId, CaptureModeRestrictions::AUTOMATIC_ONLY, true);
+
+        if ($showCaptureDropdown) {
             $event->getForm()->add(
-                'method',
+                'captureMode',
                 ChoiceType::class,
                 [
-                    'choices' => $paymentMethodApiChoices,
-                    'label' => 'mollie.payment.config.payment_methods.method.label',
-                    'tooltip' => 'mollie.payment.config.payment_methods.method.tooltip',
+                    'choices' => [
+                        'mollie.payment.config.payment_methods.capture_mode.option.automatic' => 'automatic',
+                        'mollie.payment.config.payment_methods.capture_mode.option.manual' => 'manual',
+                    ],
+                    'label' => 'mollie.payment.config.payment_methods.capture_mode.label',
+                    'tooltip' => 'mollie.payment.config.payment_methods.capture_mode.tooltip',
                     'required' => true,
                     'placeholder' => false,
-                    'attr' => [
-                        'class' => 'mollie-method-select',
-                        'data-method-wrapper' => $paymentMethodConfig->getMollieId(),
-                    ],
-                ]
-            )->add(
-                'transactionDescriptions',
-                LocalizedFallbackValueCollectionType::class,
-                [
-                    'label' => 'mollie.payment.config.payment_methods.transactionDescription.label',
-                    'tooltip' => 'mollie.payment.config.payment_methods.transactionDescription.tooltip',
-                    'required' => true,
-                    'entry_options' => ['constraints' => [new NotBlank()]],
+                    'data' => $paymentMethodSetting->getCaptureMode() ?: 'manual',
                 ]
             );
         }
-
 
         if ($paymentMethodConfig->isMollieComponentsSupported()) {
             $event->getForm()->add(
@@ -369,6 +369,7 @@ class PaymentMethodSettingsType extends AbstractType
         $resolver->setDefaults(
             [
                 'data_class' => PaymentMethodSettings::class,
+                'csrf_protection' => false,
             ]
         );
     }
