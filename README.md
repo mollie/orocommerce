@@ -27,7 +27,11 @@ Read more about the integration configuration on [our Wiki](https://github.com/m
 
 ## Release notes
 
-**5.2.5:**
+**5.2.6:**
+- Remove deprecated Orders API
+- Added capture mode and manual capture
+
+- **5.2.5:**
 - Fix broken checkout for empty first and last name
 - Fixed surcharges not showing in checkout
 
