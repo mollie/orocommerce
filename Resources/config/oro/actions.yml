@@ -40,6 +40,59 @@ operations:
           method: processForm
           method_parameters: [$.data, $.form]
 
+  mollie_payment_capture:
+    label: mollie.payment.capture.label
+    routes:
+      - oro_order_view
+    frontend_options:
+      template: '@MolliePayment/Action/capture.html.twig'
+    button_options:
+      icon: fa-money
+    attributes:
+      mollieCapture:
+        label: ' '
+        type: entity
+        options:
+          class: Mollie\Bundle\PaymentBundle\Form\Entity\MollieCapture
+    form_options:
+      attribute_fields:
+        mollieCapture:
+          form_type: Mollie\Bundle\PaymentBundle\Form\Type\MollieCaptureType
+          options:
+            required: true
+      attribute_default_values:
+        mollieCapture: $.capture
+    form_init:
+      - '@call_service_method':
+          service: mollie_payment.manager.mollie_capture_provider
+          method: getMollieCapture
+          method_parameters: [$.data]
+          attribute: $.capture
+    preactions:
+      - '@call_service_method':
+          service: mollie_payment.manager.mollie_capture_provider
+          method: displayCaptureOption
+          method_parameters: [$.data]
+          attribute: $.isAllowed
+    preconditions:
+      '@equal': [$.isAllowed, true]
+    actions:
+      - '@call_service_method':
+          service: mollie_payment.manager.mollie_capture_provider
+          method: processCapture
+          method_parameters: [$.form]
+          attribute: $.formResponse
+      - '@flash_message':
+          conditions:
+            '@eq': [$.formResponse.success, true]
+          message: $.formResponse.message
+          type: 'success'
+      - '@flash_message':
+          conditions:
+            '@eq': [$.formResponse.success, false]
+          message: $.formResponse.message
+          type: 'error'
+
   mollie_payment_refund:
     label: mollie.payment.refund.label
     routes:

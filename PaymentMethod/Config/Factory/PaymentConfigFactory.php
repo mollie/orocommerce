@@ -96,8 +96,6 @@ class PaymentConfigFactory implements PaymentConfigFactoryInterface
         $configParams[MolliePaymentConfig::FIELD_PAYMENT_METHOD_IDENTIFIER] = $paymentIdentifier;
         $configParams[MolliePaymentConfig::ICON] = $mollieMethodConfig->getImage();
         $configParams[MolliePaymentConfig::MOLLIE_ID] = $mollieMethodConfig->getMollieId();
-        $configParams[MolliePaymentConfig::API_METHOD] = $mollieMethodConfig->getApiMethod();
-        $configParams[MolliePaymentConfig::IS_API_METHOD_RESTRICTED] = $mollieMethodConfig->isApiMethodRestricted();
         $configParams[MolliePaymentConfig::PROFILE_ID] = $mollieMethodConfig->getProfileId();
         $configParams[MolliePaymentConfig::CHANNEL_ID] = $channel->getId();
         $configParams[MolliePaymentConfig::SURCHARGE_TYPE] = $mollieMethodConfig->getSurchargeType();

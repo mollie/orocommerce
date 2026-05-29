@@ -18,10 +18,6 @@ class MolliePaymentLinkPaymentCreator implements MolliePaymentCreatorInterface
      */
     private $paymentCreator;
     /**
-     * @var MollieOrdersApiPaymentCreator
-     */
-    private $orderCreator;
-    /**
      * @var PaymentLinkConfigProviderInterface
      */
     private $paymentLinkConfigProvider;
@@ -30,16 +26,13 @@ class MolliePaymentLinkPaymentCreator implements MolliePaymentCreatorInterface
      * MolliePaymentLinkPaymentCreator constructor.
      *
      * @param MolliePaymentApiPaymentCreator $paymentCreator
-     * @param MollieOrdersApiPaymentCreator $orderCreator
      * @param PaymentLinkConfigProviderInterface $paymentLinkConfigProvider
      */
     public function __construct(
         MolliePaymentApiPaymentCreator $paymentCreator,
-        MollieOrdersApiPaymentCreator $orderCreator,
         PaymentLinkConfigProviderInterface $paymentLinkConfigProvider
     ) {
         $this->paymentCreator = $paymentCreator;
-        $this->orderCreator = $orderCreator;
         $this->paymentLinkConfigProvider = $paymentLinkConfigProvider;
     }
 
@@ -55,13 +48,6 @@ class MolliePaymentLinkPaymentCreator implements MolliePaymentCreatorInterface
      */
     public function createMolliePayment(PaymentTransaction $paymentTransaction)
     {
-        $paymentLinkConfig = $this->paymentLinkConfigProvider
-            ->getPaymentLinkConfig($paymentTransaction->getEntityIdentifier());
-
-        if ($paymentLinkConfig && $paymentLinkConfig->getApiMethod() === PaymentMethodConfig::API_METHOD_ORDERS) {
-            return $this->orderCreator->createMolliePayment($paymentTransaction);
-        }
-
         return $this->paymentCreator->createMolliePayment($paymentTransaction);
     }
 }

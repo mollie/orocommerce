@@ -211,10 +211,6 @@ class PaymentMethodSettings
      */
     private $surchargeLimit;
     /**
-     * @var string
-     */
-    private $method;
-    /**
      * @var boolean
      */
     private $mollieComponents;
@@ -247,6 +243,11 @@ class PaymentMethodSettings
      * @var int
      */
     private $paymentExpiryDays;
+
+    /**
+     * @var string
+     */
+    private $captureMode;
 
     /**
      * PaymentMethodSettings constructor.
@@ -571,22 +572,6 @@ class PaymentMethodSettings
     /**
      * @return string
      */
-    public function getMethod()
-    {
-        return $this->method;
-    }
-
-    /**
-     * @param string $method
-     */
-    public function setMethod($method)
-    {
-        $this->method = $method;
-    }
-
-    /**
-     * @return string
-     */
     public function getImagePath()
     {
         return $this->imagePath;
@@ -814,5 +799,21 @@ class PaymentMethodSettings
     public function setPaymentExpiryDays($paymentExpiryDays)
     {
         $this->paymentExpiryDays = $paymentExpiryDays;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCaptureMode()
+    {
+        return $this->captureMode;
+    }
+
+    /**
+     * @param string $captureMode
+     */
+    public function setCaptureMode($captureMode)
+    {
+        $this->captureMode = $captureMode;
     }
 }

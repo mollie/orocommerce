@@ -19,4 +19,11 @@ class PaymentMethods
     const GiftCard = 'giftcard';
     const Vouchers = 'voucher';
     const Banktransfer = 'banktransfer';
+    const Trustly = 'trustly';
+    const Alma = 'alma';
+    const Twint = 'twint';
+    const Payconiq = 'payconiq';
+    const Riverty = 'riverty';
+    const Klarna = 'klarna';
+    const Billie = 'billie';
 }

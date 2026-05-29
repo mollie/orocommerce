@@ -10,7 +10,6 @@ use Mollie\Bundle\PaymentBundle\Manager\PaymentLinkConfigProviderInterface;
 use Mollie\Bundle\PaymentBundle\Mapper\MollieDtoMapperInterface;
 use Mollie\Bundle\PaymentBundle\PaymentMethod\Config\MolliePaymentConfigInterface;
 use Mollie\Bundle\PaymentBundle\PaymentMethod\Config\Provider\MolliePaymentContextAwareConfigProviderInterface;
-use Mollie\Bundle\PaymentBundle\PaymentMethod\MollieOrdersApiPaymentCreator;
 use Mollie\Bundle\PaymentBundle\PaymentMethod\MolliePayment;
 use Mollie\Bundle\PaymentBundle\PaymentMethod\MolliePaymentApiPaymentCreator;
 use Mollie\Bundle\PaymentBundle\PaymentMethod\MolliePaymentCreatorInterface;
@@ -137,16 +136,11 @@ class MolliePaymentPaymentMethodFactory implements MolliePaymentPaymentMethodFac
             );
             return new MolliePaymentLinkPaymentCreator(
                 new MolliePaymentApiPaymentCreator($mapper, $this->paymentService),
-                new MollieOrdersApiPaymentCreator($mapper, $this->orderService),
                 $this->paymentLinkConfigProvider
             );
         }
 
         $mapper = new MollieConfigMapperDecorator($this->mollieDtoMapper, $config, $this->doctrineHelper);
-
-        if ($config->getApiMethod() === PaymentMethodConfig::API_METHOD_ORDERS) {
-            return new MollieOrdersApiPaymentCreator($mapper, $this->orderService);
-        }
 
         return new MolliePaymentApiPaymentCreator($mapper, $this->paymentService);
     }

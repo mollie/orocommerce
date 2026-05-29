@@ -483,6 +483,22 @@ class MollieDtoMapper implements MollieDtoMapperInterface
             $payment->setDescription($this->getDescription($order, $paymentTransaction));
         }
 
+        if ($order && ($billingAddress = $order->getBillingAddress())) {
+            $payment->setBillingAddress($this->getAddressData($billingAddress, $order->getEmail()));
+        }
+
+        if ($order) {
+            $orderLines = $order->getLineItems();
+            if (!$orderLines->isEmpty()) {
+                $payment->setLines(
+                    array_merge(
+                        $this->getOrderLinesData($orderLines),
+                        $this->getSurcharges($order)
+                    )
+                );
+            }
+        }
+
         return $payment;
     }
 

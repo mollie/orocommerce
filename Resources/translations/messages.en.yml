@@ -9,6 +9,19 @@ mollie:
       copy_button.label: 'Copy and Save'
     capture:
       message: 'It is not possible to manually capture payment. Payment will be captured automatically by mollie.'
+      label: 'Capture'
+      confirmMessage: 'Please enter the amount you want to capture.'
+      amount:
+        label: 'Amount to capture'
+        invalid: 'Amount to capture must be greater than zero'
+        exceeds_available: 'Amount to capture is bigger than the capturable amount'
+      totals:
+        authorized: 'Authorized amount'
+        captured: 'Already captured'
+        remaining: 'Remaining to capture'
+      successMessage: 'Payment successfully captured'
+      errorMessage: 'Payment capture failed. Mollie api response: {api_message}'
+      totalAmountCapturedMessage: 'Total amount has already been captured'
     refund:
       voucher.message: 'This order is (partially) paid using a voucher. You can refund a maximum of %amount% %currency%'
       label: 'Refund'
@@ -85,15 +98,6 @@ mollie:
           label: 'Image'
           mime_type_error: 'Please upload a valid image'
           upload_error: 'Image {image_name} could not be uploaded.'
-        method:
-          label: 'Method'
-          tooltip: 'Payment API<br>
-                    Use the Payment API Platform for the transactions.<br><br>
-
-                    Order API<br>
-                    Use the new Order API Platform and get additional insights into the orders. <a href="https://docs.mollie.com/orders/why-use-orders" target="_blank">Read more</a>.'
-          option.payment_api.label: 'Payment API'
-          option.order_api.label: 'Orders API'
         payment_surcharge:
           label: 'Payment surcharge'
           tooltip: 'Please select a surcharge type.'
@@ -142,6 +146,11 @@ mollie:
         paymentExpiryDays:
           label: 'Days To Expire'
           tooltip: 'How many days before payment for this method becomes expired? Leave empty to use default expiration (28 days)'
+        capture_mode:
+          label: 'Capture Mode'
+          tooltip: 'Choose when the payment should be captured. Manual capture requires an explicit capture action after authorization.'
+          option.automatic: 'Automatic'
+          option.manual: 'Manual'
         expiryDays.error: 'Expiry days must be value between 1 and 100'
         versionCheck:
           message: 'A new module version {versionNumber} is available. Please download the latest version <a href="{downloadUrl}" target="_blank">here</a>.'

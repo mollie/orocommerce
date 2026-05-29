@@ -101,13 +101,10 @@ class VoucherRefundFormProvider
         $refund->setIsVoucher(true);
 
         if ($order) {
-            $refund->setIsOrderApiUsed(false);
             $reminder = $this->getReminderDetail();
             $reminderAmount = $reminder ? $reminder->getReminderAmount() : $order->getAmount();
-            $paymentStatus = $this->getPayment() ? $this->getPayment()->getStatus() : false;
 
             $currency = $order->getAmount()->getCurrency();
-            $refund->setIsOrderRefundable($paymentStatus === 'paid');
             $refunded = $order->getAmountRefunded()->getAmountValue();
             $refund->setTotalRefunded($refunded);
             $refund->setTotalValue($reminderAmount->getAmountValue() - $refunded);

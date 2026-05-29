@@ -9,6 +9,7 @@ use Mollie\Bundle\PaymentBundle\PaymentMethod\Config\Provider\MolliePaymentConte
 use Oro\Bundle\LocaleBundle\Twig\LocaleExtension;
 use Oro\Bundle\OrderBundle\Entity\Order;
 use Oro\Bundle\PaymentBundle\Context\PaymentContext;
+use Oro\Bundle\PaymentBundle\Method\PaymentMethodInterface;
 use Oro\Bundle\PaymentBundle\Provider\PaymentTransactionProvider;
 
 /**
@@ -136,14 +137,22 @@ class OroPaymentMethodUtility
      *
      * @return bool
      */
-    public function isOrderValidForOrdersApi(Order $order)
+    public function isPaymentAuthorizedOnly(Order $order): bool
     {
-        $billingAddress = $order->getBillingAddress();
-        return $billingAddress &&
-            !empty($billingAddress->getCountryIso2()) &&
-            !empty($billingAddress->getFirstName()) &&
-            !empty($billingAddress->getLastName()) &&
-            !empty($order->getEmail());
+        $transactions = $this->paymentTransactionProvider->getPaymentTransactions($order);
+        $hasAuthorize = false;
+        $hasCapture = false;
+
+        foreach ($transactions as $transaction) {
+            if ($transaction->getAction() === PaymentMethodInterface::AUTHORIZE && $transaction->isActive() && $transaction->isSuccessful()) {
+                $hasAuthorize = true;
+            }
+            if ($transaction->getAction() === PaymentMethodInterface::CAPTURE && $transaction->isSuccessful()) {
+                $hasCapture = true;
+            }
+        }
+
+        return $hasAuthorize && !$hasCapture;
     }
 
     /**
@@ -175,7 +184,7 @@ class OroPaymentMethodUtility
     private function getNoContextMolliePaymentConfigProvider(): MolliePaymentContextAwareConfigProviderInterface
     {
         $this->molliePaymentConfigProvider->setPaymentContext(null);
-        $this->molliePaymentConfigProvider->setApiMethod(PaymentMethodConfig::API_METHOD_ORDERS);
+
         return $this->molliePaymentConfigProvider;
     }
 
@@ -190,13 +199,8 @@ class OroPaymentMethodUtility
             PaymentContext::FIELD_CURRENCY => $order->getCurrency(),
         ]);
 
-        $apiMethod = PaymentMethodConfig::API_METHOD_PAYMENT;
-        if ($this->isOrderValidForOrdersApi($order)) {
-            $apiMethod = PaymentMethodConfig::API_METHOD_ORDERS;
-        }
-
         $this->molliePaymentConfigProvider->setPaymentContext($paymentContext);
-        $this->molliePaymentConfigProvider->setApiMethod($apiMethod);
+
         return $this->molliePaymentConfigProvider;
     }
 }
