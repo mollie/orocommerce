@@ -27,7 +27,7 @@ Read more about the integration configuration on [our Wiki](https://github.com/m
 
 ## Release notes
 
-**5.2.6:**
+**5.3.0:**
 - Remove deprecated Orders API
 - Added capture mode and manual capture
 
