@@ -143,7 +143,7 @@ class OrderEntityListener
                 try {
                     $this->eventBus->fire(new IntegrationOrderBillingAddressChangedEvent(
                         $order->getIdentifier(),
-                        $this->mollieDtoMapper->getAddressData($billingAddress, $order->getEmail())
+                        $this->mollieDtoMapper->getAddressData($billingAddress, $order->getEmail(), $order->getCustomerUser())
                     ));
                 } catch (\Exception $exception) {
                     $this->handleException($exception, 'billing_address_change_error');
@@ -155,7 +155,7 @@ class OrderEntityListener
                 try {
                     $this->eventBus->fire(new IntegrationOrderShippingAddressChangedEvent(
                         $order->getIdentifier(),
-                        $this->mollieDtoMapper->getAddressData($shippingAddress, $order->getEmail())
+                        $this->mollieDtoMapper->getAddressData($shippingAddress, $order->getEmail(), $order->getCustomerUser())
                     ));
                 } catch (\Exception $exception) {
                     $this->handleException($exception, 'shipping_address_change_error');
