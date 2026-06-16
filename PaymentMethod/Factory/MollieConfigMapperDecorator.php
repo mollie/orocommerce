@@ -7,6 +7,7 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\Payment;
 use Mollie\Bundle\PaymentBundle\Manager\ProductAttributeResolver;
 use Mollie\Bundle\PaymentBundle\Mapper\MollieDtoMapperInterface;
 use Mollie\Bundle\PaymentBundle\PaymentMethod\Config\MolliePaymentConfigInterface;
+use Oro\Bundle\CustomerBundle\Entity\CustomerUser;
 use Oro\Bundle\EntityBundle\ORM\DoctrineHelper;
 use Oro\Bundle\OrderBundle\Entity\Order;
 use Oro\Bundle\OrderBundle\Entity\OrderAddress;
@@ -111,9 +112,9 @@ class MollieConfigMapperDecorator implements MollieDtoMapperInterface
     /**
      * {@inheritdoc}
      */
-    public function getAddressData(OrderAddress $address, $email)
+    public function getAddressData(OrderAddress $address, $email, CustomerUser $customerUser = null)
     {
-        return $this->dtoMapper->getAddressData($address, $email);
+        return $this->dtoMapper->getAddressData($address, $email, $customerUser);
     }
 
     /**
