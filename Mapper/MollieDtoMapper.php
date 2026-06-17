@@ -16,6 +16,7 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\Paym
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration;
 use Oro\Bundle\EntityBundle\ORM\DoctrineHelper;
 use Oro\Bundle\LocaleBundle\Helper\LocalizationHelper;
+use Oro\Bundle\CustomerBundle\Entity\CustomerUser;
 use Oro\Bundle\OrderBundle\Entity\OrderAddress;
 use Oro\Bundle\OrderBundle\Entity\OrderLineItem;
 use Oro\Bundle\PaymentBundle\Entity\PaymentTransaction;
@@ -129,6 +130,8 @@ class MollieDtoMapper implements MollieDtoMapperInterface
             return null;
         }
 
+        $customerUser = $order->getCustomerUser();
+
         $billingAddress = $order->getBillingAddress();
         if (!$billingAddress) {
             return null;
@@ -178,10 +181,17 @@ class MollieDtoMapper implements MollieDtoMapperInterface
                 'value' => $paymentTransaction->getAmount(),
                 'currency' => $paymentTransaction->getCurrency()
             ],
-            'billingAddress' => $this->getAddressData($billingAddress, $order->getEmail())->toArray(),
+            'billingAddress' => $this->getAddressData($billingAddress, $order->getEmail(), $customerUser)->toArray(),
             'redirectUrl' => $this->ensureDebugWebhookUrl(
                 $this->router->generate(
                     'mollie_payment_callback_return',
+                    ['accessIdentifier' => $paymentTransaction->getAccessIdentifier()],
+                    UrlGeneratorInterface::ABSOLUTE_URL
+                )
+            ),
+            'cancelUrl' => $this->ensureDebugWebhookUrl(
+                $this->router->generate(
+                    'oro_payment_callback_error',
                     ['accessIdentifier' => $paymentTransaction->getAccessIdentifier()],
                     UrlGeneratorInterface::ABSOLUTE_URL
                 )
@@ -211,7 +221,7 @@ class MollieDtoMapper implements MollieDtoMapperInterface
         );
 
         if ($shippingAddress = $order->getShippingAddress()) {
-            $orderData->setShippingAddress($this->getAddressData($shippingAddress, $order->getEmail()));
+            $orderData->setShippingAddress($this->getAddressData($shippingAddress, $order->getEmail(), $customerUser));
         }
 
         if ($frontendOwner = $paymentTransaction->getFrontendOwner()) {
@@ -263,7 +273,7 @@ class MollieDtoMapper implements MollieDtoMapperInterface
     /**
      * {@inheritdoc}
      */
-    public function getAddressData(OrderAddress $address, $email)
+    public function getAddressData(OrderAddress $address, $email, CustomerUser $customerUser = null)
     {
         return Address::fromArray([
             'organizationName' => $address->getOrganization(),
@@ -274,8 +284,8 @@ class MollieDtoMapper implements MollieDtoMapperInterface
             'postalCode' => $address->getPostalCode(),
             'country' => $address->getCountryIso2(),
             'title' => $address->getNamePrefix(),
-            'givenName' => $address->getFirstName(),
-            'familyName' => $address->getLastName(),
+            'givenName' => $address->getFirstName() ?? $customerUser?->getFirstName(),
+            'familyName' => $address->getLastName() ?? $customerUser?->getLastName(),
             'email' => $email,
         ]);
     }
@@ -468,12 +478,24 @@ class MollieDtoMapper implements MollieDtoMapperInterface
         $order = $this->getOrderEntity($paymentTransaction);
 
         if ($order && ($shippingAddress = $order->getShippingAddress())) {
-            $payment->setShippingAddress($this->getAddressData($shippingAddress, $order->getEmail()));
+            $payment->setShippingAddress($this->getAddressData($shippingAddress, $order->getEmail(), $order->getCustomerUser()));
             $payment->setDescription($this->getDescription($order, $paymentTransaction));
         }
 
         if ($order && ($billingAddress = $order->getBillingAddress())) {
-            $payment->setBillingAddress($this->getAddressData($billingAddress, $order->getEmail()));
+            $payment->setBillingAddress($this->getAddressData($billingAddress, $order->getEmail(), $order->getCustomerUser()));
+        }
+
+        if ($order) {
+            $orderLines = $order->getLineItems();
+            if (!$orderLines->isEmpty()) {
+                $payment->setLines(
+                    array_merge(
+                        $this->getOrderLinesData($orderLines),
+                        $this->getSurcharges($order)
+                    )
+                );
+            }
         }
 
         return $payment;

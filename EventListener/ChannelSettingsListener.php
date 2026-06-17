@@ -13,6 +13,7 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http\Exceptions\H
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http\Exceptions\HttpRequestException;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\ORM\Exceptions\RepositoryNotRegisteredException;
 use Mollie\Bundle\PaymentBundle\IntegrationServices\FileUploader;
+use Mollie\Bundle\PaymentBundle\PaymentMethod\Config\CaptureModeRestrictions;
 use Oro\Bundle\IntegrationBundle\Entity\Channel;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -231,7 +232,6 @@ class ChannelSettingsListener
             $paymentMethodConfig->setSurchargeFixedAmount($paymentMethodSetting->getSurchargeFixedAmount());
             $paymentMethodConfig->setSurchargePercentage($paymentMethodSetting->getSurchargePercentage());
             $paymentMethodConfig->setSurchargeLimit($paymentMethodSetting->getSurchargeLimit());
-            $paymentMethodConfig->setApiMethod($paymentMethodSetting->getMethod());
             $paymentMethodConfig->setUseMollieComponents($paymentMethodSetting->getMollieComponents());
             $paymentMethodConfig->setUseSingleClickPayment($paymentMethodSetting->getSingleClickPayment());
             $paymentMethodConfig->setIssuerListStyle($paymentMethodSetting->getIssuerListStyle());
@@ -242,6 +242,16 @@ class ChannelSettingsListener
             $paymentMethodConfig->setImage(
                 !empty($paymentMethodSetting->getImagePath()) ? $paymentMethodSetting->getImagePath() : null
             );
+
+            $captureMode = $paymentMethodSetting->getCaptureMode();
+            if (!$captureMode) {
+                $captureMode =
+                    in_array($paymentMethodSetting->getMollieMethodId(), CaptureModeRestrictions::MANUAL_ONLY, true)
+                    ? 'manual'
+                    : 'automatic';
+            }
+
+            $paymentMethodConfig->setCaptureOption($captureMode);
         }
 
         $this->paymentMethodController->save($paymentMethodConfigs);

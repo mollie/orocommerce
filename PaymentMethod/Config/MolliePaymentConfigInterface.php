@@ -35,16 +35,6 @@ interface MolliePaymentConfigInterface extends PaymentConfigInterface
     /**
      * @return string
      */
-    public function getApiMethod();
-
-    /**
-     * @return bool
-     */
-    public function isApiMethodRestricted();
-
-    /**
-     * @return string
-     */
     public function getProfileId();
 
     /**

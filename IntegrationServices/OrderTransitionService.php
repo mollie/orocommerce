@@ -231,6 +231,8 @@ class OrderTransitionService implements OrderTransitionServiceInterface
             $paymentTransaction->setAction($action);
         }
 
+        $this->paymentTransactionProvider->savePaymentTransaction($paymentTransaction);
+
         return true;
     }
 
