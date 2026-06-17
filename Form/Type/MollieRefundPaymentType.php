@@ -47,20 +47,7 @@ class MollieRefundPaymentType extends AbstractType
         $resolver->setDefaults(
             [
                 'data_class' => MollieRefundPayment::class,
-                'validation_groups' => function (FormInterface $form) {
-                    if ($form->getName() === 'refundPayment') {
-                        $mollieRefundForm = $form->getParent();
-                        if ($mollieRefundForm) {
-                            /** @var MollieRefund $mollieRefund */
-                            $mollieRefund = $mollieRefundForm->getData();
-                            if ($mollieRefund && $mollieRefund->getSelectedTab() === MollieRefundProvider::ORDER_LINE_REFUND) {
-                                return false;
-                            }
-                        }
-                    }
-
-                    return ['Default'];
-                }
+                'validation_groups' => ['Default'],
             ]
         );
     }

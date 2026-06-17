@@ -47,11 +47,15 @@ class PaymentMethodConfig extends Entity
     /**
      * @var string[]
      */
-    protected static $apiMethodRestrictions = array(
+    public static $apiMethodRestrictions = array(
         PaymentMethods::KlarnaPayLater => self::API_METHOD_ORDERS,
         PaymentMethods::KlarnaSliceIt => self::API_METHOD_ORDERS,
         PaymentMethods::KlarnaPayNow => self::API_METHOD_ORDERS,
-        PaymentMethods::Vouchers => self::API_METHOD_ORDERS
+        PaymentMethods::Klarna => self::API_METHOD_ORDERS,
+        PaymentMethods::Vouchers => self::API_METHOD_ORDERS,
+        PaymentMethods::Billie => self::API_METHOD_ORDERS,
+        PaymentMethods::Riverty => self::API_METHOD_ORDERS,
+        PaymentMethods::Alma => self::API_METHOD_PAYMENT
     );
 
     /**
@@ -108,6 +112,7 @@ class PaymentMethodConfig extends Entity
         'voucherCategory',
         'productAttribute',
         'sortOrder',
+        'captureOption',
     );
 
     /**
@@ -204,6 +209,10 @@ class PaymentMethodConfig extends Entity
      * @var string
      */
     protected $productAttribute = self::PRODUCT_ATTRIBUTE_DEFAULT;
+    /**
+     * @var string
+     */
+    protected $captureOption;
 
     /**
      * {@inheritdoc}
@@ -682,5 +691,22 @@ class PaymentMethodConfig extends Entity
     public function setSortOrder($sortOrder)
     {
         $this->sortOrder = $sortOrder;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCaptureOption()
+    {
+        return $this->captureOption;
+    }
+
+    /**
+     * @param string $captureOption
+     * @return void
+     */
+    public function setCaptureOption($captureOption)
+    {
+        $this->captureOption = $captureOption;
     }
 }

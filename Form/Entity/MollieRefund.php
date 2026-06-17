@@ -10,21 +10,9 @@ namespace Mollie\Bundle\PaymentBundle\Form\Entity;
 class MollieRefund
 {
     /**
-     * @var array
-     */
-    private $refundItems = [];
-    /**
-     * @var bool
-     */
-    private $isOrderApiUsed;
-    /**
      * @var MollieRefundPayment
      */
     private $refundPayment;
-    /**
-     * @var string
-     */
-    private $selectedTab;
     /**
      * @var float
      */
@@ -44,59 +32,7 @@ class MollieRefund
     /**
      * @var bool
      */
-    private $isOrderRefundable;
-    /**
-     * @var bool
-     */
     private $isVoucher;
-
-    /**
-     * @return mixed
-     */
-    public function getSelectedTab()
-    {
-        return $this->selectedTab;
-    }
-
-    /**
-     * @param mixed $selectedTab
-     */
-    public function setSelectedTab($selectedTab)
-    {
-        $this->selectedTab = $selectedTab;
-    }
-
-    /**
-     * @return array
-     */
-    public function getRefundItems()
-    {
-        return $this->refundItems;
-    }
-
-    /**
-     * @param array $refundItems
-     */
-    public function setRefundItems($refundItems)
-    {
-        $this->refundItems = $refundItems;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isOrderApiUsed()
-    {
-        return $this->isOrderApiUsed;
-    }
-
-    /**
-     * @param bool $isOrderApiUsed
-     */
-    public function setIsOrderApiUsed($isOrderApiUsed)
-    {
-        $this->isOrderApiUsed = $isOrderApiUsed;
-    }
 
     /**
      * @return MollieRefundPayment
@@ -176,22 +112,6 @@ class MollieRefund
     public function setCurrencySymbol($currencySymbol)
     {
         $this->currencySymbol = $currencySymbol;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isOrderRefundable()
-    {
-        return $this->isOrderRefundable;
-    }
-
-    /**
-     * @param bool $isOrderRefundable
-     */
-    public function setIsOrderRefundable($isOrderRefundable)
-    {
-        $this->isOrderRefundable = $isOrderRefundable;
     }
 
     /**

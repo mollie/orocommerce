@@ -172,11 +172,6 @@ services:
     tags:
       - { name: form.type }
 
-  mollie_payment.form.type.mollie_refund_line_item:
-    class: Mollie\Bundle\PaymentBundle\Form\Type\MollieRefundLineItemType
-    tags:
-      - { name: form.type }
-
   mollie_payment.form.type.mollie_payment_link_generation:
     class: Mollie\Bundle\PaymentBundle\Form\Type\MolliePaymentLinkType
     tags:
@@ -242,6 +237,25 @@ services:
       - '@mollie_payment.manager.oro_payment_method_utility'
       - '@oro_locale.twig.locale'
       - '@translator'
+
+  mollie_payment.manager.mollie_capture_service:
+    class: Mollie\Bundle\PaymentBundle\Manager\MollieCaptureService
+
+  mollie_payment.manager.mollie_capture_provider:
+    class: Mollie\Bundle\PaymentBundle\Manager\MollieCaptureProvider
+    public: true
+    arguments:
+      - '@Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration'
+      - '@mollie_payment.manager.mollie_capture_service'
+      - '@mollie_payment.manager.oro_payment_method_utility'
+      - '@oro_locale.twig.locale'
+      - '@translator'
+      - '@oro_payment.provider.payment_transaction'
+
+  mollie_payment.form.type.mollie_capture:
+    class: Mollie\Bundle\PaymentBundle\Form\Type\MollieCaptureType
+    tags:
+      - { name: form.type }
 
   mollie_payment.manager.admin_link_handler:
     class: Mollie\Bundle\PaymentBundle\Manager\AdminLinkVisitHandler
