@@ -26,5 +26,6 @@ final class CaptureModeRestrictions
         'voucher',
         'payconiq',
         'alma',
+        'wero',
     ];
 }

@@ -38,7 +38,8 @@ class PaymentMethodConfig extends Entity
     const DEFAULT_TRANSACTION_DESCRIPTION = '{orderNumber}';
 
     public static $paymentOnlyApiMethods = array(
-        PaymentMethods::Alma
+        PaymentMethods::Alma,
+        PaymentMethods::Wero
     );
 
     protected static $allowedSurchargeTypes = array(
@@ -59,7 +60,8 @@ class PaymentMethodConfig extends Entity
         PaymentMethods::Vouchers => self::API_METHOD_ORDERS,
         PaymentMethods::Billie => self::API_METHOD_ORDERS,
         PaymentMethods::Riverty => self::API_METHOD_ORDERS,
-        PaymentMethods::Alma => self::API_METHOD_PAYMENT
+        PaymentMethods::Alma => self::API_METHOD_PAYMENT,
+        PaymentMethods::Wero => self::API_METHOD_PAYMENT
     );
 
     /**
