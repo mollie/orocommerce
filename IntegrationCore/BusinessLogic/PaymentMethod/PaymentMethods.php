@@ -26,4 +26,5 @@ class PaymentMethods
     const Riverty = 'riverty';
     const Klarna = 'klarna';
     const Billie = 'billie';
+    const Wero = 'wero';
 }

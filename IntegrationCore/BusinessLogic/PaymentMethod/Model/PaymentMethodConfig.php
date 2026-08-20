@@ -55,7 +55,8 @@ class PaymentMethodConfig extends Entity
         PaymentMethods::Vouchers => self::API_METHOD_ORDERS,
         PaymentMethods::Billie => self::API_METHOD_ORDERS,
         PaymentMethods::Riverty => self::API_METHOD_ORDERS,
-        PaymentMethods::Alma => self::API_METHOD_PAYMENT
+        PaymentMethods::Alma => self::API_METHOD_PAYMENT,
+        PaymentMethods::Wero => self::API_METHOD_PAYMENT
     );
 
     /**

@@ -27,6 +27,9 @@ Read more about the integration configuration on [our Wiki](https://github.com/m
 
 ## Release notes
 
+**5.3.2:**
+- Added the Wero payment method
+
 **5.3.1:**
 - Fixed double-render error for the synchronizationSettings field
 
