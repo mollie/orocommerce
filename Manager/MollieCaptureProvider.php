@@ -79,7 +79,7 @@ class MollieCaptureProvider
             $summary = $this->configService->doWithContext(
                 $this->paymentMethodUtility->getChannelId($order),
                 function () use ($order) {
-                    return $this->captureService->getCaptureSummary($order->getIdentifier());
+                    return $this->captureService->getCaptureSummary($order->getId());
                 }
             );
 
@@ -136,7 +136,7 @@ class MollieCaptureProvider
                 ];
             }
 
-            $orderId = $order->getIdentifier();
+            $orderId = $order->getId();
             $channelId = $this->paymentMethodUtility->getChannelId($order);
 
             return $this->configService->doWithContext($channelId, function () use ($orderId, $mollieCapture) {
