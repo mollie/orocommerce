@@ -42,8 +42,18 @@ class OrderReferenceService extends BaseService
     }
 
     /**
+     * Creates or updates the order reference for the given shop order.
+     *
+     * IMPORTANT: $shopReference is ALWAYS the shop order entity id (in OroCommerce
+     * Order::getId()), never the order number (Order::getIdentifier()). Every write path
+     * stores it that way - PaymentService::createPayment() and OrderService::createOrder()
+     * are both called with PaymentTransaction::getEntityIdentifier(), and
+     * WebHookTransformer reuses the value already stored on the reference. Any reader must
+     * therefore look the reference up by the entity id as well; the two values only happen
+     * to be equal when the default SimpleEntityAwareGenerator is in use.
+     *
      * @param BaseDto $createdResource
-     * @param $shopReference
+     * @param int|string $shopReference Shop order entity id
      * @param $method
      */
     public function updateOrderReference(BaseDto $createdResource, $shopReference, $method)
@@ -64,7 +74,13 @@ class OrderReferenceService extends BaseService
     /**
      * Returns order reference for provided shop order identifier
      *
-     * @param int|string $shopReference Unique identifier of a shop order
+     * $shopReference must be the shop order entity id (see updateOrderReference()), not the
+     * order number. The lookup is a strict EQUALS comparison on the string value with no
+     * fallback, so passing the wrong identifier silently returns null instead of failing.
+     * The shopReference index is not unique either, so a wrong identifier can even match a
+     * different order's reference.
+     *
+     * @param int|string $shopReference Shop order entity id
      *
      * @return OrderReference|null
      */
