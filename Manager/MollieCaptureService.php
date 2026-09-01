@@ -68,7 +68,8 @@ class MollieCaptureService
     }
 
     /**
-     * @param string $shopReference
+     * @param int|string $shopReference Shop order entity id (Order::getId()), not the order
+     *                                  number - see OrderReferenceService::getByShopReference()
      *
      * @return string Mollie payment reference
      *

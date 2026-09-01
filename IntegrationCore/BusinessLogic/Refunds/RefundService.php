@@ -194,7 +194,8 @@ class RefundService extends BaseService
     /**
      * Returns OrderReference entity by shop order id
      *
-     * @param $shopReference
+     * @param int|string $shopReference Shop order entity id, not the order number - see
+     *                                  OrderReferenceService::getByShopReference()
      *
      * @return OrderReference|null
      */

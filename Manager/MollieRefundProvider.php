@@ -103,11 +103,13 @@ class MollieRefundProvider
      */
     public function getMollieRefund($order)
     {
-        $orderReference = $this->orderReferenceService->getByShopReference($order->getIdentifier());
+        $orderReference = $this->orderReferenceService->getByShopReference($order->getId());
 
-        $voucherRefundProvider = new VoucherRefundFormProvider($orderReference, $this->localeExtension);
-        if ($voucherRefundProvider->isVoucher()) {
-            return $voucherRefundProvider->buildRefundForm();
+        if ($orderReference) {
+            $voucherRefundProvider = new VoucherRefundFormProvider($orderReference, $this->localeExtension);
+            if ($voucherRefundProvider->isVoucher()) {
+                return $voucherRefundProvider->buildRefundForm();
+            }
         }
 
         $refund = new MollieRefund();
@@ -127,10 +129,12 @@ class MollieRefundProvider
      */
     public function processRefundForm($form)
     {
+        $order = null;
+
         try {
             /** @var Order $order */
             $order = $form->getData()->data;
-            $orderId = $order->getIdentifier();
+            $orderId = $order->getId();
 
             return $this->configService->doWithContext($this->paymentMethodUtility->getChannelId($order), function () use ($orderId,
                 $form) {
@@ -160,6 +164,8 @@ class MollieRefundProvider
                 'Failed to process refund action',
                 'Integration',
                 [
+                    'OrderId' => $order ? $order->getId() : null,
+                    'OrderNumber' => $order ? $order->getIdentifier() : null,
                     'ExceptionMessage' => $exception->getMessage(),
                     'ExceptionTrace' => $exception->getTraceAsString(),
                 ]
@@ -186,7 +192,7 @@ class MollieRefundProvider
     {
         if ($order) {
             $isMollieSelected = $this->paymentMethodUtility->hasMolliePaymentConfig($order);
-            $orderReference = $this->orderReferenceService->getByShopReference($order->getIdentifier());
+            $orderReference = $this->orderReferenceService->getByShopReference($order->getId());
 
             return $isMollieSelected
                 && ($orderReference !== null)
@@ -239,7 +245,7 @@ class MollieRefundProvider
      */
     private function setPaymentRefund(Order $order, MollieRefund $refund)
     {
-        $orderId = $order->getIdentifier();
+        $orderId = $order->getId();
         $orderReference = $this->orderReferenceService->getByShopReference($orderId);
 
         $isOrdersApi = $orderReference && $orderReference->getApiMethod() === PaymentMethodConfig::API_METHOD_ORDERS;
