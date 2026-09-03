@@ -79,7 +79,7 @@ class MollieCaptureProvider
             $summary = $this->configService->doWithContext(
                 $this->paymentMethodUtility->getChannelId($order),
                 function () use ($order) {
-                    return $this->captureService->getCaptureSummary($order->getIdentifier());
+                    return $this->captureService->getCaptureSummary($order->getId());
                 }
             );
 
@@ -97,7 +97,8 @@ class MollieCaptureProvider
                 'Failed to fetch capture summary from Mollie',
                 'Integration',
                 [
-                    'OrderId' => $order->getIdentifier(),
+                    'OrderId' => $order->getId(),
+                    'OrderNumber' => $order->getIdentifier(),
                     'ExceptionMessage' => $exception->getMessage(),
                 ]
             );
@@ -120,6 +121,8 @@ class MollieCaptureProvider
      */
     public function processCapture($form): array
     {
+        $order = null;
+
         try {
             $actionData = $form->getData();
             /** @var Order $order */
@@ -136,7 +139,7 @@ class MollieCaptureProvider
                 ];
             }
 
-            $orderId = $order->getIdentifier();
+            $orderId = $order->getId();
             $channelId = $this->paymentMethodUtility->getChannelId($order);
 
             return $this->configService->doWithContext($channelId, function () use ($orderId, $mollieCapture) {
@@ -175,6 +178,8 @@ class MollieCaptureProvider
                 'Failed to process capture action',
                 'Integration',
                 [
+                    'OrderId' => $order ? $order->getId() : null,
+                    'OrderNumber' => $order ? $order->getIdentifier() : null,
                     'ExceptionMessage' => $exception->getMessage(),
                     'ExceptionTrace' => $exception->getTraceAsString(),
                 ]

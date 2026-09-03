@@ -70,7 +70,7 @@ class OroPaymentMethodUtility
             'methods' => $this->paymentTransactionProvider->getPaymentMethods($order),
         ];
 
-        $orderReference = $this->orderReferenceService->getByShopReference($order->getIdentifier());
+        $orderReference = $this->orderReferenceService->getByShopReference($order->getId());
         if ($orderReference) {
             $voucherFormProvider = new VoucherRefundFormProvider($orderReference, $this->localeExtension);
             if ($voucherFormProvider->isVoucher()) {
