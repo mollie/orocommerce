@@ -95,7 +95,7 @@ class AdminLinkPaymentRedirectListener
             ['orderId' => $paymentTransaction->getEntityIdentifier()],
             UrlGeneratorInterface::ABSOLUTE_URL
         );
-        $this->session->getFlashBag()->add(
+        $this->requestStack->getSession()?->getFlashBag()->add(
             'error',
             $this->translator->trans(
                 'mollie.payment.checkout.admin_link_error',

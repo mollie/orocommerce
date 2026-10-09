@@ -7,6 +7,9 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\Http\DTO\PaymentMe
 use Mollie\Bundle\PaymentBundle\IntegrationCore\BusinessLogic\PaymentMethod\PaymentMethodService;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Logger\Logger;
+use Oro\Bundle\IntegrationBundle\Entity\Channel;
+use Oro\Bundle\SecurityBundle\Attribute\AclAncestor;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
@@ -41,13 +44,22 @@ class ActivePaymentMethodsController extends AbstractController
 
 
     /**
-     * @Route("/methods/active/{channelId}/{profileId}", name="mollie_active_payment_methods", methods={"GET"})
+     * @Route(
+     *     "/methods/active/{channelId}/{profileId}",
+     *     name="mollie_active_payment_methods",
+     *     requirements={"channelId"="\d+", "profileId"="[A-Za-z0-9_]+"},
+     *     methods={"GET"}
+     * )
+     * @ParamConverter("channel", class="Oro\Bundle\IntegrationBundle\Entity\Channel", options={"id" = "channelId"})
      *
+     * @param string $channelId
      * @param string $profileId
+     * @param Channel|null $channel Loaded only for the object-level VIEW check
      *
      * @return JsonResponse
      */
-    public function getActivePaymentMethods($channelId, $profileId)
+    #[AclAncestor('oro_integration_view')]
+    public function getActivePaymentMethods($channelId, $profileId, ?Channel $channel = null)
     {
         try {
             $success = true;
