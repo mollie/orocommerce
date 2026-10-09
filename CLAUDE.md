@@ -39,7 +39,7 @@ ported (`PRINCIPLES.md` §7).
 | Order status enum | `EnumOption` when it exists (Oro 6.1), extend enum class otherwise | extend enum class only |
 | Product attribute data fixtures | `Migrations/Data/ORM/LoadMollieProductAttributeFamilyData`, `LoadMollieVoucherCategoryData`, `MollieProductAttribute` | `Migrations/Data/ORM/MollieProductAttribute` only |
 | README release notes | none (links to the GitHub Releases page) | release notes per version (`**5.x.y:**` list) |
-| `.github/workflows/codeql.yml` | present (branch `master`) | absent |
+| `.github/workflows/` | `codeql.yml`, `acl-attributes.yml` (branch `master`) | absent |
 | Copied core (`IntegrationCore/`) | includes `PaymentMethodConfig::$paymentOnlyApiMethods` | without `$paymentOnlyApiMethods`; otherwise identical to `master`. **Never copy `IntegrationCore/` between branches**; re-copy per branch |
 
 ## Architecture map
@@ -68,6 +68,7 @@ ported (`PRINCIPLES.md` §7).
   themes, JS page components and SCSS, `messages.*.yml` (en, de, de_DE, fr, fr_FR, nl, nl_NL)
 - `Tests/Unit/`: unit tests of the copied core only
 - `.github/workflows/codeql.yml`: CodeQL (JavaScript only, `master`)
+- `.github/workflows/acl-attributes.yml`: fails when an ACL/CSRF attribute sits inside a docblock (`master`)
 
 ## Where the instructions live
 
@@ -83,12 +84,17 @@ ported (`PRINCIPLES.md` §7).
 ## Commands
 
 There is no build step, no composer script, no linter, no static analysis and no PHP test job in CI.
+The only PHP check in CI is `acl-attributes.yml`, which greps for ACL/CSRF attributes inside docblocks.
 The bundle runs only inside an OroCommerce application.
 
 ```bash
 # PHP syntax check (not configured in repo — ad hoc; the core copy is not edited, so it is skipped)
 find . -name '*.php' -not -path './IntegrationCore/*' -not -path './Tests/*' -not -path './.git/*' \
   -print0 | xargs -0 -n1 php -l
+
+# ACL/CSRF attributes inside docblocks (same check as .github/workflows/acl-attributes.yml; expect no output)
+grep -rnE --include='*.php' --exclude-dir=IntegrationCore --exclude-dir=Tests --exclude-dir=.git \
+  '^\s*(/\*\*|\*).*#\[(Acl|AclAncestor|CsrfProtection)\b' .
 ```
 
 `Tests/Unit/` covers the copied core only. There is no `phpunit.xml` or `require-dev` in the repo;
