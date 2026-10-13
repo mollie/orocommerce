@@ -31,6 +31,7 @@ ported (`PRINCIPLES.md` §7).
 |---|---|---|
 | OroCommerce versions | `oro/commerce ^6.0` (6.0, 6.1); Oro itself requires PHP `~8.3` (6.0) / `~8.4` (6.1) | `oro/commerce ^5.0` (5.0, 5.1); Oro itself requires PHP `~8.1` (5.0) / `~8.2` (5.1) |
 | Module version line / tags | `6.x.y` (`composer.json` `version`, tag `6.2.3`) | `5.x.y` (tag `5.3.3`) |
+| Version check source (`ConfigurationService::VERSION_CHECK_URL`) | `mollie/orocommerce` `master` `composer.json` | `mollie/orocommerce` `5.0` `composer.json` |
 | Local branch suffix (existing convention) | none (for example `bugfix/CS-7958`, `feature/PIORO-211`) | `_5.0` (for example `bugfix/CS-7958_5.0`, `feature/PIORO-218_5.0`) |
 | ACL / CSRF declarations | PHP attributes `Oro\Bundle\SecurityBundle\Attribute\{Acl,AclAncestor,CsrfProtection}` | Doctrine annotations `Oro\Bundle\SecurityBundle\Annotation\{Acl,AclAncestor,CsrfProtection}` |
 | Session / flash access | `@request_stack` → `getSession()?->getFlashBag()` | `@session` / `@session.flash_bag` services |
@@ -39,7 +40,7 @@ ported (`PRINCIPLES.md` §7).
 | Order status enum | `EnumOption` when it exists (Oro 6.1), extend enum class otherwise | extend enum class only |
 | Product attribute data fixtures | `Migrations/Data/ORM/LoadMollieProductAttributeFamilyData`, `LoadMollieVoucherCategoryData`, `MollieProductAttribute` | `Migrations/Data/ORM/MollieProductAttribute` only |
 | README release notes | none (links to the GitHub Releases page) | release notes per version (`**5.x.y:**` list) |
-| `.github/workflows/codeql.yml` | present (branch `master`) | absent |
+| `.github/workflows/` | `codeql.yml`, `acl-attributes.yml` (branch `master`) | absent |
 | Copied core (`IntegrationCore/`) | includes `PaymentMethodConfig::$paymentOnlyApiMethods` | without `$paymentOnlyApiMethods`; otherwise identical to `master`. **Never copy `IntegrationCore/` between branches**; re-copy per branch |
 
 ## Architecture map
@@ -68,6 +69,7 @@ ported (`PRINCIPLES.md` §7).
   themes, JS page components and SCSS, `messages.*.yml` (en, de, de_DE, fr, fr_FR, nl, nl_NL)
 - `Tests/Unit/`: unit tests of the copied core only
 - `.github/workflows/codeql.yml`: CodeQL (JavaScript only, `master`)
+- `.github/workflows/acl-attributes.yml`: fails when an ACL/CSRF attribute sits inside a docblock (`master`)
 
 ## Where the instructions live
 
@@ -83,12 +85,17 @@ ported (`PRINCIPLES.md` §7).
 ## Commands
 
 There is no build step, no composer script, no linter, no static analysis and no PHP test job in CI.
+The only PHP check in CI is `acl-attributes.yml`, which greps for ACL/CSRF attributes inside docblocks.
 The bundle runs only inside an OroCommerce application.
 
 ```bash
 # PHP syntax check (not configured in repo — ad hoc; the core copy is not edited, so it is skipped)
 find . -name '*.php' -not -path './IntegrationCore/*' -not -path './Tests/*' -not -path './.git/*' \
   -print0 | xargs -0 -n1 php -l
+
+# ACL/CSRF attributes inside docblocks (same check as .github/workflows/acl-attributes.yml; expect no output)
+grep -rnE --include='*.php' --exclude-dir=IntegrationCore --exclude-dir=Tests --exclude-dir=.git \
+  '^\s*(/\*\*|\*).*#\[(Acl|AclAncestor|CsrfProtection)\b' .
 ```
 
 `Tests/Unit/` covers the copied core only. There is no `phpunit.xml` or `require-dev` in the repo;
@@ -139,8 +146,11 @@ Verification of wrapper code is manual, in an OroCommerce application of the bra
 - **Payments API only.** New payments use the Mollie Payments API. Orders API references created by
   earlier versions stay supported (refund, webhook, shipment, checkout link).
 - **Release: bump versions in lockstep, in a separate `Release X.Y.Z` commit.** Update `composer.json`
-  `version` in the branch's own line (`6.x.y` / `5.x.y`); on `5.0` also add the README release notes.
-  The developer merges (GitHub PR) and tags `X.Y.Z` (no `v` prefix).
+  `version` and the `mollie_payment.version` parameter in `Resources/config/services.yml` (the
+  extension version fallback) to the same value in the branch's own line (`6.x.y` / `5.x.y`); on `5.0`
+  also add the README release notes. The developer merges (GitHub PR) and tags `X.Y.Z` (no `v`
+  prefix) on `logeecom/orocommerce` and on `mollie/orocommerce`, because the version check links to
+  `github.com/mollie/orocommerce/releases/tag/X.Y.Z`.
 - **Porting**: changes land on `master` first. The spec decides whether they also go to `5.0`, and if
   so they are ported per `PRINCIPLES.md` §7, keeping the branch specifics from § Supported branches.
 
