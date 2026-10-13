@@ -4,7 +4,8 @@ namespace Mollie\Bundle\PaymentBundle\Controller;
 
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration;
 use Mollie\Bundle\PaymentBundle\IntegrationServices\DebugService;
-use Oro\Bundle\SecurityBundle\Annotation\Acl;
+use Oro\Bundle\SecurityBundle\Annotation\AclAncestor;
+use Oro\Bundle\SecurityBundle\Annotation\CsrfProtection;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -43,12 +44,7 @@ class SupportController extends AbstractController
      *     methods={"GET"}
      * )
      *
-     * @Acl(
-     *      id="oro_integration_view",
-     *      type="entity",
-     *      permission="VIEW",
-     *      class="OroIntegrationBundle:Channel"
-     * )
+     * @AclAncestor("oro_integration_view")
      *
      * @return JsonResponse
      */
@@ -64,12 +60,8 @@ class SupportController extends AbstractController
      *     methods={"POST"}
      * )
      *
-     * @Acl(
-     *      id="oro_integration_view",
-     *      type="entity",
-     *      permission="VIEW",
-     *      class="OroIntegrationBundle:Channel"
-     * )
+     * @AclAncestor("oro_integration_update")
+     * @CsrfProtection()
      *
      * @param Request $request
      * @return JsonResponse
@@ -94,12 +86,7 @@ class SupportController extends AbstractController
      *     methods={"GET"}
      * )
      *
-     * @Acl(
-     *      id="oro_integration_view",
-     *      type="entity",
-     *      permission="VIEW",
-     *      class="OroIntegrationBundle:Channel"
-     * )
+     * @AclAncestor("oro_integration_update")
      *
      * @return BinaryFileResponse
      */
@@ -109,6 +96,6 @@ class SupportController extends AbstractController
         $debugService = $this->get(DebugService::class);
         $debugFile = $debugService->getDebugDataFilePath();
 
-        return $this->file($debugFile, self::DEBUG_DATA_FILE_NAME);
+        return $this->file($debugFile, self::DEBUG_DATA_FILE_NAME)->deleteFileAfterSend(true);
     }
 }

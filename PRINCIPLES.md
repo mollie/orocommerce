@@ -172,9 +172,10 @@ commits that already exist.
 5. **Never commit secrets** (organization access tokens, including test tokens) or
    developer-environment files (`.idea/`, `.claude/settings.local.json`).
 6. **Releases are separate commits.** A release is its own `Release X.Y.Z` commit on each branch, in
-   the branch's version line: `composer.json` `version` (`6.x.y` on `master`, `5.x.y` on `5.0`), plus
-   the README release notes on `5.0`. The developer merges through a GitHub PR and tags `X.Y.Z` (no
-   `v` prefix).
+   the branch's version line: `composer.json` `version` and the `mollie_payment.version` parameter in
+   `Resources/config/services.yml`, both set to the same value (`6.x.y` on `master`, `5.x.y` on
+   `5.0`), plus the README release notes on `5.0`. The developer merges through a GitHub PR and tags
+   `X.Y.Z` (no `v` prefix) on `logeecom/orocommerce` and `mollie/orocommerce`.
 
 ## 4. Documentation discipline
 
@@ -292,8 +293,9 @@ green and reviewed. The AI resources are the same on both branches, so no separa
 5. **Verify on the branch.** Run `php -l` on the changed files, then the plan's manual verification
    in an OroCommerce 5.0/5.1 application, then the review sequence (§2.6) on the `5.0` diff. Report the
    results separately for each branch.
-6. **Release** on `5.0` is its own `Release 5.x.y` commit: `composer.json` `version` and the README
-   release notes (`**5.x.y:**` entry), as the branch's earlier release commits did.
+6. **Release** on `5.0` is its own `Release 5.x.y` commit: `composer.json` `version`, the
+   `mollie_payment.version` parameter in `Resources/config/services.yml` and the README release notes
+   (`**5.x.y:**` entry).
 7. **AI resources.** Changes to `CLAUDE.md`, `PRINCIPLES.md`, `DESIGN.md`, `LEARNINGS.md` or `.claude/`
    are brought over unchanged (`git checkout master -- <paths>` on the `5.0` branch), in their own
    commit. Branch specifics are only ever described in `CLAUDE.md` § Supported branches, never by
