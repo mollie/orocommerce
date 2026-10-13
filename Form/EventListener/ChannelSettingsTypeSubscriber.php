@@ -16,6 +16,7 @@ use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Con
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http\Exceptions\HttpAuthenticationException;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http\Exceptions\HttpCommunicationException;
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Http\Exceptions\HttpRequestException;
+use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Logger\Logger;
 use Oro\Bundle\LocaleBundle\Entity\LocalizedFallbackValue;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -195,7 +196,16 @@ class ChannelSettingsTypeSubscriber implements EventSubscriberInterface
      */
     public function onPostSetData(FormEvent $event)
     {
-        $this->versionCheckService->checkForNewVersion();
+        try {
+            $this->versionCheckService->checkForNewVersion();
+        } catch (\Throwable $exception) {
+            Logger::logWarning(
+                'Failed to check for a new Mollie plugin version',
+                'Integration',
+                ['ExceptionMessage' => $exception->getMessage()]
+            );
+        }
+
         $form = $event->getForm();
 
         $form->get('mollieVersion')->setData($this->configService->getExtensionVersion());
