@@ -742,7 +742,7 @@ sequenceDiagram
     PMC->>API: GET /v2/methods/all and GET /v2/methods
     IF->>SUB: POST_SET_DATA
     SUB->>VCS: checkForNewVersion()
-    VCS->>GH: GET mollie/orocommerce 4.2 composer.json
+    VCS->>GH: GET mollie/orocommerce composer.json (branch master / 5.0)
     VCS-->>Admin: warning flash when a newer version exists
     opt Verify button
         Admin->>IF: POST /mollie/validate-connection/{channelId}/ (AjaxMollieController)
@@ -845,7 +845,7 @@ sequenceDiagram
 | Mollie Components (`https://js.mollie.com/v1/mollie.js`) | browser | Loaded by `mollie-credit-card.js`. Card tokenisation with `profileId`, `testmode` and the page `lang`. The token travels as `oro_workflow_transition[<method>-mollie-card-token]`. |
 | Apple Pay (`window.ApplePaySession`) | browser | `mollie-applepay.js` hides Apple Pay when `ApplePaySession.canMakePayments()` is not available. |
 | Mollie dashboard and help (`https://www.mollie.com/dashboard/developers/organization-access-tokens`, `https://help.mollie.com/hc/en-us`) | browser links | Token link on the authorization form. Support link in `Form/fields.html.twig`. |
-| Version metadata (`ConfigurationService::VERSION_CHECK_URL` = `https://raw.githubusercontent.com/mollie/orocommerce/4.2/composer.json`, `PLUGIN_DOWNLOAD_URL` = `https://github.com/mollie/orocommerce/releases`) | outbound | `VersionCheckService::checkForNewVersion()` runs on every channel form `POST_SET_DATA` through `VersionCheckProxy` (no token header) and flashes a warning with the release tag URL when the fetched `version` is greater than `getExtensionVersion()`. |
+| Version metadata (`ConfigurationService::VERSION_CHECK_URL` = `https://raw.githubusercontent.com/mollie/orocommerce/<branch>/composer.json` with `<branch>` = `master` on `master` and `5.0` on `5.0`, `PLUGIN_DOWNLOAD_URL` = `https://github.com/mollie/orocommerce/releases`) | outbound | `VersionCheckService::checkForNewVersion()` runs on every channel form `POST_SET_DATA` through `VersionCheckProxy` (no token header) and flashes a warning with the release tag URL (`…/releases/tag/<version>`) when the fetched `version` is greater than `getExtensionVersion()`. `ChannelSettingsTypeSubscriber` catches any failure of the check and logs a warning, so the channel form still renders when GitHub is unreachable. |
 | Oro platform extension points | in-process | Tags:<br/>- `oro_payment.payment_method_provider`, `oro_payment.payment_method_view_provider`<br/>- `oro_integration.channel`, `oro_integration.transport`, `oro_integration.delete_provider`<br/>- `oro_pricing.subtotal_provider`, `oro_action.condition`, `oro_entity_extend.entity_generator_extension`<br/>- `doctrine.orm.entity_listener`, `doctrine.repository_service`, `monolog.logger`, `form.type`, `kernel.event_listener` (`kernel.exception`, `oro_payment.callback.notify`, `oro_payment.callback.return`, `oro_payment.event.collect_surcharge`, `oro_datagrid.datagrid.build.after.mollie-notifications-grid`)<br/>Service decoration: `oro_checkout.mapper.order_mapper`.<br/>Oro config files: `actions.yml` (operations on `oro_order_view`), `placeholders.yml` (`view_general_section_after`), `datagrids.yml`, `assets.yml`, `jsmodules.yml`, `bundles.yml`, `twig.yml`, and the layout `setBlockTheme` imports.<br/>Services used: `PaymentTransactionProvider`, `PaymentStatusProvider`, `ApplicablePaymentMethodsProvider`, `CompositePaymentMethodProvider`, `TaxProviderRegistry`, `SurchargeProvider`, `LocalizationHelper`, `WebsiteManager`, `WebsiteUrlResolver`, `PackageProvider`, `AclHelper`, `DoctrineHelper`, `ConfigModelManager`, `EntityAliasResolver`, `LocaleExtension`, `PriceRoundingService`. |
 | Filesystem | local | Method logos in `%kernel.project_dir%/public/bundles/molliepayment/img/uploads`. The debug ZIP reads `%kernel.logs_dir%` and writes a temp file, which is deleted after it is sent. |
 
@@ -887,4 +887,5 @@ sequenceDiagram
 - **Packaging and version.** The package is installed with Composer from the Git repository.
   `composer.json` `version` is the release version. `ConfigurationService::getExtensionVersion()`
   reports the installed `mollie/orocommerce` package version from Oro `PackageProvider` and falls
-  back to the container parameter `mollie_payment.version` (`Resources/config/services.yml:2`).
+  back to the container parameter `mollie_payment.version` (`Resources/config/services.yml:2`). Both
+  are bumped together in the release commit.
