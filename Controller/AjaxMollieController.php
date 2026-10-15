@@ -31,16 +31,16 @@ class AjaxMollieController extends AbstractController
 
     /**
      * @Route("/validate-connection/{channelId}/", name="mollie_payment_validate_connection", methods={"POST"})
-     * #[AclAncestor("oro_integration_update")]
      * @ParamConverter("channel", class="Oro\Bundle\IntegrationBundle\Entity\Channel", options={"id" = "channelId"})
-     * #[CsrfProtection()]
      *
      * @param Request      $request
      * @param Channel|null $channel
      *
      * @return JsonResponse
      */
-    public function validateConnectionAction(Request $request, Channel $channel = null)
+    #[AclAncestor('oro_integration_update')]
+    #[CsrfProtection()]
+    public function validateConnectionAction(Request $request, ?Channel $channel = null)
     {
         if (!$channel) {
             $channel = new Channel();

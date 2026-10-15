@@ -4,7 +4,8 @@ namespace Mollie\Bundle\PaymentBundle\Controller;
 
 use Mollie\Bundle\PaymentBundle\IntegrationCore\Infrastructure\Configuration\Configuration;
 use Mollie\Bundle\PaymentBundle\IntegrationServices\DebugService;
-use Oro\Bundle\SecurityBundle\Attribute\Acl;
+use Oro\Bundle\SecurityBundle\Attribute\AclAncestor;
+use Oro\Bundle\SecurityBundle\Attribute\CsrfProtection;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -25,15 +26,21 @@ class SupportController extends AbstractController
      * @var Configuration
      */
     private $configService;
+    /**
+     * @var DebugService
+     */
+    private $debugService;
 
     /**
      * SupportController constructor.
      *
      * @param Configuration $configService
+     * @param DebugService $debugService
      */
-    public function __construct(Configuration $configService)
+    public function __construct(Configuration $configService, DebugService $debugService)
     {
         $this->configService = $configService;
+        $this->debugService = $debugService;
     }
 
     /**
@@ -43,15 +50,9 @@ class SupportController extends AbstractController
      *     methods={"GET"}
      * )
      *
-     * #[Acl(
-     *      id="oro_integration_view",
-     *      type="entity",
-     *      permission="VIEW",
-     *      class="Oro\Bundle\IntegrationBundle\Entity\Channel"
-     * )]
-     *
      * @return JsonResponse
      */
+    #[AclAncestor('oro_integration_view')]
     public function getDebugStatus()
     {
         return new JsonResponse(['isDebugModeEnabled' => $this->configService->isDebugModeEnabled()]);
@@ -64,16 +65,11 @@ class SupportController extends AbstractController
      *     methods={"POST"}
      * )
      *
-     * #[Acl(
-     *      id="oro_integration_view",
-     *      type="entity",
-     *      permission="VIEW",
-     *      class="Oro\Bundle\IntegrationBundle\Entity\Channel"
-     * )]
-     *
      * @param Request $request
      * @return JsonResponse
      */
+    #[AclAncestor('oro_integration_update')]
+    #[CsrfProtection()]
     public function updateDebugStatus(Request $request)
     {
         $content = $request->getContent();
@@ -94,21 +90,13 @@ class SupportController extends AbstractController
      *     methods={"GET"}
      * )
      *
-     * #[Acl(
-     *      id="oro_integration_view",
-     *      type="entity",
-     *      permission="VIEW",
-     *      class="Oro\Bundle\IntegrationBundle\Entity\Channel"
-     * )]
-     *
      * @return BinaryFileResponse
      */
+    #[AclAncestor('oro_integration_update')]
     public function downloadDebugData()
     {
-        /** @var DebugService $debugService */
-        $debugService = $this->get(DebugService::class);
-        $debugFile = $debugService->getDebugDataFilePath();
+        $debugFile = $this->debugService->getDebugDataFilePath();
 
-        return $this->file($debugFile, self::DEBUG_DATA_FILE_NAME);
+        return $this->file($debugFile, self::DEBUG_DATA_FILE_NAME)->deleteFileAfterSend(true);
     }
 }
