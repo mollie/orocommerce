@@ -5,3 +5,4 @@
 
 # Custom content
 vendor
+.claude/settings.local.json

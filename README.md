@@ -27,6 +27,10 @@ Read more about the integration configuration on [our Wiki](https://github.com/m
 
 ## Release notes
 
+**5.3.4:**
+- Fixed: Enforce ACL and CSRF on Mollie validation and endpoints
+- Fixed: Plugin version checking on the channel form
+
 **5.3.3:**
 - Fixed: Use order entity ID for Mollie capture and refund references lookup
 
